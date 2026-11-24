@@ -888,12 +888,35 @@ img{max-width:100%}
 #abilhint kbd{display:inline-block;min-width:26px;padding:1px 5px;margin-right:4px;border:1px solid rgba(255,255,255,.35);border-radius:3px;font:700 10px var(--f-body);text-align:center;color:#fff;background:rgba(255,255,255,.08)}
 #abilhint.hidden{display:none}
 @media (max-width:640px){#abilhint{bottom:120px;gap:8px;font-size:10px}}
+/* v31 ally nameplates + spike-carrier tag */
+#nameplates{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+#hud.hidden~#nameplates,#nameplates:empty{display:none}
+.nplate{position:absolute;left:0;top:0;display:flex;flex-direction:column;align-items:center;gap:2px;transform-origin:50% 100%;will-change:transform;transition:opacity .15s}
+.nplate.hidden{display:none}
+.np-name{font:700 11px var(--f-body);letter-spacing:.4px;color:#bff6ee;text-shadow:0 1px 2px #000,0 0 3px #000;white-space:nowrap}
+.np-hp,.np-ar{width:58px;height:4px;background:rgba(0,0,0,.55);border:1px solid rgba(0,0,0,.6);border-radius:1px;overflow:hidden}
+.np-ar{height:2px;width:58px}
+.np-hp i,.np-ar i{display:block;height:100%;width:100%;background:#4fe8d4}
+.np-hp i.lo{background:#ff5a6a}.np-ar i{background:#cfe7ff}
+.np-spike{display:none;width:20px;height:20px;filter:drop-shadow(0 0 3px rgba(255,70,90,.8))}
+.np-spike svg{width:100%;height:100%}
+.nplate.spike .np-spike{display:block;animation:npspk 1.2s ease-in-out infinite}
+@keyframes npspk{50%{transform:translateY(-2px)}}
+.nplate.near{opacity:.35}.nplate.near .np-name{display:none}
+.nplate.noplate .np-name,.nplate.noplate .np-hp,.nplate.noplate .np-ar{display:none}
+.nplate.noplate.near{opacity:.6}
+#range-agents-chip{position:fixed;right:14px;bottom:168px;z-index:31;display:flex;align-items:center;gap:7px;padding:5px 10px 5px 5px;background:rgba(10,16,22,.78);border:1px solid rgba(255,255,255,.18);border-radius:4px;color:#e6eef2;font:700 11px var(--f-body);letter-spacing:.6px;text-transform:uppercase;cursor:pointer}
+#range-agents-chip img{width:26px;height:26px;border-radius:3px;object-fit:cover;background:#1b252e}
+#range-agents-chip kbd{padding:1px 5px;border:1px solid rgba(255,255,255,.35);border-radius:3px;font:700 10px var(--f-body)}
+#range-agents-chip.hidden{display:none}
+@media (max-width:640px){#range-agents-chip{bottom:auto;top:64px}}
 </style>
 <div id="loading">LOADING RIFTLINE</div>
 <canvas id="game"></canvas>
 
 <div id="nearsight"></div>
   <div id="tacmap" class="hidden"><div class="tm-card"><div class="tm-head">Tactical map</div><canvas id="tacmap-cv"></canvas><div id="tacmap-info"></div></div></div>
+  <div id="nameplates"></div>
   <div id="abilhint" class="hidden"></div>
   <div id="shadowview" class="hidden"><div id="shadow-info"></div></div>
   <div id="hud" class="layer hidden">
@@ -1102,6 +1125,7 @@ img{max-width:100%}
     </section>
     <section class="setpane hidden" data-pane="controls">
       <p class="note kbnote">Click a key, then press the new one (Esc cancels). Taking a key that is already used swaps the two. Ctrl+W can close a browser tab, so crouch uses Z unless the keyboard is locked (Video → Fullscreen with keyboard lock).</p>
+      <div class="row"><label>Aim / scope key</label><div class="opts" id="set-adsmode"><button class="opt" data-v="hold">Hold</button><button class="opt" data-v="toggle">Toggle</button></div></div>
       <div id="binds"></div>
       <button class="opt" id="btn-binds-reset">Reset keys to defaults</button>
     </section>
@@ -1119,6 +1143,8 @@ img{max-width:100%}
       <div class="row"><label for="set-res">Resolution scale</label><input type="range" id="set-res" min="0.5" max="1" step="0.05"><output id="o-res"></output></div>
       <div class="row"><label>Particles</label><div class="opts" id="set-part"><button class="opt" data-v="high">High</button><button class="opt" data-v="low">Low</button></div></div>
       <div class="row"><label>Bullet tracers</label><div class="opts" id="set-tracers"><button class="opt" data-v="high">High</button><button class="opt" data-v="low">Low</button><button class="opt" data-v="off">Off</button></div></div>
+      <div class="row"><label>Ally nameplates</label><div class="opts" id="set-nameplates"><button class="opt" data-v="1">On</button><button class="opt" data-v="0">Off</button></div></div>
+      <div class="row"><label>Ally x-ray (through walls)</label><div class="opts" id="set-allyxray"><button class="opt" data-v="1">On</button><button class="opt" data-v="0">Off</button></div></div>
       <div class="row"><label>Enemy outlines</label><div class="opts" id="set-outline"><button class="opt" data-v="full">Full detail</button><button class="opt" data-v="low">Low detail</button><button class="opt" data-v="off">Off</button></div></div>
       <div class="row"><label>Enemy highlight colour</label><div class="opts" id="set-enemycol"><button class="opt" data-v="red">Red</button><button class="opt" data-v="yellow">Yellow</button><button class="opt" data-v="purple">Purple</button></div></div>
       <div class="row"><label for="set-fov">Field of view</label><input type="range" id="set-fov" min="80" max="115" step="1"><output id="o-fov"></output></div>
@@ -1208,6 +1234,30 @@ img{max-width:100%}
 .mpwarn{margin:0 0 10px;padding:8px 12px;background:rgba(245,197,66,.12);border-left:3px solid var(--gold);color:var(--off);font-weight:600}.mpag.tk:after{content:"TEAMMATE";position:absolute;top:6px;left:0;right:0;text-align:center;font:800 10px var(--f-display);letter-spacing:1.5px;color:var(--gold)}
 .mpturn{margin-top:14px;max-width:820px;color:#9aa8b3}.mpturn summary{cursor:pointer;font:700 13px var(--f-body);letter-spacing:1.5px;text-transform:uppercase}.mpturn p{font-size:15px;line-height:1.45}.mpturn code{color:var(--off);font-size:13px}
 .mpturn .row{display:flex;gap:10px}.mpturn input{flex:1;font-size:14px!important}.mpturn.hidden{display:none}
+.mprow{display:flex;gap:8px}.mprow input{flex:1;min-width:0;font-size:15px!important;padding:8px 10px!important}
+#mp input:disabled{opacity:.5}
+.mpsel{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+@media(max-width:980px){.mpsel{grid-template-columns:1fr}}
+.mpsel .mpags{grid-template-columns:repeat(auto-fill,minmax(78px,1fr))}
+.mpcardag{position:sticky;top:12px;background:linear-gradient(165deg,rgba(28,45,57,.95),rgba(14,24,31,.95));border:1px solid rgba(255,255,255,.08);padding:16px 16px 10px;clip-path:polygon(0 0,calc(100% - 14px) 0,100% 14px,100% 100%,14px 100%,0 calc(100% - 14px))}
+.mpagh{display:flex;gap:14px;align-items:center;border-left:3px solid var(--c);padding-left:12px}
+.mpagh img{width:64px;height:64px;object-fit:cover;background:#0b141b}
+.mpagh b{display:block;font:900 30px var(--f-display);letter-spacing:2px;text-transform:uppercase;line-height:1}
+.mprole{display:inline-flex;align-items:center;gap:5px;margin-top:6px;font:700 12px var(--f-body);letter-spacing:1.5px;text-transform:uppercase;color:var(--rc)}
+.mprole svg{width:14px;height:14px}
+.mptag{display:inline-block;margin:6px 0 0 10px;padding:2px 7px;font:800 10px var(--f-display);letter-spacing:1.5px;text-transform:uppercase;background:rgba(63,208,200,.16);color:var(--teal)}
+.mptag.tk{background:rgba(245,197,66,.14);color:var(--gold)}
+.mpbio{color:#9aa8b3;font-size:14px;line-height:1.4;margin:12px 0 10px}
+.mpabl{list-style:none;margin:0;padding:0}
+.mpabl li{display:grid;grid-template-columns:30px 34px 1fr;gap:10px;align-items:start;padding:9px 0;border-top:1px solid rgba(255,255,255,.06)}
+.mpabl li.ult{background:linear-gradient(90deg,rgba(245,197,66,.07),transparent)}
+.mpkey{display:grid;place-items:center;height:24px;margin-top:4px;background:#0b141b;border:1px solid #2b4050;font:800 12px var(--f-display);letter-spacing:.5px;color:var(--off)}
+.mpabl li.ult .mpkey{border-color:rgba(245,197,66,.5);color:var(--gold)}
+.mpico{width:34px;height:34px;display:grid;place-items:center;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)}
+.mpico svg{width:22px;height:22px}
+.mpan{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.mpan b{font-size:15px}.mpan small{color:#8aa0ad;font-size:12px;white-space:nowrap}
+.mpabl p{margin:2px 0 0;color:#9aa8b3;font-size:13px;line-height:1.35}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
@@ -1267,13 +1317,13 @@ const DEFAULT_BINDS = {
   fwd: 'KeyW', back: 'KeyS', left: 'KeyA', right: 'KeyD', walk: 'ShiftLeft', jump: 'Space',
   primary: 'Digit1', secondary: 'Digit2', melee: 'Digit3', charge: 'Digit4', reload: 'KeyR', use: 'KeyF', drop: 'KeyG', inspect: 'KeyY',
   abilC: 'KeyC', abilQ: 'KeyQ', abilE: 'KeyE', ult: 'KeyX', ping: 'KeyV', wheel: 'KeyT', map: 'KeyM', buy: 'KeyB', score: 'Tab',
-  lookL: 'ArrowLeft', lookR: 'ArrowRight', lookU: 'ArrowUp', lookD: 'ArrowDown',
+  lookL: 'ArrowLeft', lookR: 'ArrowRight', lookU: 'ArrowUp', lookD: 'ArrowDown', ads: '', agentSwap: 'F2',
 };
 const BIND_GROUPS = [
   ['Movement', [['fwd', 'Forward'], ['back', 'Back'], ['left', 'Strafe left'], ['right', 'Strafe right'], ['walk', 'Walk'], ['crouch', 'Crouch'], ['jump', 'Jump']]],
-  ['Weapons', [['primary', 'Primary'], ['secondary', 'Sidearm'], ['melee', 'Blade'], ['charge', 'Charge / plant'], ['reload', 'Reload'], ['inspect', 'Inspect weapon'], ['use', 'Use / disarm'], ['drop', 'Drop']]],
+  ['Weapons', [['primary', 'Primary'], ['secondary', 'Sidearm'], ['melee', 'Blade'], ['charge', 'Charge / plant'], ['reload', 'Reload'], ['inspect', 'Inspect weapon'], ['use', 'Use / disarm'], ['drop', 'Drop'], ['ads', 'Aim / scope / alt fire']]],
   ['Abilities', [['abilC', 'Ability C slot'], ['abilQ', 'Ability Q slot'], ['abilE', 'Ability E slot'], ['ult', 'Ultimate']]],
-  ['Interface', [['wheel', 'Callout wheel'], ['ping', 'Ping'], ['map', 'Full map'], ['buy', 'Armory'], ['score', 'Scoreboard']]],
+  ['Interface', [['wheel', 'Callout wheel'], ['ping', 'Ping'], ['map', 'Full map'], ['buy', 'Armory'], ['score', 'Scoreboard'], ['agentSwap', 'Range: swap agent']]],
   ['Arrow-key look', [['lookL', 'Look left'], ['lookR', 'Look right'], ['lookU', 'Look up'], ['lookD', 'Look down']]],
 ];
 function keyName(c) {
@@ -1282,7 +1332,7 @@ function keyName(c) {
 }
 const Settings = {
   graphics: 'high', sens: 0.6, arrowSens: 1, fov: 103, vol: 0.7, crouchKey: 'auto', minimap: 'rotate', showFps: 1,
-  dpi: 800, rawInput: 1, customWin: 9, hand: 'right', dmPrimary: 'reaver', dmSecondary: 'kestrel', invertY: 0, shadows: 1, resScale: 1, particles: 'high', tracers: 'high', outline: 'full', enemyCol: 'red', fullscreen: 0, comms: 1, radioVo: 1, region: 'na', lang: 'en', teamAlly: '#3fa9ff', teamEnemy: '#ff4655',
+  dpi: 800, rawInput: 1, customWin: 9, hand: 'right', dmPrimary: 'reaver', dmSecondary: 'kestrel', invertY: 0, shadows: 1, resScale: 1, particles: 'high', tracers: 'high', outline: 'full', nameplates: 1, allyXray: 1, adsMode: 'hold', enemyCol: 'red', fullscreen: 0, comms: 1, radioVo: 1, region: 'na', lang: 'en', teamAlly: '#3fa9ff', teamEnemy: '#ff4655',
   xh: Object.assign({}, XH_PRESETS.Standard),
   mode: 'quick', diff: 1, agent: 'vanta', map: 'random', loadout: null, bindsV: 0,
   load() { try { const s = JSON.parse(localStorage.getItem('riftline.settings') || '{}'); for (const k in s) if (k in this && typeof this[k] !== 'function') this[k] = s[k]; } catch (e) { } },
@@ -1696,7 +1746,7 @@ const AGENTS = {
       C: { name: 'Rally Beacon', kind: 'stim', cost: 100, max: 1, p: { r: 6, dur: 12 }, ai: 'stim', desc: 'Throw a beacon. Allies inside fire and reload faster for 12s.' },
       Q: { name: 'Slag Canister', kind: 'molly', cost: 250, max: 1, p: { r: 4.5, dur: 7, dps: 50 }, ai: 'molly', desc: 'Lob a canister that floods the ground with fire for 7s.' },
       E: { name: 'Ash Veil', kind: 'smokeSky', cost: 100, max: 3, free: 3, p: { r: 4.4, dur: 19, range: 55, place: 'map', multi: 3 }, ai: 'smoke', desc: 'Open a tactical map and mark up to three points within 55m; confirm to drop long-lasting smokes on all of them at once. Three charges, refilled every round.' },
-      X: { name: 'Sunfall', kind: 'orbital', points: 7, p: { r: 6, delay: 2, dur: 3.2, dps: 120 }, ai: 'ult-area', desc: 'Call a lance from orbit onto the aimed point after a 2s warning.' },
+      X: { name: 'Sunfall', kind: 'orbital', points: 7, p: { r: 6, delay: 2, dur: 3.2, dps: 120, place: 'map', multi: 1, range: 999 }, ai: 'ult-area', desc: 'Call a lance from orbit onto the aimed point after a 2s warning.' },
     }
   },
   mire: {
@@ -1723,10 +1773,10 @@ const AGENTS = {
     name: 'Lumen', role: 'Controller', accent: 0xf4c95d, bio: 'Lighthouse keeper. Bends light until the whole site goes dark.',
     look: { build: 'slim', h: 1.04, skin: SKIN.pale, hair: 'pony', hairC: 0xc9c4bc, gear: ['monocle'], gearC: 0xd8b25a, top: 'robe', topC: 0xf2ead2, shirtC: 0xd8a83a, pantsC: 0x5a5244, bootsC: 0x3a3229, gloveC: 0x8a7a5a, extras: ['cape'] },
     abilities: {
-      C: { name: 'Lightfall', kind: 'flashPop', cost: 200, max: 2, p: { range: 30, delay: 0.7, dur: 1.6, sky: true }, ai: 'flash', desc: 'Drop a flare up to 30m away that bursts into a flash.' },
+      C: { name: 'Lightfall', kind: 'flashPop', cost: 200, max: 2, p: { range: 30, delay: 0.7, dur: 1.6, sky: true, place: 'map', multi: 2 }, ai: 'flash', desc: 'Drop a flare up to 30m away that bursts into a flash.' },
       Q: { name: 'Halo Smoke', kind: 'smokeSky', cost: 150, max: 2, p: { r: 4.2, dur: 16, range: 45, color: 0x7c7466, place: 'map', multi: 2 }, ai: 'smoke', desc: 'Open the tactical map and mark up to two smokes within 45m, then confirm.' },
       E: { name: 'Solar Wall', kind: 'smokeWall', cost: 0, max: 1, free: 1, p: { len: 18, dur: 12, color: 0xc9a85a }, ai: 'wall', desc: 'Raise a short wall of light that blocks vision.' },
-      X: { name: 'Eventide', kind: 'smokeWall', points: 7, p: { len: 70, dur: 20, color: 0x3c3550, mega: true }, ai: 'ult-zone', desc: 'Cast a 70m dusk wall across the map that blocks vision for 20s.' },
+      X: { name: 'Eventide', kind: 'smokeWall', points: 7, p: { len: 70, dur: 20, color: 0x3c3550, mega: true, place: 'map', line: true, range: 999 }, ai: 'ult-zone', desc: 'Cast a 70m dusk wall across the map that blocks vision for 20s.' },
     }
   },
   ashgrove: {
@@ -1744,7 +1794,7 @@ const AGENTS = {
     name: 'Corvid', role: 'Initiator', accent: 0x7fe0d0, bio: 'Tracker. Finds you through walls, then shoots through them.',
     look: { build: 'mid', skin: SKIN.tan, hair: 'none', hairC: 0x22201d, gear: ['hood', 'beak'], gearC: 0x2a2d2b, top: 'jacket', topC: 0x245a4a, shirtC: 0x7fe0d0, pantsC: 0x343a34, bootsC: 0x1e211e, gloveC: 0x2a2d2b, extras: ['quiver'] },
     abilities: {
-      C: { name: 'Scout Drone', kind: 'drone', cost: 400, max: 1, p: { dur: 7, tag: 'reveal' }, ai: 'info', desc: 'Pilot a drone for 7s. Enemies it sees are revealed; click to tag them.' },
+      C: { name: 'Scout Drone', kind: 'drone', cost: 400, max: 1, p: { mode: 'fly', dur: 7, tag: 'reveal' }, ai: 'info', desc: 'Pilot a drone for 7s. Enemies it sees are revealed; click to tag them.' },
       Q: { name: 'Shock Arrow', kind: 'frag', cost: 150, max: 2, p: { dmg: 75, r: 4.2, impact: true, bounces: 1, speed: 30, style: 'shock' }, ai: 'frag', desc: 'Fire an arrow that bounces once and detonates in an electric blast.' },
       E: { name: 'Ping Arrow', kind: 'recon', cost: 0, max: 1, free: 1, p: { pulses: 2, r: 30, speed: 38 }, ai: 'info', desc: 'Fire an arrow that pulses twice, revealing enemies in its line of sight.' },
       X: { name: 'Railstorm', kind: 'rail', points: 8, p: { beams: 3, dmg: 80 }, ai: 'ult-self', desc: 'Fire three wall-piercing energy beams down your aim.' },
@@ -1784,7 +1834,7 @@ const AGENTS = {
     name: 'Patch', role: 'Initiator', accent: 0xff5cc8, bio: 'Sixteen-tab hacker. Her crawler finds you; her swarm finishes the job.',
     look: { build: 'slim', skin: SKIN.fair, hair: 'swept', hairC: 0xd14fa6, gear: ['headphones'], gearC: 0x2b2d33, top: 'hoodie', topC: 0x4a2a8a, shirtC: 0xff5cc8, pantsC: 0x2a2c33, bootsC: 0xe6e6e6, gloveC: 0x33363d, extras: ['backpack'] },
     abilities: {
-      C: { name: 'Crawler', kind: 'crawler', cost: 250, max: 1, p: { speed: 7, dur: 5, daze: 3 }, ai: 'info', desc: 'Send a ground bot forward. It dazes and reveals the first enemy it reaches.' },
+      C: { name: 'Crawler', kind: 'drone', cost: 250, max: 1, p: { mode: 'runner', speed: 9, dur: 5, r: 5, daze: 3, hp: 80 }, ai: 'info', desc: 'Take control of a mechanical hound that charges forward. Steer it, then click to leap and daze everyone it lands near.' },
       Q: { name: 'Spotlight', kind: 'flash', cost: 250, max: 2, p: { fuse: 0.6, dur: 1.9, speed: 16 }, ai: 'flash', desc: 'Throw a strobe that flashes anyone facing it.' },
       E: { name: 'Survey Pulse', kind: 'radar', cost: 0, max: 1, free: 1, p: { r: 20, delay: 1, dur: 2.5 }, ai: 'info', desc: 'After 1s, reveal enemies within 20m of you, through walls.' },
       X: { name: 'Tracer Swarm', kind: 'seekers', points: 7, p: { count: 3, effect: 'vuln', dur: 5 }, ai: 'ult-info', desc: 'Launch three seekers that hunt enemies, revealing them and making them take double damage for 5s.' },
@@ -1815,7 +1865,7 @@ const AGENTS = {
     name: 'Glint', role: 'Sentinel', accent: 0xd8b25a, bio: 'Watchmaker and spy. Every corner of his site is wired.',
     look: { build: 'slim', skin: SKIN.pale, hair: 'swept', hairC: 0x141414, gear: ['monocle'], gearC: 0xd8b25a, top: 'coat', topC: 0x0f5a3a, shirtC: 0xf4ead2, pantsC: 0x1f2a24, bootsC: 0x15130f, gloveC: 0x15130f, extras: [] },
     abilities: {
-      C: { name: 'Spyglass', kind: 'sensor', cost: 200, max: 1, p: { r: 30, hp: 40 }, ai: 'trap', desc: 'Fix a lens to a surface. Enemies in its view are revealed to your team.' },
+      C: { name: 'Spyglass', kind: 'drone', cost: 200, max: 1, p: { mode: 'cam', range: 10, hp: 50, cd: 6 }, ai: 'trap', desc: 'Fix a camera to a wall. Press again to look through it (it reveals what it sees) and click to fire a reveal dart; press again to step out — the camera stays.' },
       Q: { name: 'Trip Coil', kind: 'trapWire', cost: 150, max: 2, p: { range: 8, daze: 2.5, reveal: 4 }, ai: 'trap', desc: 'String a wire that reveals and dazes enemies who cross it.' },
       E: { name: 'Snare', kind: 'mine', cost: 0, max: 1, free: 1, p: { trigger: 2.2, effect: 'slow', r: 4, dur: 4 }, ai: 'trap', desc: 'Hide a snare that slows enemies who walk into it.' },
       X: { name: 'Neural Lock', kind: 'suppressPulse', points: 7, p: { r: 22, delay: 0.8, dur: 8, reveal: 4 }, ai: 'ult-zone', desc: 'Pulse out 22m: enemies hit lose abilities for 8s and are revealed.' },
@@ -1918,10 +1968,10 @@ const AGENTS = {
     name: 'Salvo', role: 'Initiator', accent: 0xd6a24a, bio: 'Retired artillery spotter. Still thinks in grid references.',
     look: { build: 'heavy', skin: SKIN.tan, hair: 'buzz', hairC: 0x5a4a3a, gear: ['beard', 'headphones'], gearC: 0x3a3022, top: 'vest', topC: 0x55452c, shirtC: 0xd6a24a, pantsC: 0x3a3428, bootsC: 0x241f18, gloveC: 0x3a3022, extras: ['backpack', 'beltPouches'] },
     abilities: {
-      C: { name: 'Ghost Drone', kind: 'drone', cost: 300, max: 1, p: { dur: 5.5, tag: 'reveal' }, ai: 'info', desc: 'Pilot a quiet drone; it tags enemies it sees.' },
+      C: { name: 'Ghost Drone', kind: 'drone', cost: 300, max: 1, p: { mode: 'skim', dur: 5.5, r: 6, supp: 4, reveal: 3, hp: 80 }, ai: 'info', desc: 'Pilot a quiet floor-skimming drone. Click to fire one pulse that suppresses and reveals enemies around it.' },
       Q: { name: 'Parcel', kind: 'concuss', cost: 200, max: 2, p: { r: 4.5, daze: 2.4, speed: 16 }, ai: 'concuss', desc: 'Lob a sticky grenade that concusses everyone near it.' },
       E: { name: 'Guided Salvo', kind: 'orbital', cost: 200, max: 2, p: { r: 3.2, delay: 1.65, dur: 0.55, dps: 115, place: 'map', multi: 2, range: 40 }, ai: 'molly', desc: 'Mark up to two points on the tactical map; missiles land on them a moment later.' },
-      X: { name: 'Last Word', kind: 'carpet', points: 9, p: { n: 5, step: 4, r: 3.5, delay: 1.85, gap: 0.5, dps: 150 }, ai: 'ult-area', desc: 'Call a line of five strikes walking forward from the point you aim at.' },
+      X: { name: 'Last Word', kind: 'carpet', points: 9, p: { n: 5, step: 4, r: 3.5, delay: 1.85, gap: 0.5, dps: 150, place: 'map', line: true, range: 999 }, ai: 'ult-area', desc: 'Call a line of five strikes walking forward from the point you aim at.' },
     }
   },
   mourne: {   // ≈ Clove
@@ -1982,6 +2032,41 @@ for (const id of AGENT_IDS) {
   for (const k of ['C', 'Q', 'E', 'X']) { const ab = A.abilities[k]; ab.key = k; ab.icon = ab.icon || ab.kind; ab.p = ab.p || {}; }
 }
 const BOT_NAMES = ['Kite', 'Mosaic', 'Rook', 'Juno', 'Halcyon', 'Basalt', 'Tamsin', 'Oro', 'Vesper', 'Nadir', 'Quint', 'Saffi', 'Brann', 'Ilex', 'Marlow', 'Pell', 'Ostra', 'Wick', 'Fenn', 'Lark', 'Cobalt', 'Mica'];
+// ============================================================ v31 ABILITY ECONOMY (data only; applied once at load)
+// The buy-order rule every agent follows:
+//   · Signature (E): 1 free charge at the start of every round (topped up to 1, never stacked past what you hold);
+//     extra signature charges, where the cap allows, are bought at the listed price.
+//   · Basics (C, Q): start at 0 and are always bought; unused charges carry over to the next round (Valorant keeps them).
+//   · Ultimate (X): points only, never credits.
+// Agents with a direct Valorant counterpart use that agent's prices and caps; everyone else keeps their kit's prices
+// under the same rule. Prices from published cost tables (older patches for some agents) — one table to tune.
+const ABIL_ECON = {
+  //            C [cost, max]   Q [cost, max]   E [extra cost, max]
+  vanta:   { C: [100, 2], Q: [250, 1], E: [100, 3] },   // ≈ Brimstone: Stim, Incendiary, Sky Smoke 1 free + 2 at 100
+  hollow:  { C: [150, 2], Q: [300, 1], E: [100, 2] },   // ≈ Omen: Shrouded Step, Paranoia, Dark Cover 1 free + 1 at 100
+  salvo:   { C: [300, 1], Q: [200, 1], E: [150, 2] },   // ≈ Tejo: Stealth Drone, Special Delivery, Guided Salvo 1 free + 1 at 150
+  mourne:  { C: [100, 1], Q: [200, 1], E: [150, 2] },   // ≈ Clove: Pick-Me-Up, Meddle, Ruse 1 free + 1 at 150
+  fray:    { C: [100, 2], Q: [250, 2], E: [0, 1] },     // ≈ Yoru: Fakeout, Blindside, Gatecrash free
+  kilo:    { C: [200, 1], Q: [250, 2], E: [0, 1] },     // ≈ KAY/O: FRAG/ment, FLASH/drive, ZERO/point free
+  corvid:  { C: [400, 1], Q: [150, 2], E: [0, 1] },     // ≈ Sova: Owl Drone, Shock Bolt, Recon Bolt free
+  sable:   { C: [250, 2], Q: [200, 2], E: [200, 2] },   // ≈ Reyna: Leer; Devour / Dismiss (1 free signature + 1 at 200)
+};
+const AbilEcon = {
+  applied: false,
+  apply() {
+    if (this.applied) return; this.applied = true;
+    for (const id of AGENT_IDS) {
+      const A = AGENTS[id].abilities, o = ABIL_ECON[id] || {};
+      for (const k of ['C', 'Q']) { const a = A[k]; if (o[k]) { a.cost = o[k][0]; a.max = o[k][1]; } a.free = 0; if (!a.cost) a.cost = 100; }
+      const E = A.E; if (o.E) { E.cost = o.E[0]; E.max = o.E[1]; }
+      E.free = 1; E.max = Math.max(1, E.max || 1); if (E.max > 1 && !E.cost) E.cost = 100; if (E.max === 1) E.cost = 0;
+      E.signature = true;
+    }
+  },
+  label(a) { return a.signature ? (a.max > 1 ? `1 free · +${a.max - 1} for ${a.cost}` : 'Free each round') : `${a.cost} · max ${a.max}`; },
+  rows(id) { const A = AGENTS[id].abilities; return ['C', 'Q', 'E'].map(k => ({ k, name: A[k].name, cost: A[k].cost, max: A[k].max, free: A[k].free })); },
+};
+AbilEcon.apply();
 // ============================================================ COSMETICS: original skin lines, tiers, levels & variants
 // Tier structure mirrors a 5-step store ladder; every name, line and design here is original to Riftline.
 const SKIN_TIERS = {
@@ -7152,7 +7237,7 @@ function updateWeapon(ag, dt) {
     w.shots = Math.max(0, w.shots - dt * (def.rps || 5) * 1.6);
   }
   const blocked = ag.railstorm || (ag.drone && ag.drone.ctrl) || ag.planting > 0 || ag.defusing > 0 || ag.st.detainU > G.time || ag.st.phaseU > G.time || (ag.st.jamU > G.time && ag.slot === 'primary');
-  if (blocked) { inp.fireP = inp.altP = false; ag.ads = false; return; }
+  if (blocked) { if (!(ag.drone && ag.drone.ctrl)) inp.fireP = false; inp.altP = false; ag.ads = false; return; }   // a piloted drone consumes the click itself (Possess.tick)
   if (def.alt === 'zoom') ag.ads = inp.alt && !ag.reloading();
   else if (def.alt === 'scope') { if (inp.altP && !ag.reloading()) { w.scope = (w.scope + 1) % (def.zooms.length + 1); if (ag.isHuman) Sfx.ui(); } ag.ads = w.scope > 0; }
   else ag.ads = false;
@@ -7369,13 +7454,13 @@ const Abil = {
       && !(ag.st.suppU > G.time) && !(ag.st.detainU > G.time);
   },
   ready(ag, key) { return key === 'X' ? ag.ultPts >= ag.A.abilities.X.points : ag.charges[key] > 0; },
-  use(ag, key, target) {
+  use(ag, key, target, opts) {
     const def = ag.A.abilities[key]; if (!def) return false;
     const K = KINDS[def.kind]; if (!K) return false;
     if (ag.abilState[key] && K.reactivate) { if (ag.alive && !(ag.st.detainU > G.time)) { K.reactivate.call(this, ag, def, key); return true; } return false; }
     const deadOk = !ag.alive && G.mode.teamBased && G.mode.phase !== 'end' && ((def.p && def.p.dead && K === KINDS.smokeSky) || K === KINDS.secondLife) && !(ag.st.suppU > G.time);
     if (!(deadOk || this.canUse(ag)) || !this.ready(ag, key)) { if (ag.isHuman) { Sfx.ui('deny'); if (ag.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); } return false; }
-    this._cast = { ag, key }; let ok; try { ok = K.use.call(this, ag, def.p, target, def, key); } finally { this._cast = null; }
+    this._cast = { ag, key }; this._opts = opts || null; let ok; try { ok = K.use.call(this, ag, def.p, target, def, key); } finally { this._cast = null; this._opts = null; }
     if (ok === false) { if (ag.isHuman) Sfx.ui('deny'); return false; }
     if (key === 'X') ag.ultPts = 0; else ag.charges[key]--;
     ag.castT = G.time + 0.5;
@@ -7553,7 +7638,7 @@ const Abil = {
     ag.pos.copy(rw.pos); ag.vel.set(0, 0, 0); ag.hp = 100; ag.yaw = rw.yaw; ag.flashT = 0; ag.clearStatus();
     FX.emit('fire', ag.pos.clone().setY(1), { n: 30, spread: 0.6, speed: 3, life: 0.8 }); Sfx.ability('ult', ag.pos);
   },
-  endDrone(dr) { if (!dr.alive) return; dr.alive = false; R.scene.remove(dr.mesh); if (dr.owner.drone === dr) dr.owner.drone = null; this.drones.splice(this.drones.indexOf(dr), 1); },
+  endDrone(dr) { if (!dr.alive) return; dr.alive = false; R.scene.remove(dr.mesh); if (dr.owner.drone === dr) dr.owner.drone = null; if (dr.key && dr.owner.abilState[dr.key] === dr) dr.owner.abilState[dr.key] = null; if (dr.hp <= 0) Possess.stats.destroyed++; this.drones.splice(this.drones.indexOf(dr), 1); },
   blocksSight(a, b) {
     const dx = b.x - a.x, dy = b.y - a.y, dz = b.z - a.z, L2 = dx * dx + dy * dy + dz * dz;
     for (const z of this.zones) {
@@ -7726,27 +7811,14 @@ const Abil = {
   },
   updateDrone(dr, dt) {
     if (G.time > dr.until || !dr.owner.alive) { this.endDrone(dr); return; }
-    const sp = 8;
-    if (dr.ctrl) {
-      const inp = dr.owner.input, d = dirFromAngles(dr.yaw, 0, tmpA), r = tmpB.set(Math.cos(dr.yaw), 0, -Math.sin(dr.yaw));
-      const v = tmpC.set(0, 0, 0).addScaledVector(d, inp.f).addScaledVector(r, inp.r); if (v.lengthSq() > 1) v.normalize();
-      dr.pos.addScaledVector(v, sp * dt);
-      if (inp.fireP && G.time > dr.tagNext) {
-        dr.tagNext = G.time + 0.8; const o = dr.pos.clone(), dd = dirFromAngles(dr.yaw, dr.pitch, new V3());
-        const res = traceBullet(dr.owner, o, dd, { pen: 0, dmg: [[999, 0, 0, 0]], name: 'Tag' }, 40, 0, true); FX.tracer(o, res.end, dr.owner.A.accent, 0.2);
-        if (res.victim && res.victim.applyStatus) { this.applyFx(res.victim, dr.owner, dr.tag === 'daze' ? { daze: 2.5, reveal: 3 } : { reveal: 3 }); Sfx.ability('ping', o); }
-      }
-      inp.fireP = false;
-    } else if (dr.path && dr.pi < dr.path.length) {
-      const c = World.center(dr.path[dr.pi][0], dr.path[dr.pi][1], tmpA); c.y = 1.2;
-      const to = tmpB.copy(c).sub(dr.pos); if (to.length() < 0.8) dr.pi++; else { to.normalize(); dr.pos.addScaledVector(to, sp * dt); dr.yaw = Math.atan2(-to.x, -to.z); }
-    }
-    dr.pos.y = 1.2; World.collide(dr.pos, 0.3, 1.2, null, 0);
+    Possess.tick(dr, dt);
+    if (!dr.alive) return;
     dr.mesh.position.copy(dr.pos); dr.mesh.rotation.y = dr.yaw;
+    const cone = dr.mode === 'cam' ? 0.55 : 0.5, range = dr.mode === 'skim' ? 22 : 28;
     for (const a of G.agents) {
       if (!this.isEnemy(a, dr.owner)) continue;
-      const e = tmpA.set(a.pos.x, a.pos.y + 1.2, a.pos.z), to = tmpB.copy(e).sub(dr.pos), dist = to.length(); if (dist > 28) continue;
-      const f = dirFromAngles(dr.yaw, 0, tmpC); if (to.normalize().dot(f) < 0.5) continue;
+      const e = tmpA.set(a.pos.x, a.pos.y + 1.2, a.pos.z), to = tmpB.copy(e).sub(dr.pos), dist = to.length(); if (dist > range) continue;
+      const f = dirFromAngles(dr.yaw, 0, tmpC); if (to.normalize().dot(f) < cone) continue;
       if (World.los(dr.pos, e) && !this.blocksSight(dr.pos, e)) this.reveal(a, dr.team, 0.4);
     }
   },
@@ -7900,7 +7972,7 @@ const KINDS = {
   } },
   // Salvo (≈ Tejo)
   carpet: { use(ag, p, tgt) {
-    const start = this.aimPoint(ag, 50, tgt), dir = new V3(start.x - ag.pos.x, 0, start.z - ag.pos.z).normalize();
+    const o = this._opts, start = this.aimPoint(ag, p.range || 50, tgt), dir = o && o.dir ? o.dir.clone().setY(0).normalize() : new V3(start.x - ag.pos.x, 0, start.z - ag.pos.z).normalize();   // a line pad gives origin + direction
     for (let i = 0; i < p.n; i++) { const pt = start.clone().addScaledVector(dir, i * p.step); const [cx, cz] = World.cellOf(pt.x, pt.z); if (!World.inb(cx, cz)) break;
       G.later(i * p.gap, () => this.zone('orbital', pt, p.r, 0.5, ag, { delay: p.delay, dps: p.dps, style: 'fire', name: ag.A.abilities.X.name })); }
   } },
@@ -7993,9 +8065,10 @@ const KINDS = {
   smokeSky: { use(ag, p, tgt) { const pt = this.aimPoint(ag, p.range || 50, tgt); this.proj(ag, 'smokeDrop', new V3(pt.x, 14, pt.z), new V3(0, -16, 0), { g: 0, bounces: 0, size: 0.18, onLand: q => this.smoke(q.pos, p.r, p.dur, ag, p.color) }); } },
   smokeWall: {
     use(ag, p, tgt) {
-      const yaw = tgt ? this.yawTo(ag, tgt) : ag.yaw, d = new V3(-Math.sin(yaw), 0, -Math.cos(yaw)), segs = [];
-      let a = ag.pos.clone().setY(0).addScaledVector(d, 1.2);
-      for (let s = 0; s < p.len; s += 2) { const b = a.clone().addScaledVector(d, 2); if (b.x < 0 || b.z < 0 || b.x > GW * CELL || b.z > GH * CELL) break; segs.push([a, b]); a = b; }
+      const o = this._opts, yaw = tgt ? this.yawTo(ag, tgt) : ag.yaw, d = o && o.dir ? o.dir.clone().setY(0).normalize() : new V3(-Math.sin(yaw), 0, -Math.cos(yaw)), segs = [];
+      let a = ag.pos.clone().setY(0).addScaledVector(d, 1.2), len = p.len;
+      if (o && o.dir && tgt) { a = tgt.clone().setY(0); if (p.mega) { while (a.x > 0 && a.z > 0 && a.x < GW * CELL && a.z < GH * CELL) a.addScaledVector(d, -2); a.addScaledVector(d, 2); len = Math.hypot(GW, GH) * CELL; } }   // pad: the drawn line, edge to edge for a map-wide wall
+      for (let s = 0; s < len; s += 2) { const b = a.clone().addScaledVector(d, 2); if (b.x < 0 || b.z < 0 || b.x > GW * CELL || b.z > GH * CELL) break; segs.push([a, b]); a = b; }
       if (!segs.length) return false;
       this.curtain(segs, ag, p.dur, { color: p.color, slow: p.slow, decay: p.decay, mega: p.mega, name: ag.A.name });
       if (p.twin) { const off = new V3(-d.z, 0, d.x).multiplyScalar(p.twin); this.curtain(segs.map(([a, b]) => [a.clone().add(off), b.clone().add(off)]), ag, p.dur, { color: p.color, name: ag.A.name }); for (const sg of segs) { sg[0].addScaledVector(off, -0); } }
@@ -8061,14 +8134,24 @@ const KINDS = {
     }
   },
   drone: {
-    reactivate(ag) { if (ag.drone) this.endDrone(ag.drone); ag.abilState.C = null; },
+    // v31 possessable entities by p.mode: 'fly' (scout drone: free flight, click fires a tagging dart), 'skim' (stealth drone:
+    // hugs the floor, click fires one suppress + reveal pulse and the drone is spent), 'runner' (a steerable ground runner
+    // that charges forward; click leaps and bursts — daze or detain — and ends), 'cam' (a wall camera: placed once, re-press
+    // the key to look through it or step back out; click fires a reveal dart on a cooldown). All have a shootable hitbox.
+    reactivate(ag, def, key) { const dr = ag.drone; if (dr && dr.mode === 'cam') { if (dr.ctrl) Possess.leave(ag); else Possess.enter(ag, dr); return; } if (dr) this.endDrone(dr); ag.abilState[key || 'C'] = null; },
     use(ag, p, tgt, def, key) {
-      const o = ag.eye(new V3()).addScaledVector(ag.dir(new V3()), 0.6);
-      const mesh = devMesh([[SharedGeo.box(0.4, 0.12, 0.4), 0x3a4640, 0, 0, 0, 1, 1, 1], [SharedGeo.sph, ag.A.accent, 0, 0, -0.2, 0.07, 0.07, 0.07], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, 0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, 0.25, 0.13, 0.02, 0.13]]);
-      mesh.position.copy(o); R.scene.add(mesh);
-      const dr = { isDrone: true, alive: true, owner: ag, team: ag.team, pos: o, radius: 0.4, yaw: ag.yaw, pitch: 0, hp: 100, until: G.time + p.dur, mesh, ctrl: ag.isHuman && !G.autopilot, tag: p.tag, tagNext: 0, path: null, pi: 0 };
-      dr.cast = this._cast; dr.t0 = G.time; this.drones.push(dr); ag.drone = dr; Sfx.ability('dash', o);
-      if (!dr.ctrl && tgt) { const [sx, sz] = World.cellOf(o.x, o.z), [gx, gz] = World.cellOf(tgt.x, tgt.z); dr.path = World.path(sx, sz, gx, gz); }
+      const mode = p.mode || 'fly', human = ag.isHuman && !G.autopilot;
+      let o = ag.eye(new V3()).addScaledVector(ag.dir(new V3()), 0.6), yaw = tgt ? this.yawTo(ag, tgt) : ag.yaw;
+      if (mode === 'cam') {   // stick to the wall (or ledge) under the crosshair, facing back out
+        const e = ag.eye(new V3()), d = tgt ? tgt.clone().setY(e.y).sub(e).normalize() : ag.dir(new V3()), t = World.rayHit(e, d, p.range || 10);
+        o = e.addScaledVector(d, Math.max(0.6, t - 0.25)); o.y = clamp(o.y, 0.6, 3.2); yaw = Math.atan2(d.x, d.z);   // faces back toward the thrower
+      }
+      const mesh = Possess.mesh(mode, ag.A.accent); mesh.position.copy(o); mesh.rotation.y = yaw; R.scene.add(mesh);
+      const dr = { isDrone: true, alive: true, owner: ag, team: ag.team, pos: o, radius: mode === 'cam' ? 0.25 : 0.4, yaw, pitch: 0, hp: p.hp || (mode === 'cam' ? 60 : mode === 'runner' ? 80 : 100),
+        until: G.time + (p.dur || 999), mesh, ctrl: human && mode !== 'cam', tag: p.tag, tagNext: 0, path: null, pi: 0, mode, p, key: key || 'C', leap: 0 };
+      dr.cast = this._cast; dr.t0 = G.time; this.drones.push(dr); ag.drone = dr; ag.abilState[dr.key] = mode === 'cam' ? dr : null; Sfx.ability('dash', o);
+      if (!dr.ctrl && tgt && mode !== 'cam') { const [sx, sz] = World.cellOf(o.x, o.z), [gx, gz] = World.cellOf(tgt.x, tgt.z); dr.path = World.path(sx, sz, gx, gz); }
+      Possess.stats.casts[mode] = (Possess.stats.casts[mode] || 0) + 1;
     }
   },
   crawler: {
@@ -8582,7 +8665,7 @@ const Bots = {
     ag.wantPlant = false; ag.wantDefuse = false; ag.wantOrb = false;
     if (!ag.alive) return;
     if ((ai.nextPerc -= dt) <= 0) { ai.nextPerc = 0.1; this.perceive(ag); }
-    if (ag.drone && !ag.drone.ctrl) { inp.f = inp.r = 0; return; }
+    if (ag.drone && !ag.drone.ctrl && ag.drone.mode !== 'cam') { inp.f = inp.r = 0; return; }   // piloting (a placed camera doesn't hold the bot)
     const w = ag.weapon();
     if (ag.railstorm) { const k = this.freshIntel(ag, 3); if (k) this.lookPoint(ag, tmpC.copy(k.pos).setY(1.2), dt, 200); inp.f = inp.r = 0; return; }
     if (this.escapeZone(ag, dt)) return;
@@ -10571,7 +10654,7 @@ const SpikeIQ = {
 // ============================================================ v27: controller smoke placement (human player)
 // Abilities with p.place:
 //   'map'    — tactical map overlay (Brimstone-style): click up to N points inside the ability's range, right-click / the
-//              ability key / Enter confirms and every marked smoke drops at once (one charge each). Esc cancels.
+//              ability key / Enter confirms and every marked smoke drops at once (one charge each). A weapon key puts it away (Esc only pauses).
 //   'shadow' — shadow-realm projection (Omen-style): the view darkens, a marker travels out along your aim and ignores walls;
 //              the mouse wheel sets its distance, a line and readout show range and whether it is behind cover. Click places.
 // Bots never open these: they call Abil.use with a target point as before.
@@ -10603,7 +10686,7 @@ const Placement = {
   },
   toMap(wx, wz) { return [(wx / CELL + 2) * this.sc, (wz / CELL + 2) * this.sc]; },
   toWorld(mx, my) { return new V3((mx / this.sc - 2) * CELL, 0, (my / this.sc - 2) * CELL); },
-  max() { return this.key === 'X' ? (this.def.p.multi || 1) : Math.min(this.def.p.multi || 1, this.P.charges[this.key] || 0); },
+  max() { if (this.def.p.line) return 2; return this.key === 'X' ? (this.def.p.multi || 1) : Math.min(this.def.p.multi || 1, this.P.charges[this.key] || 0); },
   draw() {
     const cv = $('tacmap-cv'), x = cv.getContext('2d'), P = this.P, p = this.def.p, sc = this.sc, cellPx = sc / CELL;
     x.drawImage(this.bg, 0, 0);
@@ -10613,12 +10696,18 @@ const Placement = {
     x.strokeStyle = '#ffe9a8'; x.lineWidth = 2; x.beginPath(); x.moveTo(px, pz); x.lineTo(px - Math.sin(P.yaw) * 14, pz - Math.cos(P.yaw) * 14); x.stroke();
     const acc = '#' + (P.A.accent >>> 0).toString(16).padStart(6, '0');
     this.pts.forEach((q, i) => { const [mx, my] = this.toMap(q.x, q.z); x.fillStyle = acc + '66'; x.strokeStyle = acc; x.lineWidth = 2; x.beginPath(); x.arc(mx, my, (p.r || 4.4) * cellPx, 0, TAU); x.fill(); x.stroke(); x.fillStyle = '#fff'; x.font = '800 13px sans-serif'; x.textAlign = 'center'; x.fillText(String(i + 1), mx, my + 5); });
+    if (p.line && this.pts.length) {   // line pads: origin set, the cursor sets the direction — preview the strike strip / wall
+      const o = this.pts[0], q = this.pts[1] || this.toWorld(this.cur.x, this.cur.y), d = new V3(q.x - o.x, 0, q.z - o.z); if (d.lengthSq() > 0.01) { d.normalize();
+        x.strokeStyle = acc; x.lineWidth = 2;
+        if (p.mega) { const a = o.clone(), b = o.clone(); while (a.x > 0 && a.z > 0 && a.x < GW * CELL && a.z < GH * CELL) a.addScaledVector(d, -2); while (b.x > 0 && b.z > 0 && b.x < GW * CELL && b.z < GH * CELL) b.addScaledVector(d, 2); const [ax, az] = this.toMap(a.x, a.z), [bx, bz] = this.toMap(b.x, b.z); x.lineWidth = 5; x.strokeStyle = acc + 'cc'; x.beginPath(); x.moveTo(ax, az); x.lineTo(bx, bz); x.stroke(); }
+        else for (let i = 0; i < (p.n || 1); i++) { const c = o.clone().addScaledVector(d, i * (p.step || 4)), [mx, my] = this.toMap(c.x, c.z); x.fillStyle = acc + '44'; x.beginPath(); x.arc(mx, my, (p.r || 3) * cellPx, 0, TAU); x.fill(); x.stroke(); }
+      } }
     const ok = this.valid(this.toWorld(this.cur.x, this.cur.y));
     x.strokeStyle = ok ? '#ffffff' : '#ff4655'; x.lineWidth = 2; x.beginPath(); x.arc(this.cur.x, this.cur.y, (p.r || 4.4) * cellPx, 0, TAU); x.stroke();
     x.beginPath(); x.moveTo(this.cur.x - 8, this.cur.y); x.lineTo(this.cur.x + 8, this.cur.y); x.moveTo(this.cur.x, this.cur.y - 8); x.lineTo(this.cur.x, this.cur.y + 8); x.stroke();
-    $('tacmap-info').textContent = `${this.def.name} · ${this.pts.length}/${this.max()} marked · click to mark or unmark · right-click, Enter or ${keyName(Input.key('abil' + this.key)) || this.key} to deploy · Esc to cancel`;
+    $('tacmap-info').textContent = p.line ? `${this.def.name} · ${this.pts.length ? 'click to set the direction' : 'click the origin'} · right-click / Enter / ${keyName(Input.key(this.key === 'X' ? 'ult' : 'abil' + this.key)) || this.key} to fire · a weapon key puts it away` : `${this.def.name} · ${this.pts.length}/${this.max()} marked · click to mark or unmark · right-click, Enter or ${keyName(Input.key('abil' + this.key)) || this.key} to deploy · weapon key to put away`;
   },
-  valid(w) { const [cx, cz] = World.cellOf(w.x, w.z); return World.isWalkCell(cx, cz) && Math.hypot(w.x - this.P.pos.x, w.z - this.P.pos.z) <= (this.def.p.range || 50); },
+  valid(w) { const [cx, cz] = World.cellOf(w.x, w.z); if (this.def.p.line && this.pts.length === 1) return w.x > 0 && w.z > 0 && w.x < GW * CELL && w.z < GH * CELL; return World.isWalkCell(cx, cz) && Math.hypot(w.x - this.P.pos.x, w.z - this.P.pos.z) <= (this.def.p.range || 50); },
   move(dx, dy) {
     if (this.mode !== 'map') return; const cv = $('tacmap-cv'), k = 0.9 * (Settings.sens || 1);
     this.cur.x = clamp(this.cur.x + dx * k, 0, cv.width); this.cur.y = clamp(this.cur.y + dy * k, 0, cv.height); this.draw();
@@ -10636,6 +10725,7 @@ const Placement = {
   confirm() {
     if (this.mode !== 'map') return; const P = this.P, key = this.key, pts = this.pts.slice(); this.close();
     if (!pts.length) return;
+    if (this.def.p.line) { if (pts.length < 2) { Sfx.ui('deny'); return; } const d = new V3(pts[1].x - pts[0].x, 0, pts[1].z - pts[0].z); if (Abil.use(P, key, pts[0], { dir: d })) this.stats.placed++; return; }   // origin + direction
     const dead = !!this.def.p.dead; pts.forEach((q, i) => setTimeout(() => { if ((P.alive || dead) && Abil.ready(P, key)) { Abil.use(P, key, q); this.stats.placed++; } }, i * 120));   // they fall as a volley
   },
   // ---------------------------------------------------------------- shadow projection
@@ -10662,7 +10752,7 @@ const Placement = {
     g.position.set(pt.x, 1.2, pt.z); g.rotation.y += dt * 0.6;
     const ln = this.gline; ln.geometry.setFromPoints([o.clone().add(new V3(0, -0.35, 0)), g.position.clone()]); ln.computeLineDistances();
     const behind = !World.los(o, g.position), dist = Math.hypot(pt.x - P.pos.x, pt.z - P.pos.z);
-    $('shadow-info').innerHTML = `<b>${dist.toFixed(1)} m</b> <span>${behind ? 'behind cover (one-way possible)' : 'in line of sight'}</span><small>Wheel: distance · Click: place ${this.def.name} · Right-click / Esc: cancel</small>`;
+    $('shadow-info').innerHTML = `<b>${dist.toFixed(1)} m</b> <span>${behind ? 'behind cover (one-way possible)' : 'in line of sight'}</span><small>Wheel: distance · Click: place ${this.def.name} · Right-click or a weapon key: cancel</small>`;
   },
   placeShadow() { const P = this.P, key = this.key, pt = this.shadowPoint(); this.close(); if (Abil.use(P, key, pt)) this.stats.placed++; },
 };
@@ -10849,6 +10939,79 @@ const MMProj = {
     x.restore();
   },
   STY: { fill: 'rgba(110,230,255,0.16)', line: 'rgba(170,240,255,0.95)', wall: 'rgba(150,235,255,0.9)', pierce: 'rgba(255,196,80,0.95)', range: 'rgba(255,255,255,0.45)', hot: 'rgba(255,120,90,0.95)', hotFill: 'rgba(255,110,80,0.18)' },
+};
+// ============================================================ v31 POSSESS: drone / camera control (movement, actions, entry/exit)
+// The drone record lives in Abil.drones (kind 'drone' in 70_abilities). This module owns what happens while one is alive:
+// how it moves (piloted by the human through their input, or path-following for bots), what Left Click does, and how you
+// enter and leave it. The camera follows V.drone in updateView; mouse look writes dr.yaw / dr.pitch (95_main).
+//   fly     free 3-D flight at 8 m/s (pitch climbs / dives, 0.4–6 m), dart every 0.8 s: tags (reveal / daze)
+//   skim    floor-hugging at 0.35 m, 10 m/s, quiet; one pulse: suppress + reveal everything in p.r with sight, then spent
+//   runner  charges forward at p.speed, you steer with the mouse (A/D nudge); click: leap 4 m and burst (daze or detain)
+//   cam     fixed on a wall; look around; dart every p.cd s reveals what it hits; re-press the key to step out (it stays)
+const Possess = {
+  stats: { casts: {}, darts: 0, pulses: 0, leaps: 0, camViews: 0, destroyed: 0 },
+  mesh(mode, acc) {
+    const D = 0x2c3338, L = 0x48545b;
+    if (mode === 'skim') return devMesh([[SharedGeo.cyl, D, 0, 0, 0, 0.32, 0.05, 0.32], [SharedGeo.cyl, L, 0, 0.04, 0, 0.22, 0.04, 0.22], [SharedGeo.sph, acc, 0, 0.06, -0.24, 0.06, 0.04, 0.06], [SharedGeo.box(0.5, 0.02, 0.08), acc, 0, 0.01, 0.12, 1, 1, 1]]);
+    if (mode === 'runner') return devMesh([   // a low mechanical hound: chassis, head, four legs, tail fin
+      [SharedGeo.box(0.36, 0.22, 0.7), D, 0, 0.42, 0, 1, 1, 1], [SharedGeo.box(0.26, 0.2, 0.28), L, 0, 0.5, -0.44, 1, 1, 1], [SharedGeo.sph, acc, 0.07, 0.54, -0.58, 0.035, 0.035, 0.035], [SharedGeo.sph, acc, -0.07, 0.54, -0.58, 0.035, 0.035, 0.035],
+      [SharedGeo.box(0.08, 0.32, 0.08), L, 0.14, 0.16, -0.24, 1, 1, 1], [SharedGeo.box(0.08, 0.32, 0.08), L, -0.14, 0.16, -0.24, 1, 1, 1], [SharedGeo.box(0.08, 0.32, 0.08), L, 0.14, 0.16, 0.24, 1, 1, 1], [SharedGeo.box(0.08, 0.32, 0.08), L, -0.14, 0.16, 0.24, 1, 1, 1],
+      [SharedGeo.box(0.04, 0.16, 0.24), acc, 0, 0.58, 0.42, 1, 1, 1], [SharedGeo.box(0.38, 0.03, 0.5), acc, 0, 0.54, 0, 1, 1, 1]]);
+    if (mode === 'cam') return devMesh([[SharedGeo.box(0.2, 0.16, 0.14), D, 0, 0, 0, 1, 1, 1], [SharedGeo.cyl, L, 0, 0, 0.09, 0.07, 0.05, 0.07], [SharedGeo.sph, acc, 0, 0, 0.12, 0.045, 0.045, 0.045], [SharedGeo.box(0.04, 0.04, 0.12), L, 0, 0, -0.12, 1, 1, 1]]);
+    return devMesh([[SharedGeo.box(0.4, 0.12, 0.4), 0x3a4640, 0, 0, 0, 1, 1, 1], [SharedGeo.sph, acc, 0, 0, -0.2, 0.07, 0.07, 0.07], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, 0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, 0.25, 0.13, 0.02, 0.13]]);
+  },
+  enter(P, dr) { if (!dr || !dr.alive || !Abil.canUse(P)) { Sfx.ui('deny'); return; } AbilHand.cancel(P, true); Placement.close(); dr.ctrl = true; dr.pitch = 0; this.stats.camViews++; Sfx.ui(); },
+  // step out: a camera stays where it is; every other drone is spent
+  leave(P, force) { const dr = P.drone; if (!dr) return; if (dr.mode === 'cam' && !force) { dr.ctrl = false; P.input.fireP = false; Sfx.ui(); return; } Abil.endDrone(dr); },
+  speed(dr) { return dr.mode === 'skim' ? 10 : dr.mode === 'runner' ? (dr.p.speed || 9) : dr.mode === 'cam' ? 0 : 8; },
+  tick(dr, dt) {
+    const ag = dr.owner, inp = ag.input, sp = this.speed(dr);
+    if (dr.ctrl) {
+      const f = dirFromAngles(dr.yaw, dr.mode === 'fly' ? dr.pitch : 0, new V3()), r = new V3(Math.cos(dr.yaw), 0, -Math.sin(dr.yaw)), v = new V3();
+      if (dr.mode === 'runner') v.copy(f).setY(0).normalize().addScaledVector(r, inp.r * 0.6);   // always charging; steer with the mouse
+      else if (dr.mode !== 'cam') { v.addScaledVector(f, inp.f).addScaledVector(r, inp.r); if (v.lengthSq() > 1) v.normalize(); }
+      if (dr.leap > 0) { dr.leap -= dt; v.copy(f).setY(0).normalize().multiplyScalar(1.5); if (dr.leap <= 0) { this.burst(dr); return; } }
+      dr.pos.addScaledVector(v, sp * dt);
+      if (inp.fireP) this.action(dr);
+      inp.fireP = false;
+    } else if (dr.mode !== 'cam' && dr.path && dr.pi < dr.path.length) {   // bots: follow the path; runners leap on contact
+      const c = World.center(dr.path[dr.pi][0], dr.path[dr.pi][1], new V3()); c.y = dr.pos.y;
+      const to = c.sub(dr.pos); if (to.length() < 0.8) dr.pi++; else { to.normalize(); dr.pos.addScaledVector(to, sp * dt); dr.yaw = Math.atan2(-to.x, -to.z); }
+      if (dr.mode === 'runner' && !dr.leap) for (const e of G.agents) if (Abil.isEnemy(e, ag) && e.pos.distanceTo(dr.pos) < 4.5 && World.los(dr.pos, e.eye(new V3()))) { dr.leap = 0.001; this.burst(dr); return; }
+      if (dr.mode === 'skim' && !dr.pulsed) for (const e of G.agents) if (Abil.isEnemy(e, ag) && e.pos.distanceTo(dr.pos) < (dr.p.r || 6) * 0.8 && World.los(dr.pos, e.eye(new V3()))) { this.action(dr); return; }
+    }
+    if (!dr.alive) return;
+    if (dr.mode === 'fly') { dr.pos.y = clamp(dr.ctrl ? dr.pos.y : 1.2, 0.4, 6); World.collide(dr.pos, 0.3, 0.6, null, 0); }
+    else if (dr.mode === 'skim') { dr.pos.y = 0.35; World.collide(dr.pos, 0.3, 0.4, null, 0); }
+    else if (dr.mode === 'runner') { dr.pos.y = 0.05; World.collide(dr.pos, 0.35, 0.8, null, 0); const [cx, cz] = World.cellOf(dr.pos.x, dr.pos.z); if (!World.isWalkCell(cx, cz) && dr.ctrl) dr.pos.addScaledVector(dirFromAngles(dr.yaw, 0, new V3()), -0.3); }
+    if (dr.mesh.children[0]) dr.mesh.position.y = dr.pos.y + (dr.mode === 'fly' ? Math.sin(G.time * 9) * 0.02 : 0);
+  },
+  action(dr) {
+    const ag = dr.owner, now = G.time;
+    if (dr.mode === 'skim') {   // one pulse: suppress + reveal in the radius, then spent
+      if (dr.pulsed) return; dr.pulsed = true; this.stats.pulses++;
+      const r = dr.p.r || 6; Sfx.ability('wave', dr.pos); Abil.shockwave(dr.pos.clone().setY(0.3), r, ag.A.accent);
+      for (const e of G.agents) if (Abil.isEnemy(e, ag) && e.pos.distanceTo(dr.pos) < r && World.los(dr.pos, e.eye(new V3()))) Abil.applyFx(e, ag, { supp: dr.p.supp || 4, reveal: dr.p.reveal || 3 });
+      G.later(0.35, () => Abil.endDrone(dr)); return;
+    }
+    if (dr.mode === 'runner') { if (!dr.leap) { dr.leap = 0.3; Sfx.ability('dash', dr.pos); this.stats.leaps++; } return; }
+    const cd = dr.mode === 'cam' ? (dr.p.cd || 6) : 0.8; if (now < dr.tagNext) return; dr.tagNext = now + cd;
+    const o = dr.pos.clone(), dd = dirFromAngles(dr.yaw, dr.pitch, new V3());
+    const res = traceBullet(ag, o, dd, { pen: 0, dmg: [[999, 0, 0, 0]], name: 'Tag' }, 40, 0, true); FX.tracer(o, res.end, ag.A.accent, 0.2); this.stats.darts++;
+    if (res.victim && res.victim.applyStatus) { Abil.applyFx(res.victim, ag, dr.tag === 'daze' ? { daze: 2.5, reveal: 3 } : { reveal: dr.mode === 'cam' ? 4 : 3 }); Sfx.ability('ping', o); }
+  },
+  burst(dr) {   // runner landing: daze or detain everyone close, then it is spent
+    const ag = dr.owner, r = dr.p.r || 5; Sfx.boom(dr.pos, false); Abil.shockwave(dr.pos.clone().setY(0.3), r, ag.A.accent);
+    for (const e of G.agents) if (Abil.isEnemy(e, ag) && e.pos.distanceTo(dr.pos) < r && World.los(dr.pos.clone().setY(0.6), e.eye(new V3()))) Abil.applyFx(e, ag, dr.p.detain ? { detain: dr.p.detain, reveal: 2 } : { daze: dr.p.daze || 3, reveal: 2 });
+    Abil.endDrone(dr);
+  },
+  hint(dr) {
+    const k = keyName(Input.key('abil' + dr.key)) || dr.key;
+    return dr.mode === 'skim' ? `Stealth drone · <b>click</b> pulse (suppress + reveal) · <b>${k}</b> return`
+      : dr.mode === 'runner' ? `Runner · steer with the mouse · <b>click</b> leap · <b>${k}</b> return`
+      : dr.mode === 'cam' ? `Camera · <b>click</b> reveal dart · <b>${k}</b> step out (camera stays)`
+      : `Scout drone · look to climb / dive · <b>click</b> tag · <b>${k}</b> return`;
+  },
 };
 // ============================================================ GAME STATE
 const G = {
@@ -11417,7 +11580,7 @@ class RangeMode extends PlantMode {
     for (let i = 0; i < 4; i++) { const t = new Agent({ name: names[i], agentId: AGENT_IDS[(i * 3 + 2) % AGENT_IDS.length], team: 1, teamCol: TEAM_COL.enemy }); t.rangeProp = 'target'; G.agents.push(t); this.pool.push(t); t.alive = false; }
     this.buildWorld();
     this.resetFree(true);
-    UI.banner('The Range', 'Wall consoles: shoot a button or aim + F · F2 agents · F3 panel', 'info', 3.5);
+    UI.banner('The Range', 'Wall consoles: shoot a button or aim + F · F2 agents · F3 panel', 'info', 3.5); this.chip();
     Sfx.ui('round'); UI.rebuildRoster(); UI.roundCard(null);
   }
   resetFree(first) {
@@ -11662,6 +11825,11 @@ class RangeMode extends PlantMode {
     if (c === 'F2') this.renderAgents(); else this.renderPanel();
     el.classList.remove('hidden'); this.panelOpen = id; if (Input.locked) Input.vcursor(true); Sfx.ui();
   }
+  // a persistent HUD chip so the swap is discoverable (click it when the cursor is free, or press the bound key)
+  chip() {
+    let el = $('range-agents-chip'); if (!el) { el = document.createElement('button'); el.id = 'range-agents-chip'; el.addEventListener('click', () => this.hotkey('F2')); document.body.appendChild(el); }
+    el.innerHTML = `<img src="${Portraits.get(G.player.agentId) || ''}" alt=""><span>Agents</span><kbd>${keyName(Settings.binds.agentSwap || 'F2')}</kbd>`; el.classList.remove('hidden');
+  }
   closePanels() { for (const id of ['rangeagents', 'rangepanel']) { const e = $(id); if (e) e.classList.add('hidden'); } if (this.panelOpen) { this.panelOpen = null; Input.vcursor(false); } }
   renderAgents() {
     $('rangeagents').innerHTML = `<div class="rp-head"><b>Swap agent</b><small>F2 to close</small></div><div class="ra-grid">${AGENT_IDS.map(id => `<button data-rng="agent:${id}" class="${id === G.player.agentId ? 'on' : ''}" style="--ac:${AGENTS[id].cssAccent || '#ff4655'}"><img src="${Portraits.get(id) || ''}" alt=""><b>${AGENTS[id].name}</b><small>${AGENTS[id].role}</small></button>`).join('')}</div>
@@ -11704,12 +11872,13 @@ class RangeMode extends PlantMode {
   }
   swapAgent(id) {
     const old = G.player; if (!AGENTS[id] || id === old.agentId) return;
+    AbilHand.cancel(old, true); Placement.close(); if (old.drone) Possess.leave(old, true);   // never carry a held ability / pad / drone across a swap
     const a = new Agent({ name: old.name, agentId: id, team: 0, isHuman: true, teamCol: TEAM_COL.ally });
     a.weapons.primary = old.weapons.primary; a.weapons.secondary = old.weapons.secondary || makeWeapon('pike'); a.armor = old.armor; a.armorType = old.armorType; a.creds = 9000;
-    a.spawn(old.pos.clone(), old.yaw); a.pitch = old.pitch; for (const k of ['C', 'Q', 'E']) a.charges[k] = a.A.abilities[k].max; a.slot = a.weapons.primary ? 'primary' : 'secondary'; a.equip(a.slot, true);
+    a.spawn(old.pos.clone(), old.yaw); a.pitch = old.pitch; for (const k of ['C', 'Q', 'E']) a.charges[k] = a.A.abilities[k].max; a.ultPts = a.A.abilities.X.points; a.slot = a.weapons.primary ? 'primary' : 'secondary'; a.equip(a.slot, true);
     if (old.drone) Abil.endDrone(old.drone);
     R.scene.remove(old.model); G.agents[G.agents.indexOf(old)] = a; G.player = G.viewer = a; Settings.agent = id; Settings.save();
-    UI.cache = {}; UI.rebuildRoster(); $('hud').style.setProperty('--hacc', a.A.cssAccent); UI.toast('Now playing ' + a.A.name, 'info');
+    UI.cache = {}; UI.rebuildRoster(); $('hud').style.setProperty('--hacc', a.A.cssAccent); VM.reset && VM.reset(); UI.toast('Now playing ' + a.A.name + ' · full utility', 'info'); this.chip();
   }
 }
 // ============================================================ ISLAND ART: The Range as a floating Venetian island
@@ -12921,7 +13090,7 @@ const UI = {
     if (!hint && P.alive) hint = Mech.hint(P);
     if (!hint && P.alive) { const d = Drops.nearest(P, 1.6); if (d) hint = '<b>F</b> pick up ' + d.w.def.name; }
     if (!hint && P.alive) for (const k of ['C', 'Q', 'E']) if (P.abilState[k] && P.A.abilities[k].kind === 'anchor') hint = 'Press <b>' + keyName(Input.key('abil' + k)) + '</b> to return to your mark';
-    if (P.drone && P.drone.ctrl) hint = 'Piloting drone · click to tag · <b>C</b> to return';
+    if (P.drone && P.drone.ctrl) hint = Possess.hint(P.drone);
     if (P.st.detainU > now) hint = 'Detained · no weapons or abilities';
     this.set('interact', 'html', hint); this.set('interact', 'hidden', !hint);
     const spec = !P.alive && G.viewer && G.viewer !== P && G.viewer.alive;
@@ -13072,7 +13241,7 @@ const UI = {
       const r0 = P.roundArmor0 || {}, shSub = (id, base) => P.armorType === id && !Shop.owned(P, id) && P.armor > 0 ? `yours ${Math.round(P.armor)}/${ARMOR[id].amount} · rebuy` : Shop.bought(P, id) && r0.type ? `refund → ${ARMOR[r0.type].name.split(' ')[0]} ${Math.round(r0.armor)}` : base;
       const shieldSvg = (c, big) => `<svg class="bsv" viewBox="0 0 120 40" aria-hidden="true"><path d="M60 ${big ? 2 : 5}l${big ? 17 : 14} 6-2 ${big ? 21 : 18}-${big ? 15 : 12} ${big ? 10 : 9}-${big ? 15 : 12}-${big ? 10 : 9}-2-${big ? 21 : 18}z" fill="${c}"/></svg>`;
       html += `<div class="bcol"><h3>Shields</h3>${item('light', 'Light Shield', 400, shieldSvg('#8fd8ff'), shSub('light', '+25'))}${item('regen', 'Regen Shield', 650, shieldSvg('#c58cff'), shSub('regen', '+25 · 50 reserve'))}${item('heavy', 'Heavy Shield', 1000, shieldSvg('#3fa9ff', true), shSub('heavy', '+50'))}
-      <h3>Abilities</h3>${['C', 'Q', 'E'].filter(k => P.A.abilities[k].cost && !(P.A.abilities[k].free >= P.A.abilities[k].max)).map(k => { const a = P.A.abilities[k]; return item('ab:' + k, `${k} · ${a.name}`, a.cost, `<svg class="bsv" viewBox="0 0 120 40" aria-hidden="true"><g transform="translate(46 4) scale(1.35)" fill="${P.A.cssAccent}" stroke="${P.A.cssAccent}" stroke-width="0">${ICONS[a.kind]}</g></svg>`, `<span class="chg">${Array.from({ length: a.max }, (_, i) => `<i class="${i < P.charges[k] ? 'on' : ''}"></i>`).join('')}</span>`); }).join('')}</div>`;
+      <h3>Abilities</h3>${['C', 'Q', 'E'].filter(k => P.A.abilities[k].cost && !(P.A.abilities[k].free >= P.A.abilities[k].max)).map(k => { const a = P.A.abilities[k]; return item('ab:' + k, `${k} · ${a.name}<small class="econ">${AbilEcon.label(a)}</small>`, a.cost, `<svg class="bsv" viewBox="0 0 120 40" aria-hidden="true"><g transform="translate(46 4) scale(1.35)" fill="${P.A.cssAccent}" stroke="${P.A.cssAccent}" stroke-width="0">${ICONS[a.kind]}</g></svg>`, `<span class="chg">${Array.from({ length: a.max }, (_, i) => `<i class="${i < P.charges[k] ? 'on' : ''}"></i>`).join('')}</span>`); }).join('')}</div>`;
     }
     $('bcols').innerHTML = html;
     if (!this.statId) this.stats('reaver');
@@ -13323,6 +13492,67 @@ Object.assign(UI, {
     const here = World.callout(G.player.pos.x, G.player.pos.z); $('bigmap-t').textContent = MAP.name + (here ? ' · ' + here : '');
   },
 });
+// ============================================================ v31 ALLY HUD: through-wall silhouettes, nameplates, spike-carrier tag
+// Presentation only: reads agents / mode state, never changes them.
+//   X-ray   each teammate carries a second skinned copy of its low-poly body drawn in flat teal with depthFunc GREATER, so it
+//           only appears where the real body is hidden behind a wall; when a smoke sits between the camera and the ally the
+//           copy switches to an always-on material (smokes don't write depth). Enemies never get one.
+//   Plates  a pooled DOM layer (≤ 4 plates) projected above teammates' heads: agent · name, a health bar and a shield bar,
+//           distance-scaled; within ~110 px of the crosshair a plate condenses to just its bars at low opacity. 30 Hz.
+//           Settings → Ally nameplates (on/off); with plates off the classic ally marker diamond is used instead.
+//   Spike   on the attacking side, the teammate holding the spike gets a spike icon over their head (always shown, plates on
+//           or off) so you can see at a glance who has it.
+const AllyXrayMat = new THREE.MeshBasicMaterial({ color: 0x45e6d2, transparent: true, opacity: 0.42, depthTest: true, depthFunc: THREE.GreaterDepth, depthWrite: false, skinning: true, fog: false });
+const AllyXrayAllMat = new THREE.MeshBasicMaterial({ color: 0x45e6d2, transparent: true, opacity: 0.38, depthTest: false, depthWrite: false, skinning: true, fog: false });
+const SPIKE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4 4v9l-4 7-4-7V6z" fill="#ff5a6a" stroke="#1a0a0d" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8h4M10 11h4" stroke="#ffd1d6" stroke-width="1.4" stroke-linecap="round"/></svg>';
+const AllyHUD = {
+  plates: new Map(), acc: 0, v: new V3(), stats: { xrayFrames: 0, smokeXray: 0, plates: 0, near: 0, spikeTags: 0 },
+  root() { return $('nameplates'); },
+  xrayFor(a) {
+    const u = a.model.userData; if (u.allyX) return u.allyX;
+    const m = new THREE.SkinnedMesh(u.xray.geometry, AllyXrayMat); m.renderOrder = 19; m.visible = false; m.frustumCulled = false; m.userData.noShadow = true;
+    a.model.add(m); m.bind(u.xray.skeleton, u.xray.bindMatrix); return (u.allyX = m);
+  },
+  // called from the frame's visibility pass (after model.visible is decided)
+  update(P, V, cam, dt) {
+    const M = G.mode, team = M && M.teamBased; const on = team && Settings.allyXray !== 0;
+    const eye = cam.position;
+    for (const a of G.agents) {
+      const ally = team && a.team === P.team && a !== V && a.alive;
+      const u = a.model.userData;
+      if (!ally) { if (u.allyX) u.allyX.visible = false; continue; }
+      const x = this.xrayFor(a); x.visible = on && a.model.visible;
+      if (x.visible) { const chest = this.v.set(a.pos.x, a.pos.y + 1.2, a.pos.z), sm = Abil.blocksSight(eye, chest); x.material = sm ? AllyXrayAllMat : AllyXrayMat; if (sm) this.stats.smokeXray++; this.stats.xrayFrames++; }
+      u.marker.visible = u.marker.visible && Settings.nameplates === 0;   // plates replace the diamond marker
+    }
+    if ((this.acc += dt) < 1 / 30) return; this.acc = 0;
+    this.plateTick(P, V, cam);
+  },
+  plateTick(P, V, cam) {
+    const M = G.mode, el = this.root(); if (!el) return;
+    const show = M && M.teamBased && G.running, seen = new Set(), W = innerWidth, H = innerHeight;
+    const ch = M && M.charge, carrier = ch && ch.state === 'carried' ? ch.carrier : null, atkMe = M && M.sideOf && M.sideOf(P) === 'atk';
+    if (show) for (const a of G.agents) {
+      if (a.team !== P.team || a === V || !a.alive) continue;
+      const spike = carrier === a && atkMe, plateOn = Settings.nameplates !== 0;
+      if (!plateOn && !spike) continue;
+      const p = this.v.set(a.pos.x, a.pos.y + 2.25, a.pos.z).project(cam); if (p.z > 1 || p.z < -1) continue;
+      const sx = (p.x + 1) / 2 * W, sy = (1 - p.y) / 2 * H; if (sx < -60 || sx > W + 60 || sy < -40 || sy > H + 40) continue;
+      seen.add(a.uid);
+      let d = this.plates.get(a.uid);
+      if (!d) { d = document.createElement('div'); d.className = 'nplate'; d.innerHTML = `<div class="np-spike">${SPIKE_SVG}</div><div class="np-name"></div><div class="np-hp"><i></i></div><div class="np-ar"><i></i></div>`; el.appendChild(d); this.plates.set(a.uid, d); d._n = d.children[1]; d._hp = d.children[2].firstChild; d._ar = d.children[3].firstChild; d._sp = d.children[0]; }
+      const dist = a.pos.distanceTo(cam.position), sc = clamp(1.15 - dist / 70, 0.6, 1.05), near = Math.hypot(sx - W / 2, sy - H / 2) < 110 * sc;
+      d.style.transform = `translate(${sx.toFixed(1)}px, ${sy.toFixed(1)}px) translate(-50%, -100%) scale(${sc.toFixed(3)})`;
+      const name = `${a.A.name}${a.isHuman ? '' : ''} · ${a.name}`; if (d._name !== name) { d._name = name; d._n.textContent = name; }
+      const hp = clamp(a.hp / 100, 0, 1), ar = clamp((a.armor || 0) / 50, 0, 1);
+      d._hp.style.width = (hp * 100).toFixed(0) + '%'; d._hp.className = hp < 0.35 ? 'lo' : ''; d._ar.style.width = (ar * 100).toFixed(0) + '%';
+      d.classList.toggle('near', near); d.classList.toggle('noplate', !plateOn); d.classList.toggle('spike', spike); d.classList.toggle('hidden', false);
+      if (near) this.stats.near++; if (spike) this.stats.spikeTags++; this.stats.plates++;
+    }
+    for (const [uid, d] of this.plates) if (!seen.has(uid)) d.classList.add('hidden');
+  },
+  clear() { for (const d of this.plates.values()) d.remove(); this.plates.clear(); },
+};
 // ============================================================ LOBBY: nav, Play / Collection / Shop / Career, inspect view, end-of-match progression
 const fmt = n => Math.round(n).toLocaleString('en-US');
 const MODE_LABEL = { quick: 'Unrated · Quick', standard: 'Unrated · Standard', rq: 'Quick Ranked', rs: 'Standard Ranked', dm: 'Deathmatch', range: 'The Range', custom: 'Custom Match' };
@@ -14105,10 +14335,21 @@ const Input = {
     this.keys[c] = down;
     // smoke placement views take the keyboard: Esc cancels, Enter / the same ability key confirms (map) or places (shadow)
     if (Placement.mode && down) { const ak = Placement.key, same = a === 'abil' + ak || (ak === 'X' && a === 'ult');
-      if (c === 'Escape' || c === 'Backspace') { Placement.close(); return; } if (c === 'Enter' || c === 'NumpadEnter' || same) { if (Placement.mode === 'map') Placement.confirm(); else Placement.placeShadow(); return; } }
+      if (/^abil[CQE]$|^ult$/.test(a || '') === false && /^(primary|secondary|melee|charge)$/.test(a || '')) { Placement.close(); }   // a weapon key puts the pad away (Esc only pauses)
+      if (c === 'Enter' || c === 'NumpadEnter' || same) { if (Placement.mode === 'map') Placement.confirm(); else Placement.placeShadow(); return; } }
     if (a === 'wheel') { if (down) Wheel.press(); else Wheel.release(); return; }   // callout wheel: hold-flick-release or tap-click
-    if (AbilHand.key && down && (c === 'Escape' || c === 'Backspace')) { AbilHand.cancel(P); return; }
     if (Wheel.open && down) { if (/^Digit[1-9]$/.test(c)) { Wheel.pick(+c.slice(5) - 1); return; } if (c === 'Escape' || c === 'Backspace') { Wheel.back(); return; } if (Wheel.key(c)) { this.keys[c] = false; e.preventDefault(); return; } }
+    if (a === 'ads' && P && P.alive) {   // rebindable aim / scope / alt fire (Right Click keeps working too)
+      if (AbilHand.key) { if (down) AbilHand.deploy(P, true); return; }
+      if (Placement.mode) { if (down) Placement.click(2); return; }
+      if (P.drone && P.drone.ctrl) return;
+      const tog = Settings.adsMode === 'toggle', w = P.weapon(), scope = w && w.def.alt === 'scope';
+      if (scope) { if (down) P.input.altP = true; return; }   // scopes cycle on each press in both modes
+      if (tog) { if (down) { this.adsT = !this.adsT; P.input.alt = this.adsT; if (this.adsT) P.input.altP = true; } }
+      else { P.input.alt = down; if (down) P.input.altP = true; }
+      return;
+    }
+    if (a === 'agentSwap' && down && G.mode && G.mode.range) { e.preventDefault(); G.mode.hotkey('F2'); return; }
     if (a === 'score') { UI.boardOpen = down; $('board').classList.toggle('hidden', !down); if (down) UI.renderBoard(); return; }
     if (!down) return;
     if (G.mode && G.mode.range && (c === 'F2' || c === 'F3')) { e.preventDefault(); G.mode.hotkey(c); return; }
@@ -14127,7 +14368,7 @@ const Input = {
       const dk = a && /^abil[CQE]$/.test(a) ? a.slice(4) : null; if (dk && P.A.abilities[dk].p.dead) { if (Placement.wants(P, dk)) Placement.open(P, dk); else Sfx.ui('deny'); return; }
     }
     if (!P.alive) return;
-    if (P.drone && P.drone.ctrl) { if (a === 'abilC' || a === 'use' || c === 'Escape') Abil.endDrone(P.drone); return; }
+    if (P.drone && P.drone.ctrl) { if (a === 'abil' + (P.drone.key || 'C') || a === 'use' || /^(primary|secondary|melee)$/.test(a || '')) Possess.leave(P); return; }   // drone key / weapon key returns you (Esc only pauses)
     switch (a) {
       case 'primary': AbilHand.cancel(P, true); VM.cancelInspect(); P.equip(P.weapons.ult && P.slot !== 'ult' && !P.weapons.primary ? 'ult' : 'primary'); break;
       case 'secondary': AbilHand.cancel(P, true); P.equip('secondary'); break;
@@ -14233,13 +14474,13 @@ function startGame(fromClick) {
   if (fromClick) { const finish = () => { const lbl = Input.resolveCrouch(); Input.lock(); if (Settings.crouchKey === 'auto' && !Input.kbLocked) UI.toast('Crouch is on ' + lbl + ' (rebind in Settings → Controls)', 'info'); }; if (Settings.fullscreen) Input.fullscreenAndKeyboard().then(finish, finish); else { Input.kbLocked = false; finish(); } }
   else Input.resolveCrouch();
 }
-function pause(on) {
+function pause(on) {   // pausing never leaves an ability, pad or drone half-open
   if (!G.running) return;
   G.paused = on; $('pausemenu').classList.toggle('hidden', !on); if (!on) $('pause').classList.add('hidden');
   if (!on) Input.capture = null;
-  if (on) { UI.toggleBigMap(false); syncSettingsUI(); Input.keys = {}; if (G.player) { G.player.input.fire = false; G.player.input.alt = false; } }
+  if (on) { if (G.player) AbilHand.cancel(G.player, true); Placement.close(); UI.toggleBigMap(false);  syncSettingsUI(); Input.keys = {}; if (G.player) { G.player.input.fire = false; G.player.input.alt = false; } }
 }
-function quitToMenu() { if (Net.active) Net.onQuit(); G.running = false; G.paused = false; clearGame(); Input.unlock(); for (const id of ['hud', 'pause', 'pausemenu', 'endscreen', 'loadcard', 'rankup', 'rangepanel']) { const el = $(id); if (el) el.classList.add('hidden'); } $('menu').classList.remove('hidden'); Lobby.refreshNav(); Lobby.show(Lobby.view === 'settings' ? 'play' : Lobby.view); Lobby.flowMap = null; Lobby.flowGo('mode'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { } }
+function quitToMenu() { if (Net.active) Net.onQuit(); G.running = false; G.paused = false; clearGame(); AllyHUD.clear(); { const ch = $('range-agents-chip'); if (ch) ch.classList.add('hidden'); } Input.unlock(); for (const id of ['hud', 'pause', 'pausemenu', 'endscreen', 'loadcard', 'rankup', 'rangepanel']) { const el = $(id); if (el) el.classList.add('hidden'); } $('menu').classList.remove('hidden'); Lobby.refreshNav(); Lobby.show(Lobby.view === 'settings' ? 'play' : Lobby.view); Lobby.flowMap = null; Lobby.flowGo('mode'); try { if (document.fullscreenElement) document.exitFullscreen(); } catch (e) { } }
 
 // ============================================================ CAMERA & VIEW
 function updateView(dt) {
@@ -14258,6 +14499,7 @@ function updateView(dt) {
     u.xray.visible = hostile && a.alive && (a.revealBy[P.team] || 0) > G.time;
     u.marker.visible = !hostile && a.alive && a !== V && G.mode.teamBased;
   }
+  AllyHUD.update(P, G.viewer, cam, dt);   // teammate x-ray, nameplates, spike-carrier tag
   let zoom = 1, vmOn = false;
   if (V && V.alive) {
     const w = V.weapon();
@@ -14402,6 +14644,9 @@ function initMenus() {
   syncers.push(bindOpts('set-part', () => Settings.particles, v => { Settings.particles = v; FX.setQuality(R.quality); }));
   syncers.push(bindOpts('set-tracers', () => Settings.tracers, v => Settings.tracers = v));
   syncers.push(bindOpts('set-outline', () => Settings.outline, v => { Settings.outline = v; Outline.apply(); }));
+  syncers.push(bindOpts('set-adsmode', () => Settings.adsMode, v => { Settings.adsMode = v; Input.adsT = false; }));
+  syncers.push(bindOpts('set-nameplates', () => Settings.nameplates, v => { Settings.nameplates = +v; }));
+  syncers.push(bindOpts('set-allyxray', () => Settings.allyXray, v => { Settings.allyXray = +v; }));
   syncers.push(bindOpts('set-enemycol', () => Settings.enemyCol, v => { Settings.enemyCol = v; Outline.apply(); }));
   syncers.push(bindOpts('set-fs', () => Settings.fullscreen, v => Settings.fullscreen = +v));
   $('set-res').addEventListener('input', e => { Settings.resScale = +e.target.value; $('o-res').textContent = Math.round(Settings.resScale * 100) + '%'; Settings.save(); R.resize(); });
@@ -14607,7 +14852,7 @@ const Net = {
     $('nav-mp').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.open(); });
     $('mp-close').addEventListener('click', () => { Sfx.ui(); this.close(); });
     $('mp-name').value = this.name();
-    $('mp-name').addEventListener('change', () => { const n = this.cleanName($('mp-name').value); $('mp-name').value = n; this.setName(n); if (this.role === 'client') this.up({ e: 'lset', name: n }); else if (this.role === 'host') { this.me().name = n; this.pushLobby(); } });
+    $('mp-name').addEventListener('change', () => { const n = this.cleanName($('mp-name').value); $('mp-name').value = n; this.setName(n); if (this.role && this.lobby) this.rename(n); });
     $('mp-host').addEventListener('click', () => this.hostRoom());
     $('mp-join').addEventListener('click', () => this.joinRoom($('mp-code').value));
     $('mp-code').addEventListener('keydown', e => { if (e.key === 'Enter') this.joinRoom($('mp-code').value); });
@@ -14615,6 +14860,10 @@ const Net = {
     if (NetTurn.url()) NetTurn.ice().then(() => this.renderHome());
     $('mp-room').addEventListener('click', e => this.roomClick(e));
     $('mp-room').addEventListener('change', e => this.roomChange(e));
+    $('mp-room').addEventListener('keydown', e => { if (e.target.id === 'mp-rname' && e.key === 'Enter') { e.preventDefault(); this.rename(e.target.value); e.target.blur(); } });
+    // hovering a tile previews that agent's kit; leaving the grid shows your own again
+    $('mp-room').addEventListener('mouseover', e => { const t = e.target.closest('.mpag'); if (!t || t.dataset.a === this._hov) return; this._hov = t.dataset.a; const me = this.me(); $('mp-agcard').innerHTML = this.agentCard(t.dataset.a, me && me.agent === t.dataset.a); });
+    $('mp-room').addEventListener('mouseout', e => { if (!e.target.closest('.mpags') || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.mpags'))) return; this._hov = null; const me = this.me(), c = $('mp-agcard'); if (c && me) c.innerHTML = this.agentCard(me.agent, true); });
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
@@ -14658,7 +14907,7 @@ const Net = {
     $('mp-join').disabled = true; $('mp-join').textContent = 'Joining…';
     try {
       const tx = this.newTx(); const id = await tx.join(code);
-      this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null;
+      this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null; this._named = false; this._wantName = n;
       tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink('Disconnected from the host'));
       this.up({ e: 'hello', name: n, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta', sk: this.mySkins() });
       this.render();
@@ -14686,10 +14935,22 @@ const Net = {
     for (const p of this.lobby.players) { if (seen[p.team].has(p.agent)) p.agent = AGENT_IDS.find(id => !seen[p.team].has(id)) || p.agent; seen[p.team].add(p.agent); }
     this.bcast({ e: 'lobby', l: this.lobby }); this.render();
   },
-  note(msg) { this._note = msg; clearTimeout(this._noteT); this._noteT = setTimeout(() => { this._note = ''; this.render(); }, 2500); this.render(); },
+  note(msg) { this._note = msg; clearTimeout(this._noteT); this._noteT = setTimeout(() => { this._note = ""; this.render(); }, 4000); this.render(); },
   // equipped skins travel with each player so everyone sees them (validated against this build's skin list)
   mySkins() { const o = {}; try { for (const w of SKIN_WEAPONS) { const e = Profile.equippedSkin(w); if (e) o[w] = { id: e.id, lvl: e.lvl, v: e.v }; } } catch (e) { } return o; },
   cleanSkins(sk) { const o = {}; if (sk && typeof sk === 'object') for (const w in sk) { const e = sk[w]; if (e && SKINS[e.id] && SKINS[e.id].weapon === w) o[w] = { id: e.id, lvl: clamp(e.lvl | 0, 1, 9), v: clamp(e.v | 0, 0, 9) }; } return o; },
+  nameTaken(n, exceptId) { const k = String(n).toLowerCase(); return this.lobby.players.some(p => p.id !== exceptId && p.name.toLowerCase() === k); },
+  uniqueName(n, exceptId) { n = this.cleanName(n); if (!this.nameTaken(n, exceptId)) return n; for (let i = 2; i < 99; i++) { const c = n.slice(0, 16 - String(i).length - 1) + ' ' + i; if (!this.nameTaken(c, exceptId)) return c; } return n; },
+  // rename from the lobby (host applies it directly, guests ask the host); taken names are refused
+  rename(raw) {
+    const n = this.cleanName(raw), me = this.me(); if (!me || !this.lobby) return;
+    if (n === me.name) { this.renderName(); return; }
+    if (this.lobby.inGame) { this.note('Names can be changed between matches'); this.renderName(); return; }
+    this.setName(n); this._wantName = n;
+    if (this.role === 'host') { if (this.nameTaken(n, 'H')) { this.note('“' + n + '” is already taken in this lobby'); this.renderName(); return; } me.name = n; this.pushLobby(); }
+    else this.up({ e: 'lset', name: n });
+  },
+  renderName() { const i = $('mp-rname'), me = this.me(); if (i && me && document.activeElement !== i) i.value = me.name; },
   teamCount(t) { return this.lobby.players.filter(p => p.team === t).length; },
   // one of each agent per team: keep the player's pick if it's free on that team, otherwise give them the first free one
   takenOn(t, exceptId) { return new Set(this.lobby.players.filter(p => p.team === t && p.id !== exceptId).map(p => p.agent)); },
@@ -14704,12 +14965,12 @@ const Net = {
       if (L.inGame) { this.tx.send(cid, { e: 'deny', msg: 'A match is in progress — try again when it ends' }); return; }
       if (L.players.length >= 10) { this.tx.send(cid, { e: 'deny', msg: 'The lobby is full (10 players)' }); return; }
       const team = this.teamCount(0) <= this.teamCount(1) ? 0 : 1;
-      L.players.push({ id: cid, name: this.cleanName(m.name), team, agent: this.freeAgent(team, AGENTS[m.agent] ? m.agent : 'vanta', cid), sk: this.cleanSkins(m.sk) });
+      L.players.push({ id: cid, name: this.uniqueName(m.name, cid), team, agent: this.freeAgent(team, AGENTS[m.agent] ? m.agent : 'vanta', cid), sk: this.cleanSkins(m.sk) });
       this.pushLobby(); return;
     }
     if (m.e === 'lset') {
       const p = L.players.find(x => x.id === cid); if (!p) return;
-      if (m.name != null) p.name = this.cleanName(m.name);
+      if (m.name != null) { const n = this.cleanName(m.name); if (n !== p.name) { if (L.inGame) this.tx.send(cid, { e: 'note', msg: 'Names can be changed between matches' }); else if (this.nameTaken(n, cid)) this.tx.send(cid, { e: 'note', msg: '“' + n + '” is already taken in this lobby' }); else p.name = n; } }
       if (m.sk) p.sk = this.cleanSkins(m.sk);
       if (m.agent && AGENTS[m.agent] && !L.inGame) { if (this.takenOn(p.team, p.id).has(m.agent)) this.tx.send(cid, { e: 'note', msg: AGENTS[m.agent].name + ' is taken on your team' }); else p.agent = m.agent; }
       if ((m.team === 0 || m.team === 1) && m.team !== p.team && this.teamCount(m.team) < 5 && !L.inGame) { p.team = m.team; this.fixAgent(p); }
@@ -14732,6 +14993,9 @@ const Net = {
     if (!m || !m.e) return;
     switch (m.e) {
       case 'lobby': { const before = this.me() && this.me().agent; this.lobby = m.l; const me = this.me();
+        if (me && this._wantName === undefined) this._wantName = this.cleanName($('mp-name').value);
+        if (me && this._wantName && me.name !== this._wantName && !this._named) this.note('“' + this._wantName + '” was taken · you’re “' + me.name + '”');
+        if (me) { this._named = true; this._wantName = me.name; this.setName(me.name); $('mp-name').value = me.name; }
         const wanted = before || Settings.agent;   // on first join, the agent this browser asked for
         if (me && AGENTS[wanted] && AGENTS[me.agent] && me.agent !== wanted) this.note(AGENTS[wanted].name + ' was taken on your team · you’re now ' + AGENTS[me.agent].name);
         this.render(); return; }
@@ -14753,6 +15017,7 @@ const Net = {
     if (!inRoom) { this.renderHome(); return; }
     const L = this.lobby, host = this.role === 'host';
     if (!L) { $('mp-room').innerHTML = `<div class="mpwait">Connected · waiting for the lobby…</div>`; return; }
+    const fi = $('mp-rname'), focus = fi && document.activeElement === fi ? { v: fi.value, s: fi.selectionStart, e: fi.selectionEnd } : null;
     const me = this.me(), url = location.origin + location.pathname + '?join=' + this.code;
     const col = t => {
       const ps = L.players.filter(p => p.team === t);
@@ -14782,15 +15047,31 @@ const Net = {
     $('mp-room').innerHTML = `
       <div class="mpcode"><span>Room code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button><button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button></div>
       <div class="mpgrid"><div class="mpteams">${col(0)}${col(1)}</div>
-        <div class="mpside"><div class="sect">Match</div>${set}${hostNote}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
-      <div class="sect">Your agent <span class="mpsub">· one of each per team</span></div>${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}<div class="mpags">${agents}</div>`;
+        <div class="mpside"><div class="sect">You</div>
+          <label>Name<div class="mprow"><input id="mp-rname" maxlength="16" value="${NetU.esc(me ? me.name : '')}" autocomplete="off" spellcheck="false"${L.inGame ? ' disabled' : ''}><button class="mpbtn sm" data-act="rename"${L.inGame ? ' disabled' : ''}>Save</button></div></label>
+          <div class="sect">Match</div>${set}${hostNote}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
+      <div class="sect">Your agent <span class="mpsub">· one of each per team · hover to preview</span></div>${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}
+      <div class="mpsel"><div class="mpags">${agents}</div><aside class="mpcardag" id="mp-agcard">${this.agentCard(me ? me.agent : 'vanta', true)}</aside></div>`;
+    if (focus) { const i = $('mp-rname'); if (i) { i.value = focus.v; i.focus(); try { i.setSelectionRange(focus.s, focus.e); } catch (e) { } } }
     if (me && AGENTS[me.agent] && Settings.agent !== me.agent) { Settings.agent = me.agent; Settings.save(); }
+  },
+  agentCard(id, mine) {
+    const A = AGENTS[id]; if (!A) return '';
+    const R = ROLES[A.role] || {}, kn = k => { try { return keyName(Input.key(k === 'X' ? 'ult' : 'abil' + k)) || k; } catch (e) { return k; } };
+    const cost = (k, a) => k === 'X' ? `Ultimate · ${a.points} points` : (typeof AbilEcon !== 'undefined' ? AbilEcon.label(a) : (a.cost ? a.cost + ' · max ' + a.max : ''));
+    const taken = this.lobby && this.me() && this.takenOn(this.me().team, this.myId).has(id);
+    return `<div class="mpagh" style="--c:${A.cssAccent}"><img src="${Portraits.get(id)}" alt=""><div><b>${NetU.esc(A.name)}</b>
+        <span class="mprole" style="--rc:${R.color || '#9aa8b3'}">${roleSvg(A.role)}${A.role}</span>${mine ? '<span class="mptag">Your pick</span>' : taken ? '<span class="mptag tk">Teammate has it</span>' : ''}</div></div>
+      <p class="mpbio">${NetU.esc(A.bio || R.desc || '')}</p>
+      <ul class="mpabl">${['C', 'Q', 'E', 'X'].map(k => { const a = A.abilities[k]; return `<li class="${k === 'X' ? 'ult' : ''}"><span class="mpkey">${NetU.esc(kn(k))}</span><span class="mpico" style="--c:${A.cssAccent}">${abilSvg(a, A.cssAccent)}</span>
+        <div><div class="mpan"><b>${NetU.esc(a.name)}</b><small>${NetU.esc(cost(k, a))}</small></div><p>${NetU.esc(a.desc || '')}</p></div></li>`; }).join('')}</ul>`;
   },
   roomClick(e) {
     const b = e.target.closest('[data-act]'); if (!b) return; Sfx.init(); Sfx.ui();
     const act = b.dataset.act, L = this.lobby, host = this.role === 'host';
     if (act === 'copy') { const u = b.dataset.url; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = 'Copied!'; setTimeout(() => this.render(), 1200); }, () => { prompt('Invite link', u); }); return; }
     if (act === 'leave') { this.leaveRoom(); return; }
+    if (act === 'rename') { this.rename($('mp-rname').value); return; }
     if (!L) return;
     if (act === 'agent') { const id = b.dataset.a, me = this.me(); if (L.inGame || !me) return; if (this.takenOn(me.team, this.myId).has(id)) { this.note(AGENTS[id].name + ' is taken on your team'); return; } if (host) { me.agent = id; this.pushLobby(); } else this.up({ e: 'lset', agent: id }); return; }
     if (act === 'team') { const t = +b.dataset.t; if (host) { const me = this.me(); if (this.teamCount(t) < 5) { me.team = t; this.fixAgent(me); } this.pushLobby(); } else this.up({ e: 'lset', team: t }); return; }
@@ -14800,7 +15081,9 @@ const Net = {
     if (act === 'start') this.hostStart();
   },
   roomChange(e) {
+    if (e.target.id === 'mp-rname') return;
     if (this.role !== 'host' || !this.lobby) return; const L = this.lobby, t = e.target;
+    if (t.id === 'mp-rname') return;
     if (t.id === 'mp-map') L.map = t.value;
     else if (t.id === 'mp-mode') { if (t.value[0] === 'c') { L.mode = 'custom'; L.cwin = +t.value.slice(1); } else L.mode = t.value; }
     else if (t.id === 'mp-diff') L.diff = +t.value;
@@ -14923,22 +15206,22 @@ const Net = {
       return _kill(v, at, info);
     };
     const _use = Abil.use;
-    Abil.use = function (ag, key, target) {
-      if (!N.active || ag.nid == null) return _use.call(this, ag, key, target);
+    Abil.use = function (ag, key, target, opts) {
+      if (!N.active || ag.nid == null) return _use.call(this, ag, key, target, opts);
       if (N.role === 'client') {
-        if (N._allow) return _use.call(this, ag, key, target);
+        if (N._allow) return _use.call(this, ag, key, target, opts);
         if (ag !== G.player) return false;
         const def = ag.A.abilities[key], K = def && KINDS[def.kind]; if (!K) return false;
         if (!(ag.abilState[key] && K.reactivate) && !this.ready(ag, key)) { Sfx.ui('deny'); return false; }
         const re = !!(ag.abilState[key] && K.reactivate);
-        N.up({ e: 'u', k: key, tg: N.ser(target), y: NetU.r3(ag.yaw), pi: NetU.r3(ag.pitch), al: this.alt ? 1 : 0 });
+        N.up({ e: 'u', k: key, tg: N.ser(target), op: N.ser(opts), y: NetU.r3(ag.yaw), pi: NetU.r3(ag.pitch), al: this.alt ? 1 : 0 });
         if (!re) { if (key === 'X') ag.ultPts = 0; else ag.charges[key] = Math.max(0, (ag.charges[key] || 0) - 1); N.ownHold = Math.max(N.ownHold, G.time + 0.6); }
         return true;
       }
       const def = ag.A.abilities[key], K = def && KINDS[def.kind], re = !!(ag.abilState[key] && K && K.reactivate);
-      const tg = N.ser(target), p = [NetU.r2(ag.pos.x), NetU.r2(ag.pos.y), NetU.r2(ag.pos.z)], y = NetU.r3(ag.yaw), pi = NetU.r3(ag.pitch);
-      const ok = _use.call(this, ag, key, target);
-      if (ok) N.bcast({ e: 'u', n: ag.nid, k: key, tg, re: re ? 1 : 0, p, y, pi, al: this.alt ? 1 : 0 });
+      const tg = N.ser(target), op = N.ser(opts), p = [NetU.r2(ag.pos.x), NetU.r2(ag.pos.y), NetU.r2(ag.pos.z)], y = NetU.r3(ag.yaw), pi = NetU.r3(ag.pitch);
+      const ok = _use.call(this, ag, key, target, opts);
+      if (ok) N.bcast({ e: 'u', n: ag.nid, k: key, tg, op, re: re ? 1 : 0, p, y, pi, al: this.alt ? 1 : 0 });
       return ok;
     };
     const _place = Ping.place;
@@ -14958,6 +15241,19 @@ const Net = {
     for (const k of ['giftPass', 'onHumanBuy', 'onPing']) { const f = Brain[k]; if (typeof f === 'function') Brain[k] = function () { if (N.isClient()) return; return f.apply(this, arguments); }; }
     const _forAgent = Skins.forAgent;
     Skins.forAgent = function (ag, wid) { if (ag && ag.netSkins && !ag.isHuman) return SKIN_WEAPONS.includes(wid) ? (ag.netSkins[wid] || null) : null; return _forAgent.call(this, ag, wid); };
+    const _act = Possess.action, _leave = Possess.leave, _tick = Possess.tick;
+    Possess.action = function (dr) {
+      if (N.active && dr && dr.owner && dr.owner.nid != null && !N._allow) {
+        if (N.role === 'client') { if (dr.owner !== G.player) return; N.up({ e: 'da', k: dr.key }); }
+        else N.bcast({ e: 'da', n: dr.owner.nid, k: dr.key }, dr.owner.remote || null);
+      }
+      return _act.call(this, dr);
+    };
+    Possess.leave = function (P, force) { if (N.isClient() && P === G.player && P.drone && !N._allow) N.up({ e: 'dl', f: force ? 1 : 0 }); return _leave.call(this, P, force); };
+    Possess.tick = function (dr, dt) {   // guest: other players' drones go where the host says (no local steering or pathing)
+      if (!N.isClient() || dr.owner === G.player || !dr._net) return _tick.call(this, dr, dt);
+      const n = dr._net; dr.pos.set(n[0], n[1], n[2]); dr.yaw = n[3]; dr.pitch = n[4]; if (dr.mesh) { dr.mesh.position.copy(dr.pos); dr.mesh.rotation.y = dr.yaw; }
+    };
     const _spawnDrop = Drops.spawn, _pickup = Drops.pickup;
     Drops.spawn = function (w, pos) { if (N.isClient() && !N._allow) return; _spawnDrop.call(this, w, pos); const d = this.list[this.list.length - 1]; if (d) d.nid = ++N.dropId; };
     Drops.pickup = function (ag, d) { if (N.isClient()) return; return _pickup.call(this, ag, d); };
@@ -15014,6 +15310,8 @@ const Net = {
           const sl = NetU.SLOTS[s.sl]; if (sl && sl !== a.slot && a.weapons[sl]) a.equip(sl, true);
           const w = a.weapon(); if (w && w.def.alt === 'scope') { w.scope = s.sc | 0; a.ads = w.scope > 0; }
           a.wantPlant = !!s.wp; a.wantDefuse = !!s.wd; a.wantOrb = !!s.wo;
+          const dr = a.drone;
+          if (dr && dr.alive) { if (s.dz) { dr.ctrl = true; dr.pos.set(s.dz[0], s.dz[1], s.dz[2]); dr.yaw = s.dz[3]; dr.pitch = s.dz[4]; } else if (dr.mode === 'cam') dr.ctrl = false; }
         }
         a._cp = a.pos.clone();
       }
@@ -15060,14 +15358,16 @@ const Net = {
     const a = G.player, inp = a.input, w = a.weapon(), r2 = NetU.r2;
     const wp = a.slot === 'charge' && (Input.act('charge') && Input.holdPlantT > 0.25 || inp.fire), wd = Input.act('use') || Input.act('charge'), wo = Input.act('use');
     return { e: 'i', p: [r2(a.pos.x), NetU.r3(a.pos.y), r2(a.pos.z)], v: [r2(a.vel.x), r2(a.vel.y), r2(a.vel.z)], y: NetU.r3(a.yaw), pi: NetU.r3(a.pitch), c: r2(a.crouchT), g: a.grounded ? 1 : 0,
-      f: inp.f, r: inp.r, w: inp.walk ? 1 : 0, cr: inp.crouch ? 1 : 0, al: inp.alt ? 1 : 0, sc: w && w.scope || 0, sl: NetU.SLOTS.indexOf(a.slot), wp: wp ? 1 : 0, wd: wd ? 1 : 0, wo: wo ? 1 : 0, ack: this.myFix };
+      f: inp.f, r: inp.r, w: inp.walk ? 1 : 0, cr: inp.crouch ? 1 : 0, al: inp.alt ? 1 : 0, sc: w && w.scope || 0, sl: NetU.SLOTS.indexOf(a.slot), wp: wp ? 1 : 0, wd: wd ? 1 : 0, wo: wo ? 1 : 0, ack: this.myFix,
+      dz: a.drone && a.drone.alive && a.drone.ctrl ? [r2(a.drone.pos.x), r2(a.drone.pos.y), r2(a.drone.pos.z), NetU.r3(a.drone.yaw), NetU.r3(a.drone.pitch)] : undefined };
   },
   fastSnap() {
     const M = G.mode, c = M.charge, r2 = NetU.r2, r3 = NetU.r3;
     return { e: 's', t: r3(G.time), a: G.agents.map(a => {
       const fl = (a.alive ? 1 : 0) | (a.grounded ? 2 : 0) | (a.ads ? 4 : 0) | (a.reloading() ? 8 : 0) | (a.planting > 0 ? 16 : 0) | (a.defusing > 0 ? 32 : 0) | (a.input.walk ? 64 : 0) | (a.zip ? 128 : 0);
       return [r2(a.pos.x), r3(a.pos.y), r2(a.pos.z), r3(a.yaw), r3(a.pitch), r2(a.crouchT), NetU.r1(a.vel.x), NetU.r1(a.vel.y), NetU.r1(a.vel.z), fl, Math.round(a.hp), a._fix | 0, r2(a.planting || 0)];
-    }), m: [M.phase, NetU.r2(M.timer), c.state, r2(c.pos.x), r2(c.pos.y), r2(c.pos.z), c.carrier ? c.carrier.nid : -1, r2(M.defuseProg || 0), M.defuser ? M.defuser.nid : -1] };
+    }), m: [M.phase, NetU.r2(M.timer), c.state, r2(c.pos.x), r2(c.pos.y), r2(c.pos.z), c.carrier ? c.carrier.nid : -1, r2(M.defuseProg || 0), M.defuser ? M.defuser.nid : -1],
+      dn: Abil.drones.filter(d => d.alive && d.owner && d.owner.nid != null).map(d => [d.owner.nid, d.key, r2(d.pos.x), r2(d.pos.y), r2(d.pos.z), r3(d.yaw), r3(d.pitch)]) };
   },
   slowSnap() {
     const M = G.mode, wid = w => w ? w.id : 0;
@@ -15089,8 +15389,10 @@ const Net = {
         this.rewind(a, m.rt, () => { this._dirs = m.d.slice(0, 16); try { fireOnce(a, w, 0); } finally { this._dirs = null; } }); return; }
       case 'm': if (a.alive) this.rewind(a, m.rt, () => melee(a, !!m.h)); return;
       case 'b': if (a.alive && a.weapons.ult && a.weapons.ult.def.cls === 'blades' && a.weapons.ult.mag > 0) { const y = a.yaw, pi = a.pitch; a.yaw = m.y; a.pitch = m.pi; this.rewind(a, m.rt, () => throwBlade(a, a.weapons.ult, +m.o || 0)); a.yaw = y; a.pitch = pi; if (a.weapons.ult.mag <= 0) { a.weapons.ult = null; a.equip(a.bestSlot(), true); } } return;
-      case 'u': { a.yaw = m.y; a.pitch = m.pi; Abil.alt = !!m.al; try { Abil.use(a, m.k, this.deser(m.tg)); } catch (e) { console.warn('remote cast', e); } finally { Abil.alt = false; } return; }
+      case 'u': { a.yaw = m.y; a.pitch = m.pi; Abil.alt = !!m.al; try { Abil.use(a, m.k, this.deser(m.tg), this.deser(m.op) || undefined); } catch (e) { console.warn('remote cast', e); } finally { Abil.alt = false; } return; }
       case 'a': if (m.a === 'reload') a.input.reload = true; else if (m.a === 'use' && a.alive) playerUse(a); else if (m.a === 'drop' && a.alive) playerDrop(a); return;
+      case 'da': { const dr = a.drone; if (dr && dr.alive && dr.key === m.k) Possess.action(dr); return; }
+      case 'dl': if (a.drone) Possess.leave(a, !!m.f); return;
       case 'buy': if (G.mode.purchase) G.mode.purchase(a, m.id); return;
       case 'sell': if (G.mode.sell) G.mode.sell(a, m.id); return;
       case 'req': Econ.request(a, m.id); return;
@@ -15135,6 +15437,7 @@ const Net = {
       case 'm': { const a = A[m.n]; if (a && a !== G.player && a.alive) melee(a, !!m.h); return; }
       case 'b': { const a = A[m.n]; if (a && a !== G.player && a.alive) { const w = a.weapons.ult && a.weapons.ult.def.cls === 'blades' ? a.weapons.ult : makeWeapon('blades'); if (w.def) throwBlade(a, w, +m.o || 0); } return; }
       case 'u': this.replayCast(m); return;
+      case 'da': { const o = A[m.n]; if (!o || o === G.player) return; const dr = Abil.drones.find(d => d.alive && d.owner === o && d.key === m.k); if (dr) { this._allow = true; try { Possess.action(dr); } finally { this._allow = false; } } return; }
       case 'k': { const v = A[m.v], at = m.a >= 0 ? A[m.a] : null; if (!v || !v.alive) return; this._kill = true; try { killAgent(v, at, this.deser(m.i) || {}); } catch (e) { console.warn(e); } finally { this._kill = false; } return; }
       case 'h': { const v = A[m.v], at = m.a >= 0 ? A[m.a] : null; if (!v) return; v.hp = m.hp; v.armor = m.ar; v.lastHurtT = G.time;
         const info = { part: m.p, decay: !!m.dc, wallbang: !!m.wb, from: at ? at.eye(new V3()) : null };
@@ -15156,8 +15459,8 @@ const Net = {
     this._allow = true;
     try {
       if (m.re && K.reactivate) { Abil.alt = !!m.al; try { if (ag.abilState[m.k]) K.reactivate.call(Abil, ag, def, m.k); } finally { Abil.alt = false; } return; }
-      const hu = ag.isHuman; ag.isHuman = false;   // drones and similar fly on the host's autopilot, so the guest never takes local control
-      Abil._cast = { ag, key: m.k }; Abil.alt = !!m.al; try { K.use.call(Abil, ag, def.p, tg, def, m.k); } finally { Abil._cast = null; Abil.alt = false; ag.isHuman = hu; }
+      Abil._cast = { ag, key: m.k }; Abil._opts = this.deser(m.op) || null; Abil.alt = !!m.al;
+      try { K.use.call(Abil, ag, def.p, tg, def, m.k); } finally { Abil._cast = null; Abil._opts = null; Abil.alt = false; }
       if (ag !== G.player) { if (m.k === 'X') ag.ultPts = 0; else ag.charges[m.k] = Math.max(0, ag.charges[m.k] - 1); }
       ag.castT = G.time + 0.5;
       if (ag === G.viewer && !K.noCast) VM.cast(ag.A.accent);
@@ -15192,6 +15495,16 @@ const Net = {
     M.timer = tm; M.defuseProg = dp; M.defuser = dfr >= 0 ? G.agents[dfr] : null;
     if (c.state !== cs || c.pos.x !== cx || c.pos.z !== cz) { c.state = cs; c.pos.set(cx, cy, cz); if (c.mesh) { c.mesh.visible = cs === 'dropped' || cs === 'planted'; c.mesh.position.copy(c.pos); } }
     c.carrier = car >= 0 ? G.agents[car] : null;
+    // drones: follow the host; one the host no longer has (shot down, expired, spent) ends here too
+    if (m.dn) {
+      const live = new Map(m.dn.map(d => [d[0] + ':' + d[1], d]));
+      for (const dr of Abil.drones.slice()) {
+        if (!dr.alive || !dr.owner || dr.owner.nid == null) continue;
+        const d = live.get(dr.owner.nid + ':' + dr.key);
+        if (d) { if (dr.owner !== P || !dr.ctrl) dr._net = d.slice(2); }
+        else if (G.time - (dr.t0 || 0) > 0.4) { this._allow = true; try { Abil.endDrone(dr); } finally { this._allow = false; } }
+      }
+    }
   },
   applySlow(m) {
     const M = G.mode, P = G.player, ids = NetU.SLOTS;
