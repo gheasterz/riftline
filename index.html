@@ -1201,7 +1201,11 @@ img{max-width:100%}
 .mpag{background:#0b141b;border:1px solid rgba(255,255,255,.08);padding:4px 4px 6px;cursor:pointer;color:var(--off);font:700 13px var(--f-body);display:flex;flex-direction:column;align-items:center;gap:4px;position:relative}
 .mpag img{width:100%;aspect-ratio:1;object-fit:cover}
 .mpag:hover{border-color:var(--c)}.mpag.on{border-color:var(--c);box-shadow:inset 0 0 0 2px var(--c);background:rgba(255,255,255,.06)}
-.mpag.tk{opacity:.45}.mpag.tk:after{content:"TEAMMATE";position:absolute;top:6px;left:0;right:0;text-align:center;font:800 10px var(--f-display);letter-spacing:1.5px;color:var(--gold)}
+.mpag.tk{opacity:.35;cursor:not-allowed;filter:grayscale(.8)}.mpag.tk:hover{border-color:rgba(255,255,255,.08)}
+#mp .mpsub{color:#6f8593;letter-spacing:1px;font-size:12px}
+.mpwarn{margin:0 0 10px;padding:8px 12px;background:rgba(245,197,66,.12);border-left:3px solid var(--gold);color:var(--off);font-weight:600}.mpag.tk:after{content:"TEAMMATE";position:absolute;top:6px;left:0;right:0;text-align:center;font:800 10px var(--f-display);letter-spacing:1.5px;color:var(--gold)}
+.mpturn{margin-top:14px;max-width:820px;color:#9aa8b3}.mpturn summary{cursor:pointer;font:700 13px var(--f-body);letter-spacing:1.5px;text-transform:uppercase}.mpturn p{font-size:15px;line-height:1.45}.mpturn code{color:var(--off);font-size:13px}
+.mpturn .row{display:flex;gap:10px}.mpturn input{flex:1;font-size:14px!important}.mpturn.hidden{display:none}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
@@ -1214,6 +1218,11 @@ img{max-width:100%}
         <div class="mpcard j"><h3>Join a game</h3><p>Enter the code your host shared, or open their invite link.</p><div class="row"><input id="mp-code" maxlength="5" placeholder="CODE" autocomplete="off" spellcheck="false"><button class="cta" id="mp-join">Join</button></div></div>
       </div>
       <p class="mpnote" id="mp-net"></p>
+      <details class="mpturn" id="mp-turnbox"><summary>Connection settings (TURN relay)</summary>
+        <p>If joining times out between different networks, a TURN relay fixes it. Get a free key at <b>metered.ca/tools/openrelay</b> (20 GB/month), create a credential, then paste its <b>credentials URL</b> (looks like <code>https://yourapp.metered.live/api/v1/turn/credentials?apiKey=…</code>). The host and each player paste it once; it’s saved in this browser.</p>
+        <div class="row"><input id="mp-turn" placeholder="https://yourapp.metered.live/api/v1/turn/credentials?apiKey=…" autocomplete="off" spellcheck="false"><button class="mpbtn" id="mp-turnsave">Save &amp; test</button></div>
+        <p class="mpnote" id="mp-turnmsg"></p>
+      </details>
       <p class="mperr" id="mp-err"></p>
     </section>
     <section id="mp-room" class="hidden"></section>
@@ -14503,6 +14512,30 @@ class NetRelay {
   close() { this.h = {}; try { this.ws.close(); } catch (e) { } }
 }
 
+// TURN relay for peer-to-peer play: paste a Metered "Open Relay" credentials URL here to build it in for every player, e.g.
+// 'https://YOURAPP.metered.live/api/v1/turn/credentials?apiKey=YOUR_KEY'  (free tier at metered.ca/tools/openrelay)
+const NET_TURN_URL = '';
+const NetTurn = {
+  servers: null, src: '',
+  url() { let u = ''; try { u = localStorage.getItem('riftline.turnurl') || ''; } catch (e) { } return u || NET_TURN_URL; },
+  set(u) { try { if (u) localStorage.setItem('riftline.turnurl', u); else localStorage.removeItem('riftline.turnurl'); } catch (e) { } this.servers = null; },
+  // ICE servers: Google + Cloudflare STUN always; TURN relays when a credentials URL is configured (fetched once per session)
+  async ice() {
+    const stun = [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:stun.cloudflare.com:3478' }];
+    const u = this.url(); if (!u) { this.src = ''; return stun; }
+    if (!this.servers) {
+      try {
+        const r = await Promise.race([fetch(u, { cache: 'no-store' }), new Promise((_, j) => setTimeout(() => j(new Error('timeout')), 6000))]);
+        if (!r.ok) throw new Error('HTTP ' + r.status);
+        const j = await r.json(); const list = Array.isArray(j) ? j : j.iceServers || [];
+        if (!list.length) throw new Error('empty');
+        this.servers = list; this.src = 'ok';
+      } catch (e) { console.warn('TURN credentials', e); this.src = 'fail'; return stun; }
+    }
+    return stun.concat(this.servers);
+  },
+};
+
 class NetPeer {
   constructor() { this.h = {}; this.kind = 'p2p'; this.conns = new Map(); }
   on(ev, fn) { this.h[ev] = fn; }
@@ -14512,11 +14545,11 @@ class NetPeer {
     return new Promise((res, rej) => { const s = document.createElement('script'); s.src = 'https://unpkg.com/peerjs@1.5.4/dist/peerjs.min.js'; s.onload = () => res(); s.onerror = () => rej(new Error('Could not load PeerJS from unpkg.com')); document.head.appendChild(s); });
   }
   async host() {
-    await NetPeer.load();
+    await NetPeer.load(); const ice = await NetTurn.ice();
     for (let tries = 0; tries < 5; tries++) {
       const code = NetU.code();
       const r = await new Promise(res => {
-        let settled = false; const p = new Peer('riftline-' + code.toLowerCase());
+        let settled = false; const p = new Peer('riftline-' + code.toLowerCase(), { config: { iceServers: ice } });
         const to = setTimeout(() => { if (!settled) { settled = true; try { p.destroy(); } catch (e) { } res({ err: 'Timed out reaching the PeerJS server' }); } }, 12000);
         p.on('open', () => { if (settled) return; settled = true; clearTimeout(to); res({ p }); });
         p.on('error', e => { if (settled) { console.warn('peer', e.type); return; } settled = true; clearTimeout(to); try { p.destroy(); } catch (x) { } res({ err: e.message || 'PeerJS error', type: e.type }); });
@@ -14536,11 +14569,11 @@ class NetPeer {
     throw new Error('Could not reserve a room code');
   }
   async join(code) {
-    await NetPeer.load();
+    await NetPeer.load(); const ice = await NetTurn.ice();
     return new Promise((res, rej) => {
-      let ok = false; const p = this.peer = new Peer();
+      let ok = false; const p = this.peer = new Peer({ config: { iceServers: ice } });
       const fail = msg => { if (ok) return; ok = true; clearTimeout(to); try { p.destroy(); } catch (e) { } rej(new Error(msg)); };
-      const to = setTimeout(() => fail('Timed out. Check the code; strict NATs/firewalls can block peer-to-peer (use the server.js relay instead)'), 15000);
+      const to = setTimeout(() => fail(NetTurn.url() ? 'Timed out. Check the code and that the host is still in the lobby' : 'Timed out. A firewall/NAT is blocking peer-to-peer — add a TURN relay key under Connection settings (both players), or use the server.js relay'), 20000);
       p.on('error', e => { if (!ok) fail(e.type === 'peer-unavailable' ? 'No game found with code ' + code : (e.message || 'Connection error')); });
       p.on('open', id => {
         const c = this.conn = p.connect('riftline-' + code.toLowerCase(), { reliable: true, serialization: 'json' });
@@ -14576,15 +14609,30 @@ const Net = {
     $('mp-host').addEventListener('click', () => this.hostRoom());
     $('mp-join').addEventListener('click', () => this.joinRoom($('mp-code').value));
     $('mp-code').addEventListener('keydown', e => { if (e.key === 'Enter') this.joinRoom($('mp-code').value); });
+    $('mp-turnsave').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.testTurn(); });
+    if (NetTurn.url()) NetTurn.ice().then(() => this.renderHome());
     $('mp-room').addEventListener('click', e => this.roomClick(e));
     $('mp-room').addEventListener('change', e => this.roomChange(e));
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
-  open() { $('mp').classList.remove('hidden'); this.render(); },
+  open() { $('mp').classList.remove('hidden'); if (this.role === 'client') this.up({ e: 'lset', sk: this.mySkins() }); this.render(); },   // re-send in case the locker changed
   close() { $('mp').classList.add('hidden'); },
   err(msg) { this._lastErr = msg || ''; const el = $('mp-err'); if (el) el.textContent = this._lastErr; },
-  renderHome() { const el = $('mp-net'); if (el) el.innerHTML = this.relay ? 'Connection: <b>game server relay</b> (this page is served by server.js)' : 'Connection: <b>peer-to-peer</b> (WebRTC via PeerJS). The host’s browser runs the match.'; },
+  renderHome() {
+    const el = $('mp-net'); if (!el) return;
+    const t = NetTurn.url(), st = !t ? 'no TURN relay — some networks will time out' : NetTurn.src === 'fail' ? '<span style="color:var(--red)">TURN key not working — check it</span>' : NetTurn.src === 'ok' ? 'TURN relay ready' : 'TURN relay configured' + (t === NET_TURN_URL ? ' (built in)' : '');
+    el.innerHTML = this.relay ? 'Connection: <b>game server relay</b> (this page is served by server.js)' : `Connection: <b>peer-to-peer</b> (WebRTC via PeerJS) · ${st}`;
+    $('mp-turnbox').classList.toggle('hidden', this.relay);
+    const inp = $('mp-turn'); if (inp && document.activeElement !== inp) inp.value = (() => { try { return localStorage.getItem('riftline.turnurl') || ''; } catch (e) { return ''; } })();
+  },
+  async testTurn() {
+    const inp = $('mp-turn'), u = inp.value.trim(), out = $('mp-turnmsg');
+    if (u && !/^https:\/\/[^\s]+$/.test(u)) { out.textContent = 'That should be the https:// credentials URL from your Metered dashboard'; return; }
+    NetTurn.set(u); out.textContent = u ? 'Checking…' : 'Cleared' + (NET_TURN_URL ? ' (the built-in key is used)' : '');
+    if (NetTurn.url()) { const list = await NetTurn.ice(); const n = list.filter(s => String(s.urls).includes('turn')).length; out.textContent = NetTurn.src === 'ok' ? `Working: ${n} TURN server${n === 1 ? '' : 's'} found` : 'Could not get TURN credentials from that URL (wrong key, or the free quota is used up)'; }
+    this.renderHome();
+  },
   newTx() { return this.relay ? new NetRelay() : new NetPeer(); },
 
   // ------------------------------------------------------------ rooms
@@ -14610,7 +14658,7 @@ const Net = {
       const tx = this.newTx(); const id = await tx.join(code);
       this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null;
       tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink('Disconnected from the host'));
-      this.up({ e: 'hello', name: n, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta' });
+      this.up({ e: 'hello', name: n, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta', sk: this.mySkins() });
       this.render();
     } catch (e) { this.err(e.message); }
     $('mp-join').disabled = false; $('mp-join').textContent = 'Join';
@@ -14630,8 +14678,21 @@ const Net = {
   me() { return this.lobby && this.lobby.players.find(p => p.id === this.myId); },
   up(d) { if (this.tx) this.tx.up(d); },
   bcast(d, ex) { if (this.tx && this.role === 'host') this.tx.bcast(d, ex); },
-  pushLobby() { if (this.role !== 'host') return; this.bcast({ e: 'lobby', l: this.lobby }); this.render(); },
+  pushLobby() {
+    if (this.role !== 'host') return;
+    const seen = [new Set(), new Set()];   // never two of one agent on a team: later arrivals move to a free agent
+    for (const p of this.lobby.players) { if (seen[p.team].has(p.agent)) p.agent = AGENT_IDS.find(id => !seen[p.team].has(id)) || p.agent; seen[p.team].add(p.agent); }
+    this.bcast({ e: 'lobby', l: this.lobby }); this.render();
+  },
+  note(msg) { this._note = msg; clearTimeout(this._noteT); this._noteT = setTimeout(() => { this._note = ''; this.render(); }, 2500); this.render(); },
+  // equipped skins travel with each player so everyone sees them (validated against this build's skin list)
+  mySkins() { const o = {}; try { for (const w of SKIN_WEAPONS) { const e = Profile.equippedSkin(w); if (e) o[w] = { id: e.id, lvl: e.lvl, v: e.v }; } } catch (e) { } return o; },
+  cleanSkins(sk) { const o = {}; if (sk && typeof sk === 'object') for (const w in sk) { const e = sk[w]; if (e && SKINS[e.id] && SKINS[e.id].weapon === w) o[w] = { id: e.id, lvl: clamp(e.lvl | 0, 1, 9), v: clamp(e.v | 0, 0, 9) }; } return o; },
   teamCount(t) { return this.lobby.players.filter(p => p.team === t).length; },
+  // one of each agent per team: keep the player's pick if it's free on that team, otherwise give them the first free one
+  takenOn(t, exceptId) { return new Set(this.lobby.players.filter(p => p.team === t && p.id !== exceptId).map(p => p.agent)); },
+  freeAgent(t, pref, exceptId) { const tk = this.takenOn(t, exceptId); if (AGENTS[pref] && !tk.has(pref)) return pref; return AGENT_IDS.find(id => !tk.has(id)) || pref; },
+  fixAgent(p) { const was = p.agent; p.agent = this.freeAgent(p.team, p.agent, p.id); return was !== p.agent; },
 
   hostMsg(cid, m) {
     if (!m || !m.e) return;
@@ -14641,14 +14702,15 @@ const Net = {
       if (L.inGame) { this.tx.send(cid, { e: 'deny', msg: 'A match is in progress — try again when it ends' }); return; }
       if (L.players.length >= 10) { this.tx.send(cid, { e: 'deny', msg: 'The lobby is full (10 players)' }); return; }
       const team = this.teamCount(0) <= this.teamCount(1) ? 0 : 1;
-      L.players.push({ id: cid, name: this.cleanName(m.name), team, agent: AGENTS[m.agent] ? m.agent : 'vanta' });
+      L.players.push({ id: cid, name: this.cleanName(m.name), team, agent: this.freeAgent(team, AGENTS[m.agent] ? m.agent : 'vanta', cid), sk: this.cleanSkins(m.sk) });
       this.pushLobby(); return;
     }
     if (m.e === 'lset') {
       const p = L.players.find(x => x.id === cid); if (!p) return;
       if (m.name != null) p.name = this.cleanName(m.name);
-      if (m.agent && AGENTS[m.agent]) p.agent = m.agent;
-      if ((m.team === 0 || m.team === 1) && m.team !== p.team && this.teamCount(m.team) < 5 && !L.inGame) p.team = m.team;
+      if (m.sk) p.sk = this.cleanSkins(m.sk);
+      if (m.agent && AGENTS[m.agent] && !L.inGame) { if (this.takenOn(p.team, p.id).has(m.agent)) this.tx.send(cid, { e: 'note', msg: AGENTS[m.agent].name + ' is taken on your team' }); else p.agent = m.agent; }
+      if ((m.team === 0 || m.team === 1) && m.team !== p.team && this.teamCount(m.team) < 5 && !L.inGame) { p.team = m.team; this.fixAgent(p); }
       this.pushLobby(); return;
     }
     if (this.isHost()) this.hostGame(cid, m);
@@ -14663,7 +14725,11 @@ const Net = {
   clientMsg(m) {
     if (!m || !m.e) return;
     switch (m.e) {
-      case 'lobby': this.lobby = m.l; this.render(); return;
+      case 'lobby': { const before = this.me() && this.me().agent; this.lobby = m.l; const me = this.me();
+        const wanted = before || Settings.agent;   // on first join, the agent this browser asked for
+        if (me && AGENTS[wanted] && AGENTS[me.agent] && me.agent !== wanted) this.note(AGENTS[wanted].name + ' was taken on your team · you’re now ' + AGENTS[me.agent].name);
+        this.render(); return; }
+      case 'note': this.note(m.msg); return;
       case 'deny': this.err(m.msg); this.tx.close(); this.tx = null; this.role = null; this.render(); return;
       case 'bye': this.lostLink('The host closed the room'); return;
       case 'start': if (this.active) this.active = false; this.pending = m.i; return;   // the match begins with the first round event
@@ -14693,7 +14759,7 @@ const Net = {
       return h + '</div>';
     };
     const taken = new Set(L.players.filter(p => me && p.team === me.team && p.id !== this.myId).map(p => p.agent));
-    const agents = AGENT_IDS.map(id => { const A = AGENTS[id]; return `<button class="mpag${me && me.agent === id ? ' on' : ''}${taken.has(id) ? ' tk' : ''}" data-act="agent" data-a="${id}" style="--c:${A.cssAccent}" title="${A.name} · ${A.role}${taken.has(id) ? ' (a teammate has it)' : ''}"><img src="${Portraits.get(id)}" alt=""><span>${A.name}</span></button>`; }).join('');
+    const agents = AGENT_IDS.map(id => { const A = AGENTS[id]; return `<button class="mpag${me && me.agent === id ? ' on' : ''}${taken.has(id) ? ' tk' : ''}" data-act="agent" data-a="${id}"${taken.has(id) ? ' aria-disabled="true"' : ''} style="--c:${A.cssAccent}" title="${A.name} · ${A.role}${taken.has(id) ? ' (a teammate has it)' : ''}"><img src="${Portraits.get(id)}" alt=""><span>${A.name}</span></button>`; }).join('');
     const maps = MAP_IDS.filter(id => id !== 'range');
     const modeName = L.mode === 'standard' ? 'Standard · first to 13' : L.mode === 'custom' ? 'Custom · first to ' + L.cwin : 'Quick · first to 5';
     const diffs = ['Easy', 'Medium', 'Hard', 'Radiant'];
@@ -14709,7 +14775,8 @@ const Net = {
       <div class="mpcode"><span>Room code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button><button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button></div>
       <div class="mpgrid"><div class="mpteams">${col(0)}${col(1)}</div>
         <div class="mpside"><div class="sect">Match</div>${set}${hostNote}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
-      <div class="sect">Your agent</div><div class="mpags">${agents}</div>`;
+      <div class="sect">Your agent <span class="mpsub">· one of each per team</span></div>${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}<div class="mpags">${agents}</div>`;
+    if (me && AGENTS[me.agent] && Settings.agent !== me.agent) { Settings.agent = me.agent; Settings.save(); }
   },
   roomClick(e) {
     const b = e.target.closest('[data-act]'); if (!b) return; Sfx.init(); Sfx.ui();
@@ -14717,10 +14784,10 @@ const Net = {
     if (act === 'copy') { const u = b.dataset.url; (navigator.clipboard ? navigator.clipboard.writeText(u) : Promise.reject()).then(() => { b.textContent = 'Copied!'; setTimeout(() => this.render(), 1200); }, () => { prompt('Invite link', u); }); return; }
     if (act === 'leave') { this.leaveRoom(); return; }
     if (!L) return;
-    if (act === 'agent') { const id = b.dataset.a; if (host) { this.me().agent = id; this.pushLobby(); } else this.up({ e: 'lset', agent: id }); Settings.agent = id; Settings.save(); return; }
-    if (act === 'team') { const t = +b.dataset.t; if (host) { if (this.teamCount(t) < 5) this.me().team = t; this.pushLobby(); } else this.up({ e: 'lset', team: t }); return; }
+    if (act === 'agent') { const id = b.dataset.a, me = this.me(); if (L.inGame || !me) return; if (this.takenOn(me.team, this.myId).has(id)) { this.note(AGENTS[id].name + ' is taken on your team'); return; } if (host) { me.agent = id; this.pushLobby(); } else this.up({ e: 'lset', agent: id }); return; }
+    if (act === 'team') { const t = +b.dataset.t; if (host) { const me = this.me(); if (this.teamCount(t) < 5) { me.team = t; this.fixAgent(me); } this.pushLobby(); } else this.up({ e: 'lset', team: t }); return; }
     if (!host || L.inGame) return;
-    if (act === 'move') { const p = L.players.find(x => x.id === b.dataset.id); if (p && this.teamCount(1 - p.team) < 5) p.team = 1 - p.team; this.pushLobby(); return; }
+    if (act === 'move') { const p = L.players.find(x => x.id === b.dataset.id); if (p && this.teamCount(1 - p.team) < 5) { p.team = 1 - p.team; this.fixAgent(p); } this.pushLobby(); return; }
     if (act === 'kick') { const id = b.dataset.id; this.tx.send(id, { e: 'deny', msg: 'The host removed you from the lobby' }); L.players = L.players.filter(x => x.id !== id); this.pushLobby(); return; }
     if (act === 'start') this.hostStart();
   },
@@ -14739,10 +14806,13 @@ const Net = {
     const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map;
     const humanNames = new Set(L.players.map(p => p.name)), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n)));
     const roster = [], teams = [0, 1].map(t => {
-      const hs = L.players.filter(p => p.team === t).slice(0, 5), ids = hs.map(p => p.agent);
+      const hs = L.players.filter(p => p.team === t).slice(0, 5), ids = [];
+      for (const p of hs) { const id = !ids.includes(p.agent) ? p.agent : AGENT_IDS.find(x => !ids.includes(x)); p.agent = id; ids.push(id); }
       const used = new Set(ids); while (ids.length < 5) { const pool = AGENT_IDS.filter(x => !used.has(x)); const id = pool.length ? pick(pool) : pick(AGENT_IDS); ids.push(id); used.add(id); }
       try { Comp.repair(ids, hs.map((_, i) => i)); } catch (e) { }
-      return ids.map((agentId, i) => hs[i] ? { name: hs[i].name, agentId, team: t, pid: hs[i].id } : { name: names.pop() || 'Bot ' + (i + 1), agentId, team: t, pid: null });
+      hs.forEach((p, i) => { ids[i] = p.agent; });   // players' picks always stand; only bot slots get rebalanced
+      for (let i = hs.length; i < 5; i++) if (ids.indexOf(ids[i]) !== i || hs.some(p => p.agent === ids[i])) ids[i] = AGENT_IDS.find(x => !ids.includes(x)) || ids[i];   // bots never duplicate a teammate either
+      return ids.map((agentId, i) => hs[i] ? { name: hs[i].name, agentId, team: t, pid: hs[i].id, sk: hs[i].id === 'H' ? this.mySkins() : (hs[i].sk || {}) } : { name: names.pop() || 'Bot ' + (i + 1), agentId, team: t, pid: null });
     });
     for (let i = 0; i < 5; i++) roster.push(teams[0][i], teams[1][i]);
     this.info = { roster, map, mode: L.mode, cwin: L.cwin, diff: L.diff, sides: Math.random() < 0.5 ? ['atk', 'def'] : ['def', 'atk'] };
@@ -14777,6 +14847,7 @@ const Net = {
       const me = e.pid === this.myId;
       const a = new Agent({ name: e.name, agentId: e.agentId, team: e.team, isHuman: me, teamCol: e.team === myTeam ? TEAM_COL.ally : TEAM_COL.enemy });
       a.nid = i; G.agents.push(a);
+      if (e.pid && !me) a.netSkins = this.cleanSkins(e.sk);   // another human: show their equipped skins, not a random bot pick
       if (me) G.player = a;
       else if (this.role === 'host') { if (e.pid) { a.remote = e.pid; a.isBot = false; } else Bots.init(a); }
       else { a.isBot = false; a.netOther = true; a._buf = []; }
@@ -14860,6 +14931,8 @@ const Net = {
       return _say.call(this, team, bot, text, force);
     };
     for (const k of ['giftPass', 'onHumanBuy', 'onPing']) { const f = Brain[k]; if (typeof f === 'function') Brain[k] = function () { if (N.isClient()) return; return f.apply(this, arguments); }; }
+    const _forAgent = Skins.forAgent;
+    Skins.forAgent = function (ag, wid) { if (ag && ag.netSkins && !ag.isHuman) return SKIN_WEAPONS.includes(wid) ? (ag.netSkins[wid] || null) : null; return _forAgent.call(this, ag, wid); };
     const _spawnDrop = Drops.spawn, _pickup = Drops.pickup;
     Drops.spawn = function (w, pos) { if (N.isClient() && !N._allow) return; _spawnDrop.call(this, w, pos); const d = this.list[this.list.length - 1]; if (d) d.nid = ++N.dropId; };
     Drops.pickup = function (ag, d) { if (N.isClient()) return; return _pickup.call(this, ag, d); };
@@ -15161,6 +15234,21 @@ function guestAct(P, a) {
   return true;
 }
 
+// multiplayer edition: every skin is free, fully upgraded, with every colour variant. Saved per website, so a
+// single-player save elsewhere is untouched; skins added in future updates unlock on the next page load.
+function mpUnlockAllSkins() {
+  try {
+    const d = Profile.get(); d.owned = d.owned || {}; d.equipped = d.equipped || {};
+    for (const id in SKINS) {
+      const T = Skins.tierOf(id), L = SKIN_LINES[SKINS[id].line] || {}, nv = Math.max(1, (L.vars || []).length);
+      const o = d.owned[id] || (d.owned[id] = { lvl: 1, v: 0, vars: [0] });
+      o.lvl = Math.max(o.lvl || 1, (T && T.levels) || 1);
+      o.vars = Array.from({ length: nv }, (_, i) => i); o.v = clamp(o.v | 0, 0, nv - 1);
+    }
+    Profile.save();
+  } catch (e) { console.warn('skin unlock', e); }
+}
+
 // ============================================================ BOOT
 function boot() {
   if (!AGENTS[Settings.agent]) Settings.agent = 'vanta';
@@ -15169,7 +15257,7 @@ function boot() {
   World.load(MAPS.saltworks); R.buildMap(MAPS.saltworks);
   R.setQuality(Settings.graphics === 'low' ? 'low' : 'high');
   if (!['quick', 'standard', 'dm', 'rq', 'rs', 'range', 'custom'].includes(Settings.mode)) Settings.mode = 'quick';
-  VM.init(); Portraits.init(); UI.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
+  mpUnlockAllSkins(); VM.init(); Portraits.init(); UI.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
   Input.resolveCrouch();
   $('loading').classList.add('hidden');
   const q = new URLSearchParams(location.search);
