@@ -913,6 +913,54 @@ img{max-width:100%}
 .savebox small,.saverow small{display:block;margin-top:5px;color:var(--mut,#8fa0ad);font-size:11px;line-height:1.35}
 .saverow>div{display:flex;flex-direction:column;align-items:flex-start}
 .savebtns{display:flex;flex-wrap:wrap;gap:8px}
+/* v36 kill banners: emblem in a ring, five kill segments, circuit linework, line-coloured glow */
+#killbanner .kb2{display:flex;flex-direction:column;align-items:center;gap:2px;--k1:#eaf6ff;animation:kb2In .34s cubic-bezier(.2,1.35,.4,1) both;transform-origin:50% 70%;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--k1) 55%,transparent))}
+#killbanner .kb2.spec{transform:scale(.82);opacity:.94}
+#killbanner .kb2.t3{scale:1.06}#killbanner .kb2.t4{scale:1.12}#killbanner .kb2.t5,#killbanner .kb2.ace{scale:1.18}
+#killbanner .kb2.ace{--k1:#ffd23a;--k2:#fff1b0}
+#killbanner .kb2.out{animation:kb2Out .32s ease-in forwards}
+@keyframes kb2In{from{opacity:0;transform:scale(.55) translateY(18px)}to{opacity:1;transform:none}}
+@keyframes kb2Out{to{opacity:0;transform:scale(.86) translateY(14px);filter:blur(2px)}}
+.kb2-art{position:relative;width:330px;height:210px;max-width:92vw}
+.kb2-frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.kb2-frame .ln{fill:none;stroke:color-mix(in srgb,var(--k1) 70%,#fff);stroke-width:1.6;stroke-dasharray:100;stroke-dashoffset:100;animation:kbDraw .55s .08s ease-out forwards}
+.kb2-frame .ln.dim{stroke-opacity:.45}.kb2-frame .nd{fill:var(--k1)}.kb2-frame .nd.dim{opacity:.5}
+.kb2-frame .fr,.kb2-frame .fr-t{fill:rgba(8,14,20,.55);stroke:color-mix(in srgb,var(--k1) 80%,#fff);stroke-width:2.2}
+.kb2-frame .fr{stroke-dasharray:100;stroke-dashoffset:100;animation:kbDraw .5s ease-out forwards}
+.kb2-frame .fr-t{fill:var(--k1);stroke:none;opacity:.8}
+.kb2-frame .seg{fill:rgba(140,160,175,.16);stroke:rgba(255,255,255,.12);stroke-width:1}
+.kb2:not(.kb-sk) .kb2-frame .seg.on{fill:var(--k2)}.kb2-frame .seg.on{fill:var(--k1);stroke:#fff;stroke-width:1.2;filter:drop-shadow(0 0 6px var(--k1));animation:kbSeg .28s var(--d) cubic-bezier(.3,1.6,.5,1) both;transform-origin:0 0}
+.kb2-frame .seg.new{animation:kbSeg .28s var(--d) cubic-bezier(.3,1.6,.5,1) both,kbFlare .5s calc(var(--d) + .25s) ease-in-out 2}
+@keyframes kbSeg{from{opacity:0;transform:scale(1.18)}to{opacity:1;transform:none}}
+@keyframes kbFlare{50%{fill:#fff;filter:drop-shadow(0 0 14px var(--k1)) drop-shadow(0 0 4px #fff)}}
+.kb2-frame .ring{fill:none;stroke:#f4f8ff;stroke-width:6;stroke-dasharray:100;stroke-dashoffset:100;animation:kbDraw .42s .05s ease-out forwards;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--k1) 70%,#fff))}
+.kb2.hs .kb2-frame .ring{stroke:#ffd23a}.kb2-frame .hsb line{stroke:#ffd23a;stroke-width:3;stroke-linecap:round;animation:kbHs .5s .15s ease-out both}
+@keyframes kbHs{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
+@keyframes kbDraw{to{stroke-dashoffset:0}}
+.kb2-emb{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;animation:kbEmb .46s .1s cubic-bezier(.25,1.5,.45,1) both;filter:drop-shadow(0 0 8px var(--k1))}
+.kb2-emb svg{width:100%;height:100%;overflow:visible}
+.kb2-emb .a{fill:var(--k1)}.kb2-emb .b{fill:var(--k2)}.kb2-emb .k{fill:var(--k4)}.kb2-emb .s{fill:none;stroke:var(--k1);stroke-width:3;stroke-linecap:round}
+.kb2:not(.kb-sk) .kb2-emb .a{fill:#eef6ff}.kb2:not(.kb-sk) .kb2-emb .k{fill:#16222c}
+@keyframes kbEmb{from{opacity:0;transform:scale(1.7)}60%{opacity:1}to{transform:none}}
+.kb2.punch .kb2-emb{animation:kbPunch .3s ease-out}@keyframes kbPunch{40%{transform:scale(1.22)}}
+.kb2.a-spin .kb2-emb svg{animation:kbSpin 6s linear infinite}.kb2.a-vortex .kb2-emb svg{animation:kbSpin 3s linear infinite reverse}
+.kb2.a-flicker .kb2-emb,.kb2.a-glitch .kb2-emb{animation:kbEmb .46s .1s both,kbFlick 1.4s .6s steps(1) infinite}@keyframes kbFlick{0%,100%{opacity:1}47%{opacity:.35}50%{opacity:1}83%{opacity:.6}86%{opacity:1}}
+.kb2-n{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-width:34px;height:26px;padding:0 8px;display:grid;place-items:center;font:900 20px/1 var(--f-display);color:#0b1117;background:var(--k1);clip-path:polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%);animation:kbEmb .4s .3s both;box-shadow:0 0 10px var(--k1)}
+.kb2-plate{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:-14px;animation:kbPlate .3s .18s ease-out both}
+@keyframes kbPlate{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.kb2-plate small{white-space:nowrap;font:700 11px var(--f-body);letter-spacing:3px;text-transform:uppercase;color:color-mix(in srgb,var(--k1) 60%,#fff)}
+.kb2-plate small .who{color:var(--ally);letter-spacing:1.5px}.kb2-plate small .ln-name{color:var(--k2)}
+.kb2-v{display:flex;align-items:center;gap:9px;padding:4px 14px 4px 4px;background:linear-gradient(90deg,color-mix(in srgb,var(--k1) 26%,rgba(10,16,22,.9)),rgba(10,16,22,.82));border-left:3px solid var(--k1);clip-path:polygon(0 0,100% 0,96% 100%,0 100%)}
+.kb2-v b{font:900 24px/1 var(--f-display);letter-spacing:1px;text-transform:uppercase;color:#fff}
+.kb2-p{width:34px;height:34px;object-fit:cover;background:rgba(0,0,0,.35)}
+.kb2-g{height:18px;margin-left:6px;filter:drop-shadow(0 0 3px rgba(255,255,255,.4))}.kb2-w{font:700 12px var(--f-body);font-style:normal;color:var(--dim);margin-left:6px}
+.kb2-tags{display:flex;gap:5px}.kb2-tags .kt{font:800 10px var(--f-body);font-style:normal;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;background:rgba(255,255,255,.14);color:#fff}
+.kb2-tags .kt.hs{background:#ffd23a;color:#1a1205}.kb2-tags .kt.fin{background:var(--k1);color:#0b1117;box-shadow:0 0 12px var(--k1);animation:kbFinTag .6s .25s ease-out both}
+@keyframes kbFinTag{from{opacity:0;letter-spacing:8px}to{opacity:1}}
+.kb2.fin .kb2-art::before{content:'';position:absolute;left:50%;top:50%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--k1) 45%,transparent),transparent 65%);animation:kbFinGlow 1.2s ease-in-out infinite alternate;pointer-events:none}
+@keyframes kbFinGlow{from{opacity:.4;transform:scale(.9)}to{opacity:1;transform:scale(1.08)}}
+@media (max-width:640px),(max-height:560px){.kb2-art{width:240px;height:152px}.kb2-emb{width:56px;height:56px;margin:-28px 0 0 -28px}.kb2-v b{font-size:19px}#killbanner{bottom:128px}}
+@media (prefers-reduced-motion:reduce){#killbanner .kb2,#killbanner .kb2 *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 /* v35 combat report: right-edge side panel between the kill feed and the credits readout */
 #combatrep{position:absolute;right:12px;top:204px;width:min(336px,46vw);max-height:calc(100vh - 340px);overflow:hidden;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:3;
   background:linear-gradient(180deg,rgba(12,21,28,.9),rgba(12,21,28,.82));border:1px solid rgba(255,255,255,.1);border-right:3px solid var(--enemy);padding:8px 10px 9px;animation:crin .16s ease-out;font:600 12px var(--f-body);color:var(--bone)}
@@ -3385,7 +3433,7 @@ const SaveImport = {
     if (!Number.isInteger(f.version) || f.version < 1 || f.version > SaveExport.VERSION) return no(`Unsupported save version (${this.esc(f.version)}).`);
     const D = f.data; if (!D || typeof D !== 'object' || Array.isArray(D)) return no('The save has no data block.');
     const keys = Object.keys(D); if (!keys.length) return no('The save holds no data.'); if (keys.length > this.MAX_KEYS) return no('The save holds too many entries.');
-    for (const k of keys) { if (!k.startsWith(SaveExport.PREFIX) || k.length > 128 || !/^[\w.\-]+$/.test(k)) return no('The save contains keys Riftline does not use.'); }
+    for (const k of keys) { if (!k.startsWith(SaveExport.PREFIX) || k.length > 128 || !/^[\w.:\-]+$/.test(k)) return no('The save contains keys Riftline does not use.'); }
     if (typeof f.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(f.sha256)) return no('The save is missing its checksum.');
     const h = await SaveExport.digest(JSON.stringify(D)); if (!h) return no('This browser cannot verify the checksum.');
     if (h !== f.sha256) return no('The checksum does not match: the file was edited or damaged.');
@@ -4513,7 +4561,8 @@ const BuyZones = {
     for (const i of dRing) g[(i / w) | 0][i % w] = '-';
     let sitesIn = 0; for (const i of site) if (D[i]) sitesIn++;
     const st = { fA: +fA.toFixed(2), fD: +fD.toFixed(2), siteF: +siteF.toFixed(2), contact: +res.contact.toFixed(2), longLane: res.longLane < 1e8 ? +res.longLane.toFixed(2) : null, cross: res.cross, sitesInDef: +(sitesIn / site.length).toFixed(2), atkCells: A.reduce((s, v) => s + v, 0), defCells: D.reduce((s, v) => s + v, 0), aRing: aRing.length, dRing: dRing.length, tries, pair: res.pair ? [[res.pair[0] % w, (res.pair[0] / w) | 0], [res.pair[1] % w, (res.pair[1] / w) | 0], res.pair[2], res.pair[3]] : null };
-    this.stats[def.id || def.name] = st; return st;
+    this.stats[def.id || def.name] = st; (this.regions || (this.regions = {}))[def.id || def.name] = { A, D };   // v36: BarrierSeal reads the zones
+    return st;
   },
 };
 // test / tuning helper: per-map report (and an ASCII picture of the zones)
@@ -4545,6 +4594,8 @@ const BarrierAudit = {
 const CELL = 2;
 let GW = 44, GH = 58, MAP = null;
 const MAT = { none: 0, wood: 1, stone: 2, metal: 3, solid: 4 };
+// v36: structural walls and trees are blockers to their full height and can never be stood on (ability launches included)
+const NO_STAND = ['#', 'W', 'w', 'R'];
 const TILE = {
   'v': { h: 0, mat: 0 },   // void (off the edge of a floating island): no floor, no walls, blocked for movement only
   '#': { h: 6.0, mat: MAT.solid }, 'W': { h: 5.0, mat: MAT.stone }, 'w': { h: 4.5, mat: MAT.wood },
@@ -4565,11 +4616,11 @@ const World = {
     if (typeof BuyZones !== 'undefined') BuyZones.apply(def, M);   // v34: buy-phase barriers derived per map (defenders on site, attackers staged)
     const N = GW * GH;
     this.h = new Float32Array(N); this.mat = new Uint8Array(N); this.zone = new Uint8Array(N); this.walk = new Uint8Array(N); this.barrier = new Uint8Array(N); this.ceil = new Float32Array(N); this.nav = new Float32Array(N);
-    this.ch = new Array(N); this.voidC = new Uint8Array(N); this.siteLetters = def.sites.slice(); this.temp = [];
+    this.ch = new Array(N); this.voidC = new Uint8Array(N); this.noStand = new Uint8Array(N); this.sealBase = new Float32Array(N); this.buyReach = new Uint8Array(N); this.siteLetters = def.sites.slice(); this.temp = [];
     for (let z = 0; z < GH; z++) for (let x = 0; x < GW; x++) {
       const c = M.g[z][x], i = z * GW + x; this.ch[i] = c; if (c === 'v') this.voidC[i] = 1;
       const t = TILE[c];
-      if (t) { this.h[i] = t.h; this.mat[i] = t.mat; if (t.ceil) this.ceil[i] = t.ceil; } else this.walk[i] = 1;
+      if (t) { this.h[i] = t.h; this.mat[i] = t.mat; if (t.ceil) this.ceil[i] = t.ceil; if (NO_STAND.includes(c)) this.noStand[i] = 1; } else this.walk[i] = 1;
       this.nav[i] = !t ? 0 : CLIMB.includes(c) ? t.h : -1;   // standing height for navigation, -1 = blocked
       const si = this.siteLetters.indexOf(c); if (si >= 0) this.zone[i] = si + 1;
       if (c === '=') this.barrier[i] = 1; else if (c === '-') this.barrier[i] = 2;
@@ -4579,6 +4630,7 @@ const World = {
     this.mid = (def.mid || []).map(m => ({ p: m.slice(0, 2), look: m.slice(2, 4) }));
     this._g = this._f = this._c = null;
     Mech.init(def);
+    if (typeof BarrierSeal !== 'undefined') BarrierSeal.apply(def);   // v36: seal props / windows / trees / teleports on every buy-zone edge
     if (light) { this.sites = {}; this.siteLetters.forEach((L, si) => { const z = []; for (let i = 0; i < N; i++) if (this.zone[i] === si + 1) z.push([i % GW, (i / GW) | 0]); const cx = z.reduce((s, p) => s + p[0], 0) / z.length, cz = z.reduce((s, p) => s + p[1], 0) / z.length; this.sites[L] = { center: [Math.round(cx), Math.round(cz)], atkCh: [], defCh: [], holds: [], post: [], zone: z }; }); return; }
     this.analyze();
     if (typeof Aware !== 'undefined') { Aware.map = null; Aware.spots(); }   // bot hazard map (corners, cubbies) built at load, not mid-round
@@ -4591,12 +4643,16 @@ const World = {
   blockH(cx, cz, side) {
     if (!this.inb(cx, cz)) return 99;
     const i = cz * GW + cx, h = this.h[i];
-    if (h > 0) return h;
+    if (this.barrier[i] && this.barrierSolid(i)) return 99;   // buy-phase barriers (and v36 seal caps on props/walls/trees) are solid for everyone
+    if (h > 0) return this.noStand[i] ? 99 : h;               // v36: structural walls and trees are never a floor (no out-of-bounds wall walking)
     if (this.voidC[i]) return 99;   // the island's edge: open air you can see and shoot across, but never walk into
-    return this.barrierSolid(i) ? 99 : 0; // buy-phase barriers are solid for everyone
+    return 0;
   },
-  barrierSolid(i) { const b = this.barrier[i]; return b ? (b === 1 ? this.barriersUp.atk : this.barriersUp.def) : false;
+  // bit 1 = attacker barrier, bit 2 = defender barrier (a seal cap can belong to both zones)
+  barrierSolid(i) { const b = this.barrier[i]; return b ? !!(((b & 1) && this.barriersUp.atk) || ((b & 2) && this.barriersUp.def)) : false;
   },
+  // what a thrown or rolling object collides with: real geometry plus any standing barrier column
+  solidAt(cx, cz) { if (!this.inb(cx, cz)) return 99; const i = cz * GW + cx; return this.barrier[i] && this.barrierSolid(i) ? 99 : this.h[i]; },
   zoneAt(px, pz) { const cx = Math.floor(px / CELL), cz = Math.floor(pz / CELL); if (!this.inb(cx, cz)) return 0; return this.zone[cz * GW + cx]; },
   siteAt(px, pz) { const z = this.zoneAt(px, pz); return z ? this.siteLetters[z - 1] : null; },
   isWalkCell(cx, cz) { return this.inb(cx, cz) && this.walk[cz * GW + cx] === 1; },
@@ -4666,7 +4722,7 @@ const World = {
     for (let guard = 0; guard < 500; guard++) {
       const tNext = Math.min(tMX, tMZ, maxT);
       if (!this.inb(cx, cz)) return { t, floor: false, out: true };
-      const i = cz * GW + cx, h = this.h[i] || (this.barrier[i] && this.barrierSolid(i) ? 99 : 0);
+      const i = cz * GW + cx, h = this.barrier[i] && this.barrierSolid(i) ? 99 : this.h[i];
       if (h > 0) {
         const yA = oy + dy * t, yB = oy + dy * tNext, cl = this.ceil[i];
         if (cl > 0 && Math.max(yA, yB) > cl) { if (cb(i, t, tNext)) return { t, floor: false, cell: i }; }
@@ -4761,7 +4817,7 @@ const World = {
     for (const a of G.agents) {
       if (!a.alive) continue;
       const [cx, cz] = this.cellOf(a.pos.x, a.pos.z), t = this.tp.get(cz * GW + cx);
-      if (!t || !a.grounded || G.time < (a.tpCD || 0)) { a.tpT = 0; continue; }
+      if (!t || !a.grounded || G.time < (a.tpCD || 0) || !BuyGuard.moveOk(a, t.exit[1] * GW + t.exit[0])) { a.tpT = 0; continue; }
       a.tpT = (a.tpT || 0) + dt;
       if (a.tpT >= 0.35) {
         const from = a.pos.clone(), to = this.center(t.exit[0], t.exit[1]);
@@ -4889,6 +4945,140 @@ const World = {
     });
   },
 };
+// ============================================================ v36 BARRIER SEAL: airtight buy zones (movement, vision, utility)
+// BuyZones (v34) decides WHERE each team's buy zone ends and rings it with barrier cells. That ring is airtight for plain
+// floor, but a zone edge is also made of props, windows, trees, teleporter pads and zipline ends, and a player can climb,
+// crouch-jump, updraft or blast-jump far higher than the 1.15 m the zone growth assumed. This pass runs after the world
+// arrays exist (World.load) and closes every remaining way out, using the engine's own movement numbers:
+//
+//   1. Reach: a breadth-first climb from each team's spawn with both barriers up. A step to a neighbouring cell is allowed
+//      when its top is at most REACH above where you stand (dropping is always allowed). REACH is the best this team could do
+//      with any agent: a crouch-jump (6.3 m/s jump, 18 m/s² gravity, +0.34 m tuck, +0.3 m ledge catch) plus every charge of
+//      the strongest vertical ability (updraft / blast jump) chained in the air. Structural walls and trees (NO_STAND) are
+//      never a floor at any height, so nobody walks along wall tops or tree crowns.
+//   2. Physical seal: whenever that climb could step from the zone onto a prop / window / plinth that touches open floor
+//      outside the zone (a bridge), or onto a floor cell the ring skipped (teleporter pad, spawn edge), that cell becomes a
+//      barrier column for the team. Teleporters and ziplines that lead outside are gated at runtime instead (BuyGuard).
+//   3. Vision seal: eye points over the team's reachable floor (standing, jump apex, one ability launch, the full chain) are
+//      traced against the other team's reachable floor (chest and head) with the real 3D ray march; trees are treated as
+//      see-through (their canopy has gaps the box collider doesn't). Any ray that gets through caps the first cell where it
+//      left the source zone (a wall top, a window, a tree) with a barrier column; repeated until no ray gets through.
+//   4. Barrier height: barrier walls render up to the highest eye point the vision pass had to stop (≥ 6 m), so what you
+//      see matches what the ray march (which treats a standing barrier as infinitely tall) already blocks.
+// Results are cached per map for the session; the first load of a map pays the cost once.
+const BarrierSeal = {
+  cache: {}, stats: {},
+  reach() {
+    const g = 18, jump = 6.3, ap = v => v * v / (2 * g), J = ap(jump), tuck = 0.34, catchH = 0.3;
+    let best = 0, single = 0;
+    for (const id in AGENTS) { let tot = 0; for (const k in AGENTS[id].abilities) { const a = AGENTS[id].abilities[k]; if (!a || !a.p) continue;
+      const v = a.kind === 'updraft' ? (a.p.v || 10.5) : a.kind === 'blastJump' ? a.p.up : 0; if (!v) continue; const n = Math.max(1, a.max || 1); tot += n * ap(v); single = Math.max(single, ap(v)); } best = Math.max(best, tot); }
+    return { foot: J + tuck + catchH, abil: J + best + tuck + catchH, eyes: [1.6, 1.6 + J, 1.6 + J + single, 1.6 + J + best] };
+  },
+  apply(def) {
+    const id = def.id || def.name, Z = BuyZones.regions && BuyZones.regions[id];
+    World.buyReach.fill(0); World.sealBase.fill(0); World.buyFoot = new Uint8Array(GW * GH); World.barrierTop = 6;
+    if (!Z) return null;
+    const c = this.cache[id];
+    if (c) { for (const [i, b, base] of c.seals) { World.barrier[i] |= b; World.sealBase[i] = Math.max(World.sealBase[i], base); } World.buyReach.set(c.reach); World.buyFoot.set(c.foot); World.barrierTop = c.top; this.stats[id] = c.stats; return c.stats; }
+    return this.compute(def, id, Z, !!this.fullMode);
+  },
+  // layout fingerprint: the char grid after zone derivation (a bake is only trusted for the exact layout it was made from)
+  sig() { let h = 2166136261; for (let i = 0; i < GW * GH; i++) { h ^= World.ch[i].charCodeAt(0); h = Math.imul(h, 16777619) >>> 0; } return (h >>> 0).toString(36) + ':' + GW + 'x' + GH; },
+  // full = the offline bake: every reachable cell at three offsets per cell (slow; run by the bake script, not at load)
+  compute(def, id, Z, full) {
+    const t0 = performance.now(), N = GW * GH, up0 = Object.assign({}, World.barriersUp); World.barriersUp.atk = World.barriersUp.def = true;
+    const Rk = this.reach(), seals = new Map(), st = { bridges: 0, holes: 0, vision: 0, trees: 0, gated: 0, passes: 0 };
+    const addSeal = (i, bit, kind) => { const prev = seals.get(i); const base = World.h[i] > 0 && World.ch[i] !== 'R' ? World.h[i] : 0; if (!prev) seals.set(i, [bit, base, kind]); else prev[0] |= bit; World.barrier[i] |= bit; World.sealBase[i] = base; };
+    const pass = i => BuyZones.pass(World.ch[i]);
+    const top = i => { const b = World.blockH(i % GW, (i / GW) | 0); return b >= 99 ? -1 : b; };   // -1 = can't enter
+    const tele = new Map(); for (const [pi, t] of World.tp) tele.set(pi, t.exit[1] * GW + t.exit[0]);
+    const zipE = []; for (const Zp of Mech.zips) { zipE.push([Zp.ia, Zp.ib]); if (!Zp.oneway) zipE.push([Zp.ib, Zp.ia]); }
+    const teams = [{ bit: 1, R: Z.A, spawn: 'a' }, { bit: 2, R: Z.D, spawn: 'd' }];
+    // ---- 1 + 2: climb from spawn, sealing bridges and holes
+    for (const T of teams) {
+      const inside = i => T.R[i] || (World.barrier[i] && World.barrierSolid(i));
+      const interior = i => { const x = i % GW, z = (i / GW) | 0; for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz; if (!World.inb(nx, nz)) continue; const k = nz * GW + nx; if (pass(k) && !inside(k)) return false; } return true; };
+      let changed = true;
+      while (changed) { changed = false; st.passes++;
+        const seen = new Uint8Array(N), q = [];
+        for (let i = 0; i < N; i++) if (World.ch[i] === T.spawn) { seen[i] = 1; q.push(i); }
+        for (let k = 0; k < q.length; k++) {
+          const i = q[k], x = i % GW, z = (i / GW) | 0, s = Math.max(0, top(i));
+          const nb = []; for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz; if (World.inb(nx, nz)) nb.push([nz * GW + nx, 0]); }
+          const tp = tele.get(i); if (tp != null) nb.push([tp, 1]); for (const [a, b] of zipE) if (a === i) nb.push([b, 1]);
+          for (const [j, jump] of nb) {
+            if (seen[j]) continue; const tj = top(j); if (tj < 0) continue;
+            if (!jump && tj > s + Rk.abil) continue;
+            if (!T.R[j] && !interior(j)) {   // stepping out of the zone
+              if (jump) { st.gated++; continue; }   // teleporter / zipline: denied at runtime by BuyGuard
+              addSeal(j, T.bit, pass(j) ? 'hole' : 'bridge'); st[pass(j) ? 'holes' : 'bridges']++; changed = true; continue;
+            }
+            seen[j] = 1; q.push(j);
+          }
+        }
+        if (!changed) { for (let i = 0; i < N; i++) if (seen[i]) World.buyReach[i] |= T.bit; }
+      }
+      // footprint: reachable cells plus obstacles enclosed by them (interior walls, crates, perches)
+      for (let i = 0; i < N; i++) { if (World.buyReach[i] & T.bit) { World.buyFoot[i] |= T.bit; continue; } if (World.h[i] > 0 && !World.barrier[i]) { const x = i % GW, z = (i / GW) | 0; let touch = false, ok = true;
+        for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz; if (!World.inb(nx, nz)) continue; const k = nz * GW + nx; if (World.buyReach[k] & T.bit) touch = true; else if (pass(k) && !(World.barrier[k] && World.barrierSolid(k))) ok = false; }
+        if (touch && ok) World.buyFoot[i] |= T.bit; } }
+    }
+    // ---- 3: vision — every reachable eye point against the other zone; cap where a ray escapes
+    const sample = (bit) => { const out = []; for (let i = 0; i < N; i++) if ((World.buyReach[i] & bit) && (full || ((i % GW) + ((i / GW) | 0)) % 2 === 0 || World.h[i] > 0)) out.push(i); return out; };
+    const OFF = full ? [[0, 0], [0.37, -0.29], [-0.41, 0.36], [0.6, 0.6], [-0.6, -0.6]] : [[0, 0]]; let offK = 0;
+    const pt = (i, y) => { const o = OFF[offK]; return [(i % GW) * CELL + CELL / 2 + o[0], Math.max(0, top(i)) + y, ((i / GW) | 0) * CELL + CELL / 2 + o[1]]; };
+    const bake = typeof BARRIER_BAKE !== 'undefined' && BARRIER_BAKE[id], sig = this.sig();
+    const see = (a, b) => { const dx = b[0] - a[0], dy = b[1] - a[1], dz = b[2] - a[2], L = Math.hypot(dx, dy, dz); let hit = false;
+      World.march(a[0], a[1], a[2], dx / L, dy / L, dz / L, L, (i) => { if (World.ch[i] === 'R' && !(World.barrier[i] && World.barrierSolid(i))) return false; hit = true; return true; }); return !hit; };
+    const exitCell = (a, b, bit) => { const n = Math.ceil(Math.hypot(b[0] - a[0], b[2] - a[2]) / CELL * 3) + 1; for (let s2 = 1; s2 <= n; s2++) { const f = s2 / n, x = Math.floor((a[0] + (b[0] - a[0]) * f) / CELL), z = Math.floor((a[2] + (b[2] - a[2]) * f) / CELL); if (!World.inb(x, z)) return -1; const i = z * GW + x; if (!(World.buyFoot[i] & bit) && !(World.barrier[i] && World.barrierSolid(i))) return i; } return -1; };
+    let topSeen = 6;
+    if (bake && bake.sig === sig && !full) { for (const [i, b] of bake.v) addSeal(i, b, 'vision'); st.vision = bake.v.length; st.baked = true; }
+    else for (offK = 0; offK < OFF.length; offK++) for (let round = 0; round < 6; round++) {
+      let leaks = 0;
+      for (const [src, dst] of [[teams[0], teams[1]], [teams[1], teams[0]]]) {
+        const S = sample(src.bit), D = sample(dst.bit);
+        for (const si of S) for (const ey of Rk.eyes) { const a = pt(si, ey);
+          for (const di of D) for (const ty of (full ? [0.9, 1.2, 1.5, 1.75] : [0.9, 1.2, 1.7])) { const b = pt(di, ty); if (!see(a, b)) continue;
+            const e = exitCell(a, b, src.bit); if (e < 0) continue; leaks++; addSeal(e, src.bit, 'vision'); st.vision++; if (World.ch[e] === 'R') st.trees++;
+            topSeen = Math.max(topSeen, a[1] + 0.6, b[1] + 0.6); break; } }
+      }
+      if (!leaks) break;
+    }
+    { let maxEye = 6; for (let i = 0; i < N; i++) if (World.buyReach[i]) maxEye = Math.max(maxEye, Math.max(0, top(i)) + Rk.eyes[Rk.eyes.length - 1] + 0.4); World.barrierTop = Math.ceil(Math.max(topSeen, maxEye)); }
+    Object.assign(World.barriersUp, up0);
+    if (st.baked && bake.top) World.barrierTop = Math.max(World.barrierTop, bake.top);
+    st.sig = sig; st.visionCells = [...seals.entries()].filter(([, v]) => v[2] === 'vision').map(([i, v]) => [i, v[0]]);
+    st.seals = seals.size; st.top = World.barrierTop; st.reachAbil = +Rk.abil.toFixed(2); st.reachFoot = +Rk.foot.toFixed(2); st.ms = Math.round(performance.now() - t0);
+    this.cache[id] = { seals: [...seals.entries()].map(([i, v]) => [i, v[0], v[1]]), reach: World.buyReach.slice(), foot: World.buyFoot.slice(), top: World.barrierTop, stats: st };
+    this.stats[id] = st; return st;
+  },
+};
+
+// ============================================================ v36 BUY GUARD: runtime gate for anything that moves you without walking
+// Teleporter pads, ziplines, teleport abilities and placed utility are checked against the team's buy footprint while its
+// barrier stands; a per-frame safety net snaps anyone who still ends up outside it (any future ability, any bug) back to the
+// last point they legitimately stood on.
+const BuyGuard = {
+  stats: { denied: 0, snaps: 0 },
+  bit(ag) { const s = G.mode && G.mode.sideOf ? G.mode.sideOf(ag) : null; return s === 'atk' ? 1 : s === 'def' ? 2 : 0; },
+  active(ag) { if (!G.mode || G.mode.phase !== 'buy' || !World.buyFoot) return 0; const b = this.bit(ag); if (!b) return 0; return (b === 1 ? World.barriersUp.atk : World.barriersUp.def) ? b : 0; },
+  cellOk(b, i) { return i >= 0 && i < GW * GH && !!(World.buyFoot[i] & b); },
+  moveOk(ag, i) { const b = this.active(ag); if (!b || this.cellOk(b, i)) return true; this.stats.denied++; return false; },
+  pointOk(ag, p) { const b = this.active(ag); if (!b) return true; const [x, z] = World.cellOf(p.x, p.z); if (World.inb(x, z) && this.cellOk(b, z * GW + x)) return true; this.stats.denied++; return false; },
+  zipOk(ag, Z) { const b = this.active(ag); if (!b) return true; for (const p of Z.pts) { const [x, z] = World.cellOf(p.x, p.z); if (!World.inb(x, z) || !this.cellOk(b, z * GW + x)) { this.stats.denied++; return false; } } return true; },
+  update() {
+    if (!G.mode || G.mode.phase !== 'buy') return;
+    for (const a of G.agents) { if (!a.alive) continue; const b = this.active(a); if (!b) continue;
+      const [x, z] = World.cellOf(a.pos.x, a.pos.z), i = World.inb(x, z) ? z * GW + x : -1;
+      if (this.cellOk(b, i)) { (a._bgPos || (a._bgPos = new V3())).copy(a.pos); a._bgOk = true; }
+      else if (a._bgOk) { a.pos.copy(a._bgPos); a.vel.set(0, 0, 0); a.zip = null; this.stats.snaps++; } }
+  },
+};
+// ============================================================ v36 BARRIER BAKE (generated by the bake script — do not edit)
+// Vision seals from the dense offline sweep (every reachable cell, five sample offsets per cell, four eye heights incl. the
+// full jump + ability chain). Keyed by a fingerprint of each map's layout; a mismatch falls back to the runtime pass.
+const BARRIER_BAKE = {"saltworks":{"sig":"7mred9:46x56","top":13,"v":[[1771,1]]},"kiln":{"sig":"vu0ns0:56x52","top":13,"v":[]},"lattice":{"sig":"jc6app:48x52","top":12,"v":[[2129,1],[2130,1],[2131,1],[2132,1],[2177,1],[2080,1],[2219,1]]},"meridian":{"sig":"4i60nw:46x56","top":12,"v":[[1861,1],[1816,1]]},"solace":{"sig":"8ycelp:48x58","top":13,"v":[]},"dunehold":{"sig":"1x70wqh:48x56","top":13,"v":[[1161,2]]},"cloister":{"sig":"11n22k4:56x54","top":14,"v":[[2208,1],[2209,1],[2210,1],[2211,1],[2212,1],[2269,1],[2270,1],[2648,1],[2649,1],[2650,1],[2651,1],[2652,1],[2653,1],[2609,1],[2666,1],[2667,1],[2668,1],[2669,1],[2670,1],[2671,1],[2672,1],[2673,1],[2674,1],[2600,1],[2618,1],[2646,1],[2207,1],[2598,1]]},"highrise":{"sig":"1kq4uov:48x58","top":13,"v":[[2277,1],[2419,1],[2421,1],[2418,1],[2465,1],[2463,1]]},"grove":{"sig":"16o4h7a:56x54","top":14,"v":[[2211,1],[2213,1],[2598,1],[2599,1],[2600,1],[2601,1],[2606,1],[2607,1],[2608,1],[2609,1],[2646,1],[2647,1],[2648,1],[2649,1],[2651,1],[2650,1],[2652,1],[2653,1],[2545,1],[2666,1],[2667,1],[2668,1],[2669,1],[2670,1],[2671,1],[2672,1],[2673,1],[2674,1],[2550,1],[2156,1]]},"afterglow":{"sig":"8z7iyt:48x56","top":12,"v":[[1893,1],[1894,1]]},"shoreline":{"sig":"pog2oq:52x58","top":14,"v":[[2621,1],[2622,1],[2716,1],[2666,1],[2667,1],[2670,1],[2686,1],[2688,1],[2689,1],[2672,1],[2687,1],[2668,1],[2671,1],[2669,1]]},"permafrost":{"sig":"1p7lukc:48x58","top":13,"v":[[1929,1],[1930,1],[1979,1],[1957,1],[2004,1],[1928,1],[1984,1],[1985,1],[1986,1],[1987,1],[1988,1],[1989,1],[1990,1],[1991,1],[1992,1],[1994,1],[1996,1],[1997,1],[1998,1],[1999,1],[1993,1],[2078,1],[2047,1],[2430,1],[2428,1],[2429,1],[1995,1],[2463,1],[2006,1],[2096,1]]},"abyssal":{"sig":"1hfhzh4:48x58","top":13,"v":[[1989,1],[1991,1]]},"faultline":{"sig":"6ys8bh:59x50","top":13,"v":[[382,1],[383,1],[316,1],[317,1],[384,1],[377,1],[385,1],[386,1],[379,1],[387,1],[378,1],[380,1],[388,1],[381,1],[330,1],[331,1],[332,1],[313,1],[253,1],[314,1],[315,1],[333,1],[334,1],[276,1],[2618,1],[2562,1],[2559,1],[2563,1],[2561,1],[2564,1],[2565,1],[2566,1],[2567,1],[2568,1],[2569,1],[2570,1],[2571,1],[2572,1],[2614,1],[2613,1],[2615,1],[2616,1],[2631,1],[2632,1],[2633,1],[2634,1],[2635,1],[2636,1],[2637,1],[2617,1],[2560,1]]}};
 // ============================================================ MAP MECHANICS: ziplines / rope ascenders, switch doors, raised platforms
 // Map defs may carry:
 //   zips:  [{ a:[x,z], b:[x,z], y?:cruise feet height, oneway?:true }]  — ride with F; vertical ropes are zips between a floor cell and an
@@ -4983,6 +5173,7 @@ const Mech = {
   },
   attach(ag, Z, dir) {
     if (!ag.alive || ag.zip) return false;
+    if (!BuyGuard.moveOk(ag, dir > 0 ? Z.ib : Z.ia) || !BuyGuard.zipOk(ag, Z)) return false;   // v36: no riding out of your buy zone
     ag.zip = { Z, dir, s: dir > 0 ? 0 : Z.L, t0: G.time }; ag.vel.set(0, 0, 0); ag.grounded = false; ag.planting = ag.defusing = 0;
     Sfx.ability('dash', ag.pos); G.noise(ag, ag.pos, 26, 'zip');
     return true;
@@ -5655,9 +5846,13 @@ const R = {
     const pm = add(Pl, this.poolMat, null, { cast: false, noShadow: true }); if (pm) pm.renderOrder = 1;
     const sm = new THREE.Mesh(S.geometry(false), signMat); sm.userData.noShadow = true; sm.renderOrder = 2; this.mapGroup.add(sm);
     this.barrierMeshes = [];
-    for (const [ch, kind, col] of [['=', 'atk', 0xff5a6e], ['-', 'def', 0x4ab8ff]]) {
-      // one seamless, opaque, full-height wall per barrier: cells merged edge to edge and sunk into the neighbouring walls
-      const B = new GeoBuf(); for (const [bx, bz] of World.cellsOfChar(ch)) B.box(bx * CELL - 0.02, bz * CELL - 0.02, bx * CELL + CELL + 0.02, bz * CELL + CELL + 0.02, 0, 6.02, col, 0);
+    for (const [bit, kind, col] of [[1, 'atk', 0xff5a6e], [2, 'def', 0x4ab8ff]]) {
+      // one seamless, opaque wall per barrier: cells merged edge to edge and sunk into the neighbouring walls. v36: built from the
+      // barrier bits (ring cells + seal caps on props / windows / trees / wall tops), each column from its base (the prop or wall
+      // top it caps; floor for trees) up to the map's barrier top, stopped under a lintel or roof
+      const B = new GeoBuf(), topY = World.barrierTop || 6;
+      for (let i = 0; i < GW * GH; i++) { if (!(World.barrier[i] & bit)) continue; const bx = i % GW, bz = (i / GW) | 0, base = World.sealBase[i] || 0, cl = World.ceil[i], y1 = cl > 0 && !World.h[i] ? cl : topY;
+        if (y1 - base < 0.05) continue; B.box(bx * CELL - 0.02, bz * CELL - 0.02, bx * CELL + CELL + 0.02, bz * CELL + CELL + 0.02, base, y1 + 0.02, col, 0); }
       if (!B.count()) continue;
       const m = new THREE.Mesh(B.geometry(false), this.barrierMaterial(col));
       m.userData = { kind, noShadow: true }; this.mapGroup.add(m); this.barrierMeshes.push(m);
@@ -7491,7 +7686,7 @@ class Agent {
     this.rewind = null; this.railstorm = null; this.drone = null; this.planting = 0; this.defusing = 0; this.ads = false; this.abilState = {};
     this.weapons.ult = null;
     if (!this.weapons[this.slot]) this.slot = this.weapons.primary ? 'primary' : 'secondary';
-    this.model.visible = true; this.model.rotation.set(0, 0, 0);
+    this.model.visible = true; this.model.rotation.set(0, 0, 0); this.model.scale.set(1, 1, 1); this.finisher = null;   // v36: a finisher may have dissolved the last body
     this.roundKills = 0; this.roundDmg = 0;
     if (typeof CombatLog !== 'undefined') CombatLog.spawned(this);   // v35: a new life for the combat report
   }
@@ -7682,6 +7877,7 @@ function traceBullet(shooter, o, d, def, range, dmgScale, quietFx) {
   const res = World.march(o.x, o.y, o.z, d.x, d.y, d.z, maxT, (i, tin) => {
     const m = World.mat[i];
     if (!firstWall) firstWall = { i, t: tin };
+    if (World.barrier[i] && World.barrierSolid(i)) { blockT = tin; blockCell = i; return true; }   // v36: buy barriers stop every bullet
     if (m === MAT.solid || (def.pen || 0) < m || pens >= 2) { blockT = tin; blockCell = i; return true; }
     factor *= m === MAT.wood ? 0.75 : m === MAT.stone ? 0.55 : 0.45; pens++;
     return false;
@@ -7897,7 +8093,8 @@ function killAgent(victim, attacker, info) {
       if (wiped && attacker.roundKills >= foes.length) { info = Object.assign({}, info, { ace: true }); UI.ace(attacker); }
       else if (wiped && foes.every(a => a.killedBy && a.killedBy.team === attacker.team) && new Set(foes.map(a => a.killedBy)).size === foes.length) { info = Object.assign({}, info, { teamAce: true }); G.later(0.4, () => UI.teamAce(attacker.team)); }
     }
-    if (attacker.isHuman) { const fin = G.mode.teamBased && !G.agents.some(a => a.alive && a.team === victim.team && a !== victim); UI.killBanner(victim, Object.assign({}, info, { final: fin })); if (!(info && info.ace) && attacker._skinCry !== G.time) Sfx.multiKill(Math.min(4, attacker.roundKills)); }
+    if (attacker.isHuman) {   // v36: the banner itself is drawn by KillBanner from the CombatLog kill event
+      if (!(info && info.ace) && attacker._skinCry !== G.time) Sfx.multiKill(Math.min(4, attacker.roundKills)); }
   }
   // round modes leave the primary on the floor for anyone to pick up; Deathmatch never drops guns (everyone respawns with their
   // own loadout, so ground weapons would only be clutter and leaked meshes)
@@ -7973,11 +8170,16 @@ const CombatLog = {
     if (fair) { const seen = new Set(); for (let i = this.hits.length - 1; i >= 0; i--) { const h = this.hits[i]; if (t - h.t > this.ASSIST_S) break;
       if (h.vic === victim && h.att && h.att !== attacker && h.att.team === attacker.team && !seen.has(h.att)) { seen.add(h.att); assists.push(h.att); } } }
     const last = this.lastHit(victim), r = { t, round: this.round, vic: victim, att: attacker || null, src: (info && info.weapon) || (last && last.src) || '—', wid: (info && info.wid) || null,
-      part: info && info.part === 'head' ? 'head' : info && info.part === 'leg' ? 'legs' : 'body', wall: !!(info && info.wallbang), assists };
+      part: info && info.part === 'head' ? 'head' : info && info.part === 'leg' ? 'legs' : 'body', wall: !!(info && info.wallbang), assists,
+      // v36: what the kill banner / finisher need, captured at the moment of the kill
+      kind: this.kind(info), ace: !!(info && info.ace), roundKills: fair ? attacker.roundKills : 0, kills: fair ? attacker.kills : 0,
+      final: !!(fair && G.mode && G.mode.teamBased && !G.agents.some(a => a.alive && a.team === victim.team && a !== victim && !a.rangeProp)),
+      skin: fair ? this.skinOf(attacker, info) : null };
     this.kills.push(r); this.stats.kills++;
     this.emit('kill', r); if (victim === G.player) this.emit('death', victim, r);
     return r;
   },
+  skinOf(att, info) { const w = info && info.wid; if (!w || !att.weapons) return null; for (const k in att.weapons) { const x = att.weapons[k]; if (x && x.id === w) return x.skin || null; } return null; },
   lastHit(victim) { for (let i = this.hits.length - 1; i >= 0; i--) if (this.hits[i].vic === victim) return this.hits[i]; return null; },
   spawned(ag) { this.lifeStart.set(ag, G.time); this.emit('spawn', ag); },
   newRound(n) { this.round = n; this.hits.length = 0; this.kills.length = 0; this.lifeStart.clear(); this.stats.resets++; this.emit('round', n); },
@@ -8049,6 +8251,7 @@ const Abil = {
     if (ag.abilState[key] && K.reactivate) { if (ag.alive && !(ag.st.detainU > G.time)) { K.reactivate.call(this, ag, def, key); return true; } return false; }
     const deadOk = !ag.alive && G.mode.teamBased && G.mode.phase !== 'end' && ((def.p && def.p.dead && K === KINDS.smokeSky) || K === KINDS.secondLife) && !(ag.st.suppU > G.time);
     if (!(deadOk || this.canUse(ag)) || !this.ready(ag, key)) { if (ag.isHuman) { Sfx.ui('deny'); if (ag.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); } return false; }
+    if (target && target.x != null && !BuyGuard.pointOk(ag, target)) { if (ag.isHuman) { Sfx.ui('deny'); UI.toast('Utility stays behind your barrier until the round starts', 'enemy'); } return false; }   // v36
     this._cast = { ag, key }; this._opts = opts || null; let ok; try { ok = K.use.call(this, ag, def.p, target, def, key); } finally { this._cast = null; this._opts = null; }
     if (ok === false) { if (ag.isHuman) Sfx.ui('deny'); return false; }
     if (key === 'X') ag.ultPts = 0; else ag.charges[key]--;
@@ -8260,7 +8463,7 @@ const Abil = {
       p.vel.y -= p.g * dt;
       const np = p.pos.clone().addScaledVector(p.vel, dt);
       let landed = false;
-      const [cx, cz] = World.cellOf(np.x, np.z), h = World.heightAt(cx, cz);
+      const [cx, cz] = World.cellOf(np.x, np.z), h = World.solidAt(cx, cz);   // v36: barriers stop thrown utility
       if (np.y < h) {
         if (p.stick || p.impact) landed = true;
         else {
@@ -8492,7 +8695,7 @@ const KINDS = {
     const pt = this.aimPoint(ag, p.range, tgt); if (pt.distanceTo(ag.pos) < 1.5) return false;
     const mk = new THREE.Mesh(new THREE.CylinderGeometry(0.6, 0.6, 0.05, 20), new THREE.MeshBasicMaterial({ color: ag.A.accent, transparent: true, opacity: 0.6 })); mk.position.copy(pt).setY(0.04); R.scene.add(mk);
     Sfx.ability('tp', ag.pos); this.selfTimer(ag, p.windup);
-    G.later(p.windup, () => { R.scene.remove(mk); if (!ag.alive) return; FX.emit('glow', tmpA.copy(ag.pos).setY(1), { n: 18, speed: 2, life: 0.5, color: ag.A.accent, g: 0 }); ag.pos.copy(pt); ag.vel.set(0, 0, 0); if (ag.ai) ag.ai.path = null; Sfx.ability('tp', pt); });
+    G.later(p.windup, () => { R.scene.remove(mk); if (!ag.alive || !BuyGuard.pointOk(ag, pt)) return; FX.emit('glow', tmpA.copy(ag.pos).setY(1), { n: 18, speed: 2, life: 0.5, color: ag.A.accent, g: 0 }); ag.pos.copy(pt); ag.vel.set(0, 0, 0); if (ag.ai) ag.ai.path = null; Sfx.ability('tp', pt); });
   } },
   nearsight: { use(ag, p, tgt) { if (tgt) ag.yaw = this.yawTo(ag, tgt); this.sweep(ag, { len: p.len, w: p.w, near: p.dur, speed: 24 }, ag.A.abilities.Q.name); } },
   shadowSmoke: { use(ag, p, tgt) {
@@ -8508,7 +8711,7 @@ const KINDS = {
     if (!pt) { const L = World.siteLetters || []; const S = World.sites[pick(L)]; if (!S) return false; pt = cpos(S.stage && S.stage.length ? pick(S.stage) : S.center); }
     const shade = new THREE.Mesh(new THREE.SphereGeometry(0.5, 12, 8), new THREE.MeshBasicMaterial({ color: ag.A.accent, transparent: true, opacity: 0.5 })); shade.position.copy(pt).setY(1.2); R.scene.add(shade);
     ag.st.phaseU = G.time + p.channel; ag.st.invisU = G.time + p.channel; this.selfTimer(ag, p.channel); Sfx.ability('ult', pt);
-    G.later(p.channel, () => { R.scene.remove(shade); if (!ag.alive) return; ag.pos.copy(pt); ag.vel.set(0, 0, 0); if (ag.ai) ag.ai.path = null; FX.emit('glow', tmpA.copy(pt).setY(1), { n: 30, speed: 2.5, life: 0.7, color: ag.A.accent, g: 0 }); Sfx.ability('tp', pt); });
+    G.later(p.channel, () => { R.scene.remove(shade); if (!ag.alive || !BuyGuard.pointOk(ag, pt)) return; ag.pos.copy(pt); ag.vel.set(0, 0, 0); if (ag.ai) ag.ai.path = null; FX.emit('glow', tmpA.copy(pt).setY(1), { n: 30, speed: 2.5, life: 0.7, color: ag.A.accent, g: 0 }); Sfx.ability('tp', pt); });
   } },
   // Fray (≈ Yoru)
   decoy: { use(ag, p) { if (this.alt) p = Object.assign({}, p, { speed: 0 });   // alt fire: a stationary echo
@@ -8657,7 +8860,7 @@ const KINDS = {
       const o = this._opts, yaw = tgt ? this.yawTo(ag, tgt) : ag.yaw, d = o && o.dir ? o.dir.clone().setY(0).normalize() : new V3(-Math.sin(yaw), 0, -Math.cos(yaw)), segs = [];
       let a = ag.pos.clone().setY(0).addScaledVector(d, 1.2), len = p.len;
       if (o && o.dir && tgt) { a = tgt.clone().setY(0); if (p.mega) { while (a.x > 0 && a.z > 0 && a.x < GW * CELL && a.z < GH * CELL) a.addScaledVector(d, -2); a.addScaledVector(d, 2); len = Math.hypot(GW, GH) * CELL; } }   // pad: the drawn line, edge to edge for a map-wide wall
-      for (let s = 0; s < len; s += 2) { const b = a.clone().addScaledVector(d, 2); if (b.x < 0 || b.z < 0 || b.x > GW * CELL || b.z > GH * CELL) break; segs.push([a, b]); a = b; }
+      for (let s = 0; s < len; s += 2) { const b = a.clone().addScaledVector(d, 2); if (b.x < 0 || b.z < 0 || b.x > GW * CELL || b.z > GH * CELL) break; { const [bx, bz] = World.cellOf(b.x, b.z), bi = bz * GW + bx; if (World.inb(bx, bz) && World.barrier[bi] && World.barrierSolid(bi)) break; } segs.push([a, b]); a = b; }   // v36: walls stop at a standing barrier
       if (!segs.length) return false;
       this.curtain(segs, ag, p.dur, { color: p.color, slow: p.slow, decay: p.decay, mega: p.mega, name: ag.A.name });
       if (p.twin) { const off = new V3(-d.z, 0, d.x).multiplyScalar(p.twin); this.curtain(segs.map(([a, b]) => [a.clone().add(off), b.clone().add(off)]), ag, p.dur, { color: p.color, name: ag.A.name }); for (const sg of segs) { sg[0].addScaledVector(off, -0); } }
@@ -8667,7 +8870,7 @@ const KINDS = {
     use(ag, p, tgt) {
       const yaw = tgt ? this.yawTo(ag, tgt) : ag.yaw, d = new V3(-Math.sin(yaw), 0, -Math.cos(yaw)), segs = [];
       let a = ag.pos.clone().setY(0).addScaledVector(d, 1.2);
-      for (let i = 0; i < p.len; i++) { const q = a.clone().addScaledVector(d, 1.8), [cx, cz] = World.cellOf(q.x, q.z); if (World.heightAt(cx, cz) > 1.5) break; segs.push([a, q]); a = q; }
+      for (let i = 0; i < p.len; i++) { const q = a.clone().addScaledVector(d, 1.8), [cx, cz] = World.cellOf(q.x, q.z); if (World.solidAt(cx, cz) > 1.5) break; segs.push([a, q]); a = q; }
       if (!segs.length) return false;
       const w = this.curtain(segs, ag, p.dur, { color: 0xff6a2a, fire: true });
     }
@@ -8750,7 +8953,7 @@ const KINDS = {
       const pos = ag.pos.clone().setY(0.15).addScaledVector(dir, 0.8); mesh.position.copy(pos); mesh.rotation.y = yaw;
       this.device({ kind: 'crawler', owner: ag, pos, mesh, hp: 60, radius: 0.35, until: G.time + p.dur, tick: (d, dt) => {
         const np = d.pos.clone().addScaledVector(dir, p.speed * dt), [cx, cz] = World.cellOf(np.x, np.z);
-        if (World.heightAt(cx, cz) > 0.5) { this.killDevice(d); return; }
+        if (World.solidAt(cx, cz) > 0.5) { this.killDevice(d); return; }
         d.pos.copy(np); d.mesh.position.copy(np);
         for (const a of G.agents) if (this.isEnemy(a, ag) && Math.hypot(a.pos.x - d.pos.x, a.pos.z - d.pos.z) < 3.5 && World.los(tmpA.copy(d.pos).setY(0.6), a.eye(tmpB))) { this.applyFx(a, ag, { daze: p.daze, reveal: 3 }); Sfx.boom(d.pos, false); FX.emit('glow', d.pos, { n: 20, speed: 4, color: ag.A.accent, g: 0 }); this.killDevice(d); return; }
       } });
@@ -9787,7 +9990,8 @@ const Brain = {
           const grp = assign[s];
           if (s === 'M') { grp.forEach((b, i) => { const m = World.mid[i % World.mid.length]; b.ai.hold = { site: 'M', pos: cpos(m.p), look: cpos(m.look).setY(1.45) }; }); continue; }
           const S = this.site(s), hs = this.crossfire(S, grp.length, Math.random() < D.crossfire);
-          grp.forEach((b, i) => { const h = hs[i]; b.ai.hold = { site: s, pos: cpos(h.p), look: cpos(h.look).setY(1.45), perch: !!h.perch }; });
+          grp.forEach((b, i) => { let h = hs[i]; if (!h || !h.p) { Brain.holdFallbacks = (Brain.holdFallbacks || 0) + 1; h = (S && S.holds && S.holds.find(x => x && x.p)) || { p: S.center, look: S.center }; }
+            b.ai.hold = { site: s, pos: cpos(h.p), look: cpos(h.look).setY(1.45), perch: !!h.perch }; });
         }
         this.plans[team] = plan;
       }
@@ -11504,7 +11708,7 @@ const MMProj = {
     for (let i = 0, t = 0; i < 90; i++, t += dt) {
       if (t >= fuse) break;
       if (lat) vel.addScaledVector(lat, dt);
-      vel.y -= g * dt; const np = pos.clone().addScaledVector(vel, dt), [cx, cz] = World.cellOf(np.x, np.z), h = World.heightAt(cx, cz);
+      vel.y -= g * dt; const np = pos.clone().addScaledVector(vel, dt), [cx, cz] = World.cellOf(np.x, np.z), h = World.solidAt(cx, cz);
       let landed = false;
       if (np.y < h) { if (ex.stick || ex.impact) landed = true; else { const [ox, oz] = World.cellOf(pos.x, pos.z); if (pos.y >= h - 0.01 && h < 6 && h > 0) { vel.y = -vel.y * 0.4; np.y = h + 0.01; } else { if (ox !== cx) vel.x *= -0.5; if (oz !== cz) vel.z *= -0.5; if (ox === cx && oz === cz) { vel.x *= -0.5; vel.z *= -0.5; } np.copy(pos); } if (b-- <= 0) landed = true; } }
       if (np.y <= 0.05) { np.y = 0.05; if (ex.stick || ex.impact || b <= 0 || Math.abs(vel.y) < 2) landed = true; else { vel.y = -vel.y * 0.35; vel.x *= 0.6; vel.z *= 0.6; b--; } }
@@ -11521,7 +11725,7 @@ const MMProj = {
       const q = a.clone().addScaledVector(d, s), [cx, cz] = World.cellOf(q.x, q.z);
       if (q.x < 0 || q.z < 0 || q.x > GW * CELL || q.z > GH * CELL) break;
       const solid = World.heightAt(cx, cz) > 1.5;
-      if (solid && !thru) break;
+      if ((solid && !thru) || (World.inb(cx, cz) && World.barrier[cz * GW + cx] && World.barrierSolid(cz * GW + cx))) break;   // v36: nothing pierces a buy barrier
       if (cur === null || inside !== solid) { if (cur) out.push(cur); cur = { t: solid ? 'pierce' : 'wall', a: q.clone(), b: q.clone() }; inside = solid; } else cur.b.copy(q);
     }
     if (cur) out.push(cur);
@@ -12783,6 +12987,85 @@ const Orbs = {
   },
   drop(ag) { const o = ag.ai.orbGoal; if (o && o.claim[ag.team] === ag) o.claim[ag.team] = null; ag.ai.orbGoal = null; },
 };
+// ============================================================ v36 FINISHERS (world effect on the round's final kill)
+// A weapon skin at its top level (4) carries a finisher: when its holder lands the last kill of a round, the victim's body
+// gets that skin line's send-off, visible to everyone in the match, and the kill banner is stamped FINISHER.
+// Every finisher stamps the line's emblem on the ground as a glowing sigil; the body treatment follows the line's family:
+//   rift    (vortex / float / ripple lines)   the body sinks through a portal disc into a column of light
+//   ascend  (ring / spin / flip lines)         the body is lifted up a beam and dissolves at the top
+//   shatter (shake / shatter / dash / gear)    the body bursts into shards in the line's colours
+//   glitch  (glitch / led / eq / flicker)      the body flickers, slices and drops out of existence
+//   sigil   (drop / crown lines, and any other) a hologram of the emblem rises and turns over the body as it fades
+// Fed by CombatLog 'kill' events; drives only its own meshes plus the corpse's transform (scale / height), so the game state,
+// hit detection and the corpse's position on the map are untouched. Bodies come back at the next spawn.
+const Finishers = {
+  D: 2.6, live: [], tex: {}, stats: { played: 0 },
+  STYLE: { vortex: 'rift', float: 'rift', ripple: 'rift', ring: 'ascend', spin: 'ascend', drop: 'sigil', flip: 'ascend', shake: 'shatter', shatter: 'shatter', dash: 'shatter', gear: 'shatter', glitch: 'glitch', led: 'glitch', eq: 'glitch', flicker: 'glitch' },
+  init() { CombatLog.on('kill', k => { if (this.eligible(k)) this.play(k); }); },
+  eligible(k) { return !!(k && k.final && k.att && k.att !== k.vic && k.skin && k.skin.lvl >= 4 && k.kind !== 'ability' && SKINS[k.skin.id] && G.mode && G.mode.teamBased); },
+  hex(v) { return '#' + ((v >>> 0) & 0xffffff).toString(16).padStart(6, '0'); },
+  // the line emblem in a ring, drawn once per line + variant onto a canvas texture
+  emblemTex(sk) {
+    const line = SKINS[sk.id].line, key = line + ':' + (sk.v | 0); if (this.tex[key]) return this.tex[key];
+    const pal = Skins.palette(sk), c1 = this.hex(pal.p[2]), c2 = this.hex(pal.tr), c4 = this.hex(pal.p[3]), th = KB_THEMES[line];
+    const cv = document.createElement('canvas'); cv.width = cv.height = 256; const x = cv.getContext('2d'), T = new THREE.CanvasTexture(cv);
+    const ring = () => { x.clearRect(0, 0, 256, 256); x.strokeStyle = c1; x.lineWidth = 7; x.shadowColor = c1; x.shadowBlur = 18; x.beginPath(); x.arc(128, 128, 112, 0, Math.PI * 2); x.stroke();
+      x.lineWidth = 3; for (let i = 0; i < 5; i++) { const a0 = -Math.PI / 2 + i * Math.PI * 2 / 5 - 0.42; x.beginPath(); x.arc(128, 128, 124, a0, a0 + 0.84); x.stroke(); } };
+    ring(); T.needsUpdate = true;
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="150" height="150"><style>.a{fill:${c1}}.b{fill:${c2}}.k{fill:${c4}}.s{fill:none;stroke:${c1};stroke-width:3;stroke-linecap:round}</style>${th ? th.svg : KillBanner.lineGlyph(line)}</svg>`;
+    const img = new Image(); img.onload = () => { ring(); x.shadowBlur = 24; x.drawImage(img, 53, 53, 150, 150); T.needsUpdate = true; }; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg);
+    return (this.tex[key] = { T, c1: pal.p[2], c2: pal.tr });
+  },
+  // vertical fade for light columns: bright at the floor, gone at the top, with faint streaks
+  fadeTex() {
+    if (this._fade) return this._fade;
+    const cv = document.createElement('canvas'); cv.width = 64; cv.height = 128; const x = cv.getContext('2d'), g = x.createLinearGradient(0, 128, 0, 0);
+    g.addColorStop(0, 'rgba(255,255,255,0.9)'); g.addColorStop(0.35, 'rgba(255,255,255,0.35)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(0, 0, 64, 128);
+    x.globalCompositeOperation = 'destination-out'; for (let i = 0; i < 9; i++) { x.fillStyle = 'rgba(0,0,0,0.55)'; x.fillRect(i * 7 + 2, 0, 3, 128); }
+    return (this._fade = new THREE.CanvasTexture(cv));
+  },
+  addMesh(f, m) { m.frustumCulled = false; m.userData.noShadow = true; R.scene.add(m); f.meshes.push(m); return m; },
+  play(k) {
+    const v = k.vic, sk = k.skin, line = SKINS[sk.id].line, th = KB_THEMES[line], type = this.STYLE[th ? th.anim : ''] || 'sigil';
+    const E = this.emblemTex(sk), p = (v.corpse || v.pos).clone(), f = { v, type, t0: G.time, p, meshes: [], shards: null, c1: E.c1, c2: E.c2 };
+    const add = (geo, mat) => this.addMesh(f, new THREE.Mesh(geo, mat));
+    const glow = (c, o) => new THREE.MeshBasicMaterial({ color: c, transparent: true, opacity: o, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide });
+    // ground sigil (every finisher)
+    f.sigil = add(new THREE.PlaneGeometry(3.4, 3.4), new THREE.MeshBasicMaterial({ map: E.T, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, opacity: 0 }));
+    f.sigil.rotation.x = -Math.PI / 2; f.sigil.position.set(p.x, 0.04, p.z);
+    if (type === 'rift' || type === 'ascend') { const mat = glow(E.c1, 0); mat.map = this.fadeTex(); f.col = add(new THREE.CylinderGeometry(type === 'rift' ? 1.1 : 0.55, type === 'rift' ? 1.4 : 0.7, type === 'rift' ? 3.2 : 14, 24, 1, true), mat); f.col.position.set(p.x, type === 'rift' ? 1.6 : 7, p.z); }
+    if (type === 'sigil') { f.holo = add(new THREE.PlaneGeometry(2.2, 2.2), new THREE.MeshBasicMaterial({ map: E.T, transparent: true, blending: THREE.AdditiveBlending, depthWrite: false, side: THREE.DoubleSide, opacity: 0 })); f.holo.position.set(p.x, 1.2, p.z); }
+    if (type === 'glitch') { f.slices = []; for (let i = 0; i < 6; i++) { const s = add(new THREE.BoxGeometry(1.4, 0.06, 0.06), glow(i % 2 ? E.c2 : E.c1, 0)); s.position.set(p.x, 0.3 + i * 0.28, p.z); f.slices.push(s); } }
+    if (type === 'shatter') { const g = this._shardG || (this._shardG = new THREE.TetrahedronGeometry(0.12)); f.shards = [];
+      for (let i = 0; i < 28; i++) { const s = add(g, new THREE.MeshBasicMaterial({ color: i % 3 ? E.c1 : E.c2, transparent: true, opacity: 0 })); s.position.set(p.x + rand(-0.3, 0.3), 0.3 + Math.random() * 1.4, p.z + rand(-0.3, 0.3));
+        s.userData.v = new V3(rand(-4, 4), rand(2, 7), rand(-4, 4)); s.userData.w = new V3(rand(-9, 9), rand(-9, 9), rand(-9, 9)); f.shards.push(s); } }
+    v.finisher = f; this.live.push(f); this.stats.played++;
+    R.flashLight && R.flashLight(new V3(p.x, 1.2, p.z), E.c1, 4, 0.5, 14); Sfx.ability('ult', p);
+  },
+  // after the agents' model update each step: the effect owns the corpse transform while it plays
+  update(dt) {
+    if (!this.live.length) return;
+    for (let n = this.live.length - 1; n >= 0; n--) {
+      const f = this.live[n], u = (G.time - f.t0) / this.D, e = clamp(u, 0, 1), m = f.v.model, ease = x => x * x * (3 - 2 * x);
+      const inA = clamp(u / 0.12, 0, 1), outA = 1 - clamp((u - 0.8) / 0.2, 0, 1), a = inA * outA;
+      f.sigil.material.opacity = 0.95 * a; f.sigil.rotation.z += dt * 0.6; f.sigil.scale.setScalar(0.6 + 0.4 * ease(inA));
+      if (f.v.alive) { this.end(f, n); continue; }
+      if (f.type === 'rift') { const k = ease(clamp((u - 0.15) / 0.6, 0, 1)); m.position.y -= k * 2.1; f.col.material.opacity = 0.32 * a; f.col.rotation.y += dt * 2; if (k >= 1) m.scale.setScalar(0.0001);
+        if (Math.random() < dt * 30) FX.emit('glow', tmpA.set(f.p.x + rand(-1, 1), 0.2, f.p.z + rand(-1, 1)), { n: 1, speed: 0.6, up: 2.5, life: 0.6, size: 0.12, color: f.c1, g: -2 }); }
+      else if (f.type === 'ascend') { const k = ease(clamp((u - 0.1) / 0.7, 0, 1)); m.position.y += k * 2.6; m.rotation.x *= 1 - k; f.col.material.opacity = 0.3 * a; const sc = 1 - clamp((u - 0.6) / 0.25, 0, 1); m.scale.setScalar(Math.max(0.0001, sc));
+        if (Math.random() < dt * 24) FX.emit('glow', tmpA.set(f.p.x + rand(-0.4, 0.4), 0.5 + k * 2.6, f.p.z + rand(-0.4, 0.4)), { n: 1, speed: 0.4, up: 3, life: 0.7, size: 0.14, color: f.c2, g: -3 }); }
+      else if (f.type === 'shatter') { m.scale.setScalar(u < 0.12 ? 1 + u * 0.8 : 0.0001);
+        for (const s of f.shards) { if (u < 0.12) continue; s.material.opacity = outA; const d = s.userData; d.v.y -= 14 * dt; s.position.addScaledVector(d.v, dt); if (s.position.y < 0.06) { s.position.y = 0.06; d.v.multiplyScalar(0.5); d.v.y = Math.abs(d.v.y) * 0.4; } s.rotation.x += d.w.x * dt; s.rotation.y += d.w.y * dt; } }
+      else if (f.type === 'glitch') { const on = u < 0.7 && Math.random() > 0.45; m.scale.setScalar(on ? 1 : 0.0001); if (on) m.position.x += rand(-0.18, 0.18);
+        for (const s of f.slices) { s.material.opacity = u < 0.75 ? (Math.random() > 0.5 ? 0.9 : 0.1) * inA : 0; s.position.x = f.p.x + rand(-0.4, 0.4); }
+        if (u >= 0.7 && !f.burst) { f.burst = true; FX.emit('glow', tmpA.set(f.p.x, 0.8, f.p.z), { n: 22, speed: 3, life: 0.5, size: 0.1, color: f.c1, g: 0 }); } }
+      else { const k = ease(e); f.holo.material.opacity = 0.9 * a; f.holo.position.y = 1.1 + k * 2.2; f.holo.rotation.y += dt * 2.4; m.scale.set(1, Math.max(0.0001, 1 - clamp((u - 0.2) / 0.5, 0, 1)), 1); }
+      if (u >= 1) { m.scale.setScalar(0.0001); this.end(f, n); }
+    }
+  },
+  end(f, n) { for (const m of f.meshes) { R.scene.remove(m); if (m.geometry !== this._shardG) m.geometry.dispose(); m.material.dispose(); } f.meshes = []; if (n >= 0) this.live.splice(n, 1); },
+  clear() { for (const f of this.live) this.end(f, -1); this.live = []; },
+};
 // ============================================================ CALLOUT WHEEL (T) + SQUAD ORDERS
 // Hold T: a radial wheel opens; flick the mouse toward a slice and release to send it (resting on a ▸ slice opens its page).
 // Tap T: the wheel stays open — click a slice, 1–9 picks directly, right-click / Esc goes back or closes. You keep walking,
@@ -13812,6 +14095,8 @@ const UI = {
     if (typeof Placement !== 'undefined' && Placement.mode) Placement.close();
     if (typeof AbilHand !== 'undefined' && AbilHand.key) AbilHand.cancel(G.player, true); { const h = $('abilhint'); if (h) h.classList.add('hidden'); }
     if (typeof CombatReport !== 'undefined') CombatReport.hide();
+    if (typeof KillBanner !== 'undefined') KillBanner.clear();
+    if (typeof Finishers !== 'undefined') Finishers.clear();
     if (typeof AllyHUD !== 'undefined') AllyHUD.clear();
   },
   onPlayerRevive() { G.viewer = G.player; UI.toast('You were revived', 'ally'); CombatReport.hide(); },
@@ -14055,27 +14340,8 @@ Object.assign(UI, {
     const el = document.createElement('div'); el.className = 'cm'; el.innerHTML = html; const box = $('comms'); box.appendChild(el);
     while (box.children.length > 4) box.firstChild.remove(); setTimeout(() => el.classList.add('out'), 4500); setTimeout(() => el.remove(), 5200);
   },
-  killBanner(vic, info) {
-    const P = G.player, n = Math.min(5, P.roundKills), hs = info && info.part === 'head', el = $('killbanner'), ace = !!(info && info.ace);
-    el.style.setProperty('--acc', hs ? '#ffc93a' : P.A.cssAccent);
-    el.className = (hs ? 'hs ' : '') + 'tier' + n + (ace ? ' ace' : ''); if (ace) el.style.setProperty('--acc', '#ffd23a');
-    // skin banner: the equipped bundle's emblem + motion + colours; bigger on the round-ending kill
-    const sk = P.weapon() && P.weapon().skin, lineId = sk && SKINS[sk.id] ? SKINS[sk.id].line : null, th = lineId && KB_THEMES[lineId];
-    const fin = !!(info && info.final), hx = v => '#' + (v >>> 0).toString(16).padStart(6, '0');
-    let top = `<div class="kb-chev">${Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>`;
-    if (th) {
-      const pal = Skins.palette(sk); el.classList.add('kb-skin', 'kbt-' + th.anim); if (fin) el.classList.add('final');
-      el.style.setProperty('--k1', hx(pal.p[2])); el.style.setProperty('--k2', hx(pal.tr)); el.style.setProperty('--k3', hx(pal.p[0])); el.style.setProperty('--k4', hx(pal.p[3]));
-      top = `<div class="kb-emb"><svg viewBox="0 0 64 64">${th.svg}</svg></div><div class="kb-chev">${Array.from({ length: 5 }, (_, i) => `<i class="${i < n ? 'on' : ''}"></i>`).join('')}</div>${fin ? '<div class="kb-fin">Final kill</div>' : ''}`;
-      this.kbTheme = lineId;
-    } else this.kbTheme = null;
-    el.innerHTML = `${top}<div class="kb-main">${this.portrait(vic, 'kb-p')}<div><small>${ace ? 'Ace' : ['', hs ? 'Headshot' : 'Eliminated', 'Double kill', 'Triple kill', 'Quadra kill', 'Penta'][n] + (hs && n > 1 ? ' · headshot' : '')}</small><b>${vic.name}</b></div>${info && info.wid && WEAPONS[info.wid] ? GunIcons.img(info.wid, 'kb-g') : ''}${th ? `<em class="kb-line">${SKIN_LINES[lineId].name}</em>` : ''}</div>`;
-    el.classList.remove('hidden');
-    // JS-driven pop-in (overshoot then settle) so it never depends on compositor animations
-    const t0 = performance.now(), anim = () => { const k = Math.min(1, Math.max(0, (performance.now() - t0) / 280)), e = 1 - Math.pow(1 - k, 3), o = Math.sin(k * Math.PI) * 6; el.style.bottom = (150 + (1 - e) * 30 - o) + 'px'; if (k < 1) requestAnimationFrame(anim); };
-    requestAnimationFrame(anim);
-    clearTimeout(this._kb); this._kb = setTimeout(() => el.classList.add('hidden'), fin && th ? 3000 : 2300);
-  },
+  // v36: kept as a thin entry point; the banner is drawn by KillBanner (normally straight from CombatLog kill events)
+  killBanner(vic, info) { const P = G.player; KillBanner.show({ att: P, vic, part: info && info.part === 'head' ? 'head' : 'body', wid: info && info.wid, src: info && info.weapon, wall: !!(info && info.wallbang), ace: !!(info && info.ace), final: !!(info && info.final), roundKills: P.roundKills || 1, kills: P.kills || 1, kind: CombatLog.kind(info || {}), skin: CombatLog.skinOf(P, info || {}) }); },
   // ---------------- ACE: screen-wide slam for your own ace, a named call for anyone else's
   ace(a) {
     const el = $('aceshow'), mine = a === G.player, ally = a.team === G.player.team, col = mine || ally ? '#ffd23a' : '#ff4655';
@@ -14309,6 +14575,111 @@ const CombatReport = {
       + `<section class="cr-sec out"><h4><span>Damage dealt</span><b>${T.dealt}</b><small>${T.hitsDealt} hits</small></h4>${dealtRows || '<p class="cr-empty">You did not hit an enemy this life.</p>'}${more(R0.dealt.length)}</section>`
       + `<section class="cr-sec in"><h4><span>Damage taken</span><b>${T.taken}</b><small>${T.hitsTaken} hits${T.armorTaken ? ` · ${T.armorTaken} absorbed` : ''}</small></h4>${takenRows || '<p class="cr-empty">No damage recorded.</p>'}${more(R0.taken.length)}</section>`;
     this.el.classList.remove('hidden');
+  },
+};
+// ============================================================ v36 KILL BANNERS (render layer; fed by CombatLog 'kill' events)
+// Emblem banner in the style of the references: a centre emblem inside a bright inner ring, an outer frame of five arc
+// segments that light up one per kill this round (the newest flares), thin circuit linework branching out to the sides, and
+// a glow in the weapon's colours. Every skin line has its own emblem (KB_THEMES) and frame shape; guns without a skin show a
+// weapon-class emblem. Under the emblem: the kill-count chip (round kills; total kills in Deathmatch) and a plate with the
+// victim, weapon and tags (headshot, wallbang, ace, finisher).
+// Banners play for the person you are watching: your own kills, or the spectated teammate's while you are dead.
+// Purely event-driven: CombatLog emits, this builds one DOM tree per kill and lets CSS run the animation — no per-frame JS.
+const KillBanner = {
+  el: null, stats: { shown: 0, punched: 0, finishers: 0 }, _t: 0, _last: null,
+  // weapon-class emblems for guns without a skin (original glyphs, drawn on a 64×64 box like KB_THEMES)
+  CLASS_EMB: {
+    rifle: '<polygon class="a" points="32,6 40,24 58,24 44,36 50,56 32,44 14,56 20,36 6,24 24,24"/><circle class="k" cx="32" cy="32" r="6"/>',
+    smg: '<polygon class="a" points="8,20 30,32 8,44 14,32"/><polygon class="a" points="30,20 52,32 30,44 36,32"/><circle class="b" cx="56" cy="32" r="4"/>',
+    pistol: '<polygon class="a" points="32,6 54,32 32,58 10,32"/><polygon class="k" points="32,20 42,32 32,44 22,32"/>',
+    sniper: '<circle class="s" cx="32" cy="32" r="22" stroke-width="4"/><line class="s" x1="32" y1="2" x2="32" y2="22" stroke-width="3"/><line class="s" x1="32" y1="42" x2="32" y2="62" stroke-width="3"/><line class="s" x1="2" y1="32" x2="22" y2="32" stroke-width="3"/><line class="s" x1="42" y1="32" x2="62" y2="32" stroke-width="3"/><circle class="b" cx="32" cy="32" r="4"/>',
+    shotgun: '<path class="a" d="M32 56 L8 14 L20 10 L32 30 L44 10 L56 14Z"/><circle class="b" cx="32" cy="20" r="4"/>',
+    heavy: '<polygon class="a" points="32,4 56,18 56,46 32,60 8,46 8,18"/><polygon class="k" points="32,16 44,24 44,40 32,48 20,40 20,24"/><circle class="b" cx="32" cy="32" r="5"/>',
+    melee: '<path class="a" d="M32 4 L40 38 L32 60 L24 38Z"/><rect class="b" x="18" y="38" width="28" height="5"/>',
+    ability: '<polygon class="a" points="36,4 14,36 30,36 26,60 50,26 34,26"/>',
+  },
+  // frame per skin animation family (each line keeps its own silhouette)
+  FRAME: { spin: 'circle', ring: 'circle', halo: 'circle', vortex: 'cog', float: 'cog', ripple: 'cog', shake: 'hex', glitch: 'hex', led: 'hex', eq: 'hex', drop: 'shield', flip: 'diamond', dash: 'diamond', flicker: 'oct', shatter: 'oct', gear: 'cog' },
+  init() {
+    this.el = $('killbanner');
+    CombatLog.on('kill', k => this.onKill(k));
+    CombatLog.on('round', () => this.clear());
+  },
+  clear() { clearTimeout(this._t); if (this.el) { this.el.classList.add('hidden'); this.el.innerHTML = ''; } this._last = null; },
+  onKill(k) {
+    const att = k.att, V = G.viewer || G.player;
+    if (!att || att === k.vic || !G.player || (att !== V && att !== G.player)) return;   // you, or the teammate you are spectating
+    if (att === G.player && !G.player.alive && V !== G.player && att !== V) return;
+    this.show(k);
+  },
+  hex(v) { return '#' + ((v >>> 0) & 0xffffff).toString(16).padStart(6, '0'); },
+  theme(k) {
+    const sk = k.skin, lineId = sk && SKINS[sk.id] ? SKINS[sk.id].line : null, th = lineId && KB_THEMES[lineId];
+    if (lineId) {
+      const pal = Skins.palette(sk), c1 = this.hex(pal.p[2]), c2 = this.hex(pal.tr), c3 = this.hex(pal.p[0]), c4 = this.hex(pal.p[3]);
+      const emb = th ? th.svg : this.lineGlyph(lineId);
+      return { line: lineId, name: SKIN_LINES[lineId].name, emb, anim: th ? th.anim : 'ring', frame: this.FRAME[th ? th.anim : 'ring'] || 'circle', c1, c2, c3, c4, lvl: sk.lvl };
+    }
+    const cls = k.kind === 'ability' ? 'ability' : k.wid === 'knife' ? 'melee' : (WEAPONS[k.wid] && WEAPONS[k.wid].cls) || 'ability';
+    const C = cls === 'pistol' ? 'pistol' : cls === 'smg' ? 'smg' : cls === 'shotgun' ? 'shotgun' : cls === 'sniper' ? 'sniper' : cls === 'heavy' ? 'heavy' : cls === 'melee' || cls === 'blades' ? 'melee' : cls === 'rifle' ? 'rifle' : 'ability';
+    const acc = att => att && att.A ? att.A.cssAccent : '#7fe3ff';
+    return { line: null, name: '', emb: this.CLASS_EMB[C], anim: 'ring', frame: 'circle', c1: '#eaf6ff', c2: acc(k.att), c3: '#93a8b6', c4: '#0c141b', lvl: 0 };
+  },
+  // a lines without bespoke art still gets a distinct emblem: faceted glyph picked from the line id
+  lineGlyph(id) {
+    let h = 0; for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+    const G2 = ['<polygon class="a" points="32,4 50,20 44,58 20,58 14,20"/><polygon class="b" points="32,18 40,30 32,46 24,30"/>',
+      '<path class="a" d="M10 52 L32 6 L54 52 L32 40Z"/><circle class="b" cx="32" cy="30" r="5"/>',
+      '<circle class="a" cx="32" cy="32" r="22"/><path class="k" d="M20 32 L32 14 L44 32 L32 50Z"/><circle class="b" cx="32" cy="32" r="4"/>',
+      '<rect class="a" x="12" y="12" width="40" height="40" transform="rotate(45 32 32)"/><rect class="k" x="24" y="24" width="16" height="16" transform="rotate(45 32 32)"/>'];
+    return G2[h % G2.length];
+  },
+  framePath(kind) {
+    const poly = (n, r, rot) => Array.from({ length: n }, (_, i) => { const a = rot + i * 2 * Math.PI / n; return (Math.cos(a) * r).toFixed(1) + ',' + (Math.sin(a) * r).toFixed(1); }).join(' ');
+    if (kind === 'hex') return `<polygon pathLength="100" class="fr" points="${poly(6, 90, Math.PI / 6)}"/>`;
+    if (kind === 'oct') return `<polygon pathLength="100" class="fr" points="${poly(8, 88, Math.PI / 8)}"/>`;
+    if (kind === 'shield') return `<polygon pathLength="100" class="fr" points="${poly(5, 92, -Math.PI / 2)}"/>`;
+    if (kind === 'diamond') return `<polygon pathLength="100" class="fr" points="0,-96 96,0 0,96 -96,0"/>`;
+    if (kind === 'cog') return `<circle pathLength="100" class="fr" r="84"/>` + Array.from({ length: 12 }, (_, i) => `<rect class="fr-t" x="-4" y="-93" width="8" height="10" transform="rotate(${i * 30})"/>`).join('');
+    return `<circle pathLength="100" class="fr" r="86"/>`;
+  },
+  // five arcs on the outer ring, clockwise from the top; lit = kills so far (cap 5), the newest one flares
+  segments(n) {
+    const R = 70, w = 52, gap = 20, out = [];
+    for (let s = 0; s < 5; s++) { const a0 = (-90 - (w * 5 + gap * 5) / 2 + gap / 2 + s * (w + gap)) * Math.PI / 180 + Math.PI / 2 - Math.PI / 2, a1 = a0 + w * Math.PI / 180;
+      const A0 = -Math.PI / 2 + (s * (w + gap) - (w / 2)) * Math.PI / 180, A1 = A0 + w * Math.PI / 180;
+      const p = (a, r) => (Math.cos(a) * r).toFixed(1) + ' ' + (Math.sin(a) * r).toFixed(1);
+      const lit = s < n, fresh = s === n - 1;
+      out.push(`<path class="seg${lit ? ' on' : ''}${fresh ? ' new' : ''}" style="--d:${(s * 0.06 + 0.12).toFixed(2)}s" d="M${p(A0, R + 7)} A${R + 7} ${R + 7} 0 0 1 ${p(A1, R + 7)} L${p(A1, R - 7)} A${R - 7} ${R - 7} 0 0 0 ${p(A0, R - 7)}Z"/>`); void a1; }
+    return out.join('');
+  },
+  circuit() {
+    const side = s => `<g transform="scale(${s} 1)"><polyline pathLength="100" class="ln" points="96,0 128,0 140,-12 176,-12"/><polyline pathLength="100" class="ln" points="96,10 118,10 128,20 150,20"/><circle class="nd" cx="176" cy="-12" r="2.6"/><circle class="nd" cx="150" cy="20" r="2"/><line pathLength="100" class="ln dim" x1="184" y1="-12" x2="200" y2="-12"/><circle class="nd dim" cx="208" cy="0" r="1.6"/></g>`;
+    return side(1) + side(-1) + `<polyline pathLength="100" class="ln" points="0,-96 0,-112 -10,-122 0,-132 10,-122 0,-112"/><polyline pathLength="100" class="ln" points="-14,-104 -22,-112"/><polyline pathLength="100" class="ln" points="14,-104 22,-112"/><line pathLength="100" class="ln dim" x1="-30" y1="104" x2="30" y2="104"/><polyline pathLength="100" class="ln" points="-8,96 0,108 8,96"/>`;
+  },
+  show(k) {
+    if (!this.el) return;
+    const att = k.att, mine = att === G.player, th = this.theme(k), team = G.mode && G.mode.teamBased;
+    const n = team ? (k.roundKills || 1) : (k.kills || 1), seg = team ? Math.min(5, n) : ((n - 1) % 5) + 1, hs = k.part === 'head', ace = !!k.ace, fin = !!k.finisher;
+    const label = ace ? 'Ace' : team ? ['', 'Eliminated', 'Double kill', 'Triple kill', 'Quadra kill', 'Penta kill'][Math.min(5, n)] || n + ' kills' : (n > 1 ? 'Kill ' + n : 'Eliminated');
+    const tags = (hs ? '<i class="kt hs">Headshot</i>' : '') + (k.wall ? '<i class="kt">Wallbang</i>' : '') + (fin ? '<i class="kt fin">Finisher</i>' : '') + (k.final && !fin && team ? '<i class="kt">Final kill</i>' : '');
+    const esc = s => String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
+    const weap = k.wid && WEAPONS[k.wid] && k.wid !== 'knife' ? GunIcons.img(k.wid, 'kb2-g') : `<em class="kb2-w">${esc(k.src || '')}</em>`;
+    const same = this._last && this._last.att === att && performance.now() - this._last.t < 900;   // rapid kills punch the live banner
+    const cls = `kb2 f-${th.frame} a-${th.anim}${hs ? ' hs' : ''}${ace ? ' ace' : ''}${fin ? ' fin' : ''}${th.line ? ' kb-sk' : ''}${mine ? '' : ' spec'} t${Math.min(5, seg)}${same ? ' punch' : ''}`;
+    this.el.className = ''; this.el.style.cssText = `--k1:${th.c1};--k2:${th.c2};--k3:${th.c3};--k4:${th.c4}`;
+    this.el.innerHTML = `<div class="${cls}">
+      <div class="kb2-art"><svg class="kb2-frame" viewBox="-220 -140 440 280" aria-hidden="true">${this.circuit()}${this.framePath(th.frame)}${this.segments(seg)}<circle pathLength="100" class="ring" r="56"/>${hs ? '<g class="hsb">' + Array.from({ length: 12 }, (_, i) => `<line x1="0" y1="-62" x2="0" y2="-74" transform="rotate(${i * 30 + 15})"/>`).join('') + '</g>' : ''}</svg>
+        <div class="kb2-emb"><svg viewBox="0 0 64 64" aria-hidden="true">${th.emb}</svg></div>
+        <div class="kb2-n" title="${mine ? 'Your' : esc(att.name) + '’s'} kills ${team ? 'this round' : 'this match'}">${n}</div></div>
+      <div class="kb2-plate"><small>${mine ? '' : `<b class="who">${esc(att.name)}</b> · `}${label}${th.line ? ` · <span class="ln-name">${esc(th.name)}</span>` : ''}</small><div class="kb2-v">${UI.portrait(k.vic, 'kb2-p')}<b>${esc(k.vic.name)}</b>${weap}</div>${tags ? `<div class="kb2-tags">${tags}</div>` : ''}</div>
+    </div>`;
+    this.el.classList.remove('hidden');
+    clearTimeout(this._t); clearTimeout(this._t2);
+    const hold = fin ? 3400 : ace ? 3200 : n >= 3 ? 2700 : 2300;
+    this._t2 = setTimeout(() => { const b = this.el.firstElementChild; if (b) b.classList.add('out'); }, hold - 320);
+    this._t = setTimeout(() => { this.el.classList.add('hidden'); this.el.innerHTML = ''; }, hold);
+    this._last = { att, t: performance.now() }; this.stats.shown++; if (same) this.stats.punched++; if (fin) this.stats.finishers++;
   },
 };
 // ============================================================ LOBBY: nav, Play / Collection / Shop / Career, inspect view, end-of-match progression
@@ -15310,11 +15681,13 @@ function step(dt) {
     a.updateModel(dt);
     if (a.pos.y < -5 || !isFinite(a.pos.x)) { const c = World.nearestWalk(GW >> 1, GH >> 1) || [GW >> 1, GH >> 1]; World.center(c[0], c[1], a.pos); a.vel.set(0, 0, 0); }
   }
+  Finishers.update(dt);   // v36: after the corpses' pose, the finisher owns their transform while it plays
   if (!guest) {
     brainAcc += dt; if (brainAcc > 0.25 && G.mode.teamBased) { brainAcc = 0; Brain.update(); }
     if (G.mode.teamBased) Lanes.track(dt);
     Comms.update(dt);
   }
+  BuyGuard.update();   // v36: nobody ends up outside their buy zone while the barrier stands (host: authoritative; guest: own prediction)
   Abil.update(dt); Souls.update(dt); Placement.update(dt); if (G.player) AbilHand.update(G.player); G.mode.update(dt); Drops.update(dt); playerSpotting(dt);
   if (NA) Net.postStep(dt);
 }
@@ -15640,6 +16013,7 @@ const Net = {
 
   // ------------------------------------------------------------ boot: UI wiring, transport probe, engine hooks
   init() {
+    if (mpUndoFreeSkins()) setTimeout(() => { try { UI.toast('Skins reset to your earned ones · import a save to bring your progress', 'info'); } catch (e) { } }, 1500);
     this.installHooks();
     fetch('rl-relay.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { this.relay = !!(j && j.relay); this.renderHome(); }).catch(() => { this.relay = false; this.renderHome(); });
     $('nav-mp').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.open(); });
@@ -16601,6 +16975,18 @@ function guestAct(P, a) {
 // scoreboard / loading card: rank badge for a multiplayer ranked match (empty otherwise)
 function mpRankChip(a, size) { if (!Net.active || !G.mode || !G.mode.ranked || a.netRank == null) return ''; return `<span class="mpsbrk" style="--rc:${Rank.col(a.netRank)}" title="${Rank.name(a.netRank)}">${Rank.emblem(a.netRank, size || 16)}</span>`; }
 
+// One-time cleanup: earlier multiplayer builds unlocked every skin, fully upgraded, in this browser. That exact
+// footprint (all skins owned, max level, every variant) can't come from play, so it's reset to a normal profile
+// (owned/equipped cleared like a fresh account; level, ranks, stats and wallet untouched). Importing a save also replaces it.
+function mpUndoFreeSkins() {
+  try {
+    const d = Profile.get(), ids = Object.keys(SKINS); if (!ids.length || !d.owned) return false;
+    const full = ids.every(id => { const o = d.owned[id], T = Skins.tierOf(id), n = (SKIN_LINES[SKINS[id].line] || {}).vars; return o && o.lvl === ((T && T.levels) || 1) && o.vars && o.vars.length === Math.max(1, (n || []).length); });
+    if (!full) return false;
+    d.owned = {}; d.equipped = {}; Profile.save(); return true;
+  } catch (e) { return false; }
+}
+
 // ============================================================ BOOT
 function boot() {
   if (!AGENTS[Settings.agent]) Settings.agent = 'vanta';
@@ -16609,7 +16995,7 @@ function boot() {
   World.load(MAPS.saltworks); R.buildMap(MAPS.saltworks);
   R.setQuality(Settings.graphics === 'low' ? 'low' : 'high');
   if (!['quick', 'standard', 'dm', 'rq', 'rs', 'range', 'custom'].includes(Settings.mode)) Settings.mode = 'quick';
-  VM.init(); Portraits.init(); UI.init(); CombatReport.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
+  VM.init(); Portraits.init(); UI.init(); CombatReport.init(); Finishers.init(); KillBanner.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
   Input.resolveCrouch();
   $('loading').classList.add('hidden');
   const q = new URLSearchParams(location.search);
