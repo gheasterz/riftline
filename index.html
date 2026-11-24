@@ -13494,23 +13494,52 @@ Object.assign(UI, {
 });
 // ============================================================ v31 ALLY HUD: through-wall silhouettes, nameplates, spike-carrier tag
 // Presentation only: reads agents / mode state, never changes them.
-//   X-ray   each teammate carries a second skinned copy of its low-poly body drawn in flat teal with depthFunc GREATER, so it
-//           only appears where the real body is hidden behind a wall; when a smoke sits between the camera and the ally the
-//           copy switches to an always-on material (smokes don't write depth). Enemies never get one.
+//   X-ray   each teammate carries a second skinned copy of its body in flat teal. AllyVis decides per frame whether anything
+//           is in the way: clear sight → hidden; map geometry → depth-tested (only the occluded parts glow); smoke or a
+//           vision-blocking ability wall → full silhouette. Enemies never get one.
 //   Plates  a pooled DOM layer (≤ 4 plates) projected above teammates' heads: agent · name, a health bar and a shield bar,
 //           distance-scaled; within ~110 px of the crosshair a plate condenses to just its bars at low opacity. 30 Hz.
 //           Settings → Ally nameplates (on/off); with plates off the classic ally marker diamond is used instead.
 //   Spike   on the attacking side, the teammate holding the spike gets a spike icon over their head (always shown, plates on
 //           or off) so you can see at a glance who has it.
-const AllyXrayMat = new THREE.MeshBasicMaterial({ color: 0x45e6d2, transparent: true, opacity: 0.42, depthTest: true, depthFunc: THREE.GreaterDepth, depthWrite: false, skinning: true, fog: false });
+// v32: the silhouette copy is pulled slightly toward the camera (negative polygon offset) and uses the exact geometry the visible
+// body renders with, so the GREATER test can never pass against the ally's own surface — it only lights where world geometry
+// really sits in front of them. The ALL variant is for utility occluders (smokes, ability walls), which don't write depth.
+const AllyXrayMat = new THREE.MeshBasicMaterial({ color: 0x45e6d2, transparent: true, opacity: 0.42, depthTest: true, depthFunc: THREE.GreaterDepth, depthWrite: false, skinning: true, fog: false, polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -8 });
 const AllyXrayAllMat = new THREE.MeshBasicMaterial({ color: 0x45e6d2, transparent: true, opacity: 0.38, depthTest: false, depthWrite: false, skinning: true, fog: false });
+
+// ---- AllyVis: what stands between the camera and a teammate (pure query, no rendering)
+//   'clear'  every sample point (head, chest, hips, feet) is in direct sight → no silhouette
+//   'world'  map geometry / solid ability walls hide some points → depth-tested silhouette (only the hidden parts)
+//   'util'   a smoke or vision-blocking ability wall (fire wall, toxin curtain, sea wall, fast lane, map-wide wall…) is in
+//            the way of any point → full silhouette, since those volumes don't write depth
+// States change only after two agreeing frames, so the outline doesn't flicker on a corner.
+const AllyVis = {
+  H: [1.72, 1.25, 0.85, 0.2], _p: new V3(), stats: { checks: 0, clear: 0, world: 0, util: 0 },
+  raw(eye, a) {
+    let world = 0, util = false;
+    for (const h of this.H) {
+      const p = this._p.set(a.pos.x, a.pos.y + h * (1 - 0.25 * clamp(a.crouchT || 0, 0, 1)), a.pos.z); this.stats.checks++;
+      if (!World.los(eye, p)) { world++; continue; }
+      if (Abil.blocksSight(eye, p)) util = true;
+    }
+    return util ? 'util' : world ? 'world' : 'clear';
+  },
+  of(eye, a) {
+    const r = this.raw(eye, a), u = a.model.userData;
+    if (u.visPend === r) u.visState = r; else u.visPend = r;
+    if (!u.visState) u.visState = r;
+    this.stats[u.visState]++;
+    return u.visState;
+  },
+};
 const SPIKE_SVG = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l4 4v9l-4 7-4-7V6z" fill="#ff5a6a" stroke="#1a0a0d" stroke-width="1.6" stroke-linejoin="round"/><path d="M10 8h4M10 11h4" stroke="#ffd1d6" stroke-width="1.4" stroke-linecap="round"/></svg>';
 const AllyHUD = {
   plates: new Map(), acc: 0, v: new V3(), stats: { xrayFrames: 0, smokeXray: 0, plates: 0, near: 0, spikeTags: 0 },
   root() { return $('nameplates'); },
   xrayFor(a) {
     const u = a.model.userData; if (u.allyX) return u.allyX;
-    const m = new THREE.SkinnedMesh(u.xray.geometry, AllyXrayMat); m.renderOrder = 19; m.visible = false; m.frustumCulled = false; m.userData.noShadow = true;
+    const m = new THREE.SkinnedMesh(u.mesh.geometry, AllyXrayMat); m.renderOrder = 19; m.visible = false; m.frustumCulled = false; m.userData.noShadow = true;
     a.model.add(m); m.bind(u.xray.skeleton, u.xray.bindMatrix); return (u.allyX = m);
   },
   // called from the frame's visibility pass (after model.visible is decided)
@@ -13521,8 +13550,11 @@ const AllyHUD = {
       const ally = team && a.team === P.team && a !== V && a.alive;
       const u = a.model.userData;
       if (!ally) { if (u.allyX) u.allyX.visible = false; continue; }
-      const x = this.xrayFor(a); x.visible = on && a.model.visible;
-      if (x.visible) { const chest = this.v.set(a.pos.x, a.pos.y + 1.2, a.pos.z), sm = Abil.blocksSight(eye, chest); x.material = sm ? AllyXrayAllMat : AllyXrayMat; if (sm) this.stats.smokeXray++; this.stats.xrayFrames++; }
+      const x = this.xrayFor(a);
+      if (x.geometry !== u.mesh.geometry) x.geometry = u.mesh.geometry;   // follow the hi/lo body swap (graphics setting)
+      const vis = on && a.model.visible ? AllyVis.of(eye, a) : 'clear';
+      x.visible = vis !== 'clear';   // direct line of sight: the natural model only, no glow
+      if (x.visible) { x.material = vis === 'util' ? AllyXrayAllMat : AllyXrayMat; if (vis === 'util') this.stats.smokeXray++; this.stats.xrayFrames++; }
       u.marker.visible = u.marker.visible && Settings.nameplates === 0;   // plates replace the diamond marker
     }
     if ((this.acc += dt) < 1 / 30) return; this.acc = 0;
