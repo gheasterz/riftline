@@ -910,6 +910,44 @@ img{max-width:100%}
 #range-agents-chip kbd{padding:1px 5px;border:1px solid rgba(255,255,255,.35);border-radius:3px;font:700 10px var(--f-body)}
 #range-agents-chip.hidden{display:none}
 @media (max-width:640px){#range-agents-chip{bottom:auto;top:64px}}
+.savebox small,.saverow small{display:block;margin-top:5px;color:var(--mut,#8fa0ad);font-size:11px;line-height:1.35}
+.saverow>div{display:flex;flex-direction:column;align-items:flex-start}
+.savebtns{display:flex;flex-wrap:wrap;gap:8px}
+/* v35 combat report: right-edge side panel between the kill feed and the credits readout */
+#combatrep{position:absolute;right:12px;top:204px;width:min(336px,46vw);max-height:calc(100vh - 340px);overflow:hidden;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:3;
+  background:linear-gradient(180deg,rgba(12,21,28,.9),rgba(12,21,28,.82));border:1px solid rgba(255,255,255,.1);border-right:3px solid var(--enemy);padding:8px 10px 9px;animation:crin .16s ease-out;font:600 12px var(--f-body);color:var(--bone)}
+@keyframes crin{from{opacity:0;transform:translateX(18px)}to{opacity:1;transform:none}}
+#combatrep.hidden{display:none}
+.cr-head{display:flex;justify-content:space-between;align-items:flex-end;gap:8px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.08)}
+.cr-head em{display:block;font:700 10px var(--f-body);font-style:normal;letter-spacing:2.5px;text-transform:uppercase;color:var(--dim)}
+.cr-head>div>b{font:800 20px var(--f-display);letter-spacing:1px;text-transform:uppercase}
+.cr-kb{display:flex;flex-direction:column;align-items:flex-end;gap:2px;min-width:0}.cr-kb small{font:700 9px var(--f-body);letter-spacing:2px;text-transform:uppercase;color:var(--enemy)}
+.cr-kn{display:flex;align-items:center;gap:5px}.cr-kn b{font:800 14px var(--f-body);color:var(--enemy);max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cr-kp{width:20px;height:20px;object-fit:cover}
+.cr-kw{display:flex;align-items:center;gap:4px}.cr-kw em{font-style:normal;color:var(--bone)}.cr-kw i{font:800 9px var(--f-body);font-style:normal;letter-spacing:1px;padding:1px 4px;background:rgba(255,255,255,.12)}.cr-kw i.hs{background:var(--gold);color:#1a1205}
+.cr-sec{flex:none;display:flex;flex-direction:column;gap:3px}.cr-more{margin:0;font:600 10px var(--f-body);color:var(--dim);text-align:right}
+.cr-sec h4{display:flex;align-items:baseline;gap:6px;margin:2px 0 1px;font:700 10px var(--f-body);letter-spacing:2px;text-transform:uppercase;color:var(--dim)}
+.cr-sec h4 b{font:800 17px var(--f-display);letter-spacing:.5px;color:var(--bone)}.cr-sec.out h4 b{color:#7ee0a8}.cr-sec.in h4 b{color:#ff7a86}.cr-sec h4 small{margin-left:auto;font:600 10px var(--f-body);letter-spacing:.5px;text-transform:none}
+.cr-row{display:grid;grid-template-columns:24px minmax(0,1fr) 46px 70px 72px;align-items:center;gap:6px;padding:3px 4px;background:rgba(255,255,255,.035);border-left:2px solid transparent}
+.cr-sec.in .cr-row{grid-template-columns:24px minmax(0,1fr) 46px 70px auto}
+.cr-row.killer{border-left-color:var(--enemy);background:rgba(255,70,85,.1)}
+.cr-p{width:24px;height:24px;object-fit:cover;background:var(--panel2,#1c2d39)}.cr-world{display:grid;place-items:center;font-size:13px;color:var(--dim)}
+.cr-n{min-width:0}.cr-n b{display:block;font:700 12px var(--f-body);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.cr-n span{display:block;font:500 10px var(--f-body);color:var(--dim);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cr-d{text-align:right}.cr-d b{display:block;font:800 16px var(--f-display);line-height:1}.cr-d span{display:block;font:500 9px var(--f-body);color:var(--dim);white-space:nowrap}
+.cr-parts{display:flex;align-items:center;gap:4px}.cr-parts svg{width:10px;height:22px;flex:none}.cr-parts svg *{fill:rgba(255,255,255,.14)}.cr-parts svg .on{fill:#d9e2e8}.cr-parts svg .on.h{fill:var(--gold)}
+.cr-pl{display:flex;flex-direction:column;font:600 9px var(--f-body);line-height:1.15;color:var(--bone)}.cr-pl span.h{color:var(--gold)}.cr-pl i{font-style:normal;color:var(--dim);margin-left:3px}
+.cr-parts.none{color:var(--dim);justify-content:center}
+.cr-st{font:800 10px var(--f-body);letter-spacing:1px;text-transform:uppercase;text-align:right;white-space:nowrap}
+.cr-st.kill{color:#7ee0a8}.cr-hs{font:800 8px var(--f-body);font-style:normal;letter-spacing:.5px;margin-left:4px;padding:1px 3px;background:var(--gold);color:#1a1205;vertical-align:1px}.cr-d span.ar{color:#6fc7ff}.cr-st.asst{color:var(--ally)}.cr-st.dead{color:var(--dim)}
+.cr-st.up{display:flex;flex-direction:column;align-items:flex-end;gap:2px;letter-spacing:0;text-transform:none;font:700 11px var(--f-body)}.cr-st.up small{font:600 8px var(--f-body);color:var(--dim);margin-left:1px}
+.cr-bar{position:relative;width:60px;height:4px;background:rgba(255,255,255,.12)}.cr-bar i{position:absolute;left:0;top:0;bottom:0;background:#ece6dc}.cr-bar u{position:absolute;left:0;top:-3px;height:2px;background:#6fc7ff}
+.cr-srcs{display:flex;gap:4px;justify-content:flex-end;align-items:center;min-width:0}.cr-src{display:flex;align-items:center;gap:3px;font:700 10px var(--f-body)}.cr-src em{font-style:normal;color:var(--bone);max-width:62px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.cr-src b{color:#ff9aa3}.cr-src.more{color:var(--dim)}
+.cr-g{height:13px;width:auto;opacity:.9}
+.cr-empty{margin:2px 0;font:500 11px var(--f-body);color:var(--dim)}
+@media (max-width:820px),(max-height:600px){#combatrep{top:204px;right:8px;width:min(300px,52vw);padding:6px 8px}.cr-parts{display:none}.cr-row,.cr-sec.in .cr-row{grid-template-columns:22px minmax(0,1fr) 40px auto;padding:2px 4px}.cr-head>div>b{font-size:17px}.cr-p{width:22px;height:22px}}
+@media (max-width:520px){#combatrep{top:96px;width:calc(100vw - 248px);min-width:150px}.cr-n span,.cr-srcs .cr-src em,.cr-kw,.cr-head em{display:none}.cr-row,.cr-sec.in .cr-row{grid-template-columns:minmax(0,1fr) 34px auto}.cr-row .cr-p{display:none}}
+
+.imp-sum{display:grid;gap:4px;margin:10px 0;max-width:420px}.imp-row{display:flex;justify-content:space-between;gap:14px;font:600 13px var(--f-body);color:var(--dim)}.imp-row b{color:var(--off);font-weight:700;text-align:right}
+.mbox .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
 </style>
 <div id="loading">LOADING RIFTLINE</div>
 <canvas id="game"></canvas>
@@ -939,6 +977,7 @@ img{max-width:100%}
   </div>
   <div id="dmscore" class="hidden"><div><span id="dm-me">0</span><small>YOUR KILLS</small></div><div><span id="dm-time">6:00</span><small>TIME</small></div><div><span id="dm-lead">0</span><small>LEADER</small></div></div>
   <div id="killfeed"></div>
+  <aside id="combatrep" class="hidden" aria-label="Combat report"></aside>
   <div id="crosshair"><canvas id="xh" width="80" height="80"></canvas></div>
   <div id="hitmark"></div>
   <div id="dmgdir"></div>
@@ -1128,6 +1167,7 @@ img{max-width:100%}
       <div class="row"><label>Aim / scope key</label><div class="opts" id="set-adsmode"><button class="opt" data-v="hold">Hold</button><button class="opt" data-v="toggle">Toggle</button></div></div>
       <div id="binds"></div>
       <button class="opt" id="btn-binds-reset">Reset keys to defaults</button>
+      <div class="row saverow"><label>Save data</label><div><div class="savebtns"><button class="opt" id="btn-export-save">Export save data</button><button class="opt" id="btn-import-save">Import save data</button></div><small id="set-export-status">JSON backup of progress, settings and keys · import restores a file exported here</small></div></div>
     </section>
     <section class="setpane hidden" data-pane="mouse">
       <div class="row"><label for="set-sens">Sensitivity</label><input type="range" id="set-sens" min="0.05" max="3" step="0.01"><output id="o-sens"></output></div>
@@ -1143,6 +1183,7 @@ img{max-width:100%}
       <div class="row"><label for="set-res">Resolution scale</label><input type="range" id="set-res" min="0.5" max="1" step="0.05"><output id="o-res"></output></div>
       <div class="row"><label>Particles</label><div class="opts" id="set-part"><button class="opt" data-v="high">High</button><button class="opt" data-v="low">Low</button></div></div>
       <div class="row"><label>Bullet tracers</label><div class="opts" id="set-tracers"><button class="opt" data-v="high">High</button><button class="opt" data-v="low">Low</button><button class="opt" data-v="off">Off</button></div></div>
+      <div class="row"><label>Combat report on death</label><div class="opts" id="set-combatrep"><button class="opt" data-v="1">On</button><button class="opt" data-v="0">Off</button></div></div>
       <div class="row"><label>Ally nameplates</label><div class="opts" id="set-nameplates"><button class="opt" data-v="1">On</button><button class="opt" data-v="0">Off</button></div></div>
       <div class="row"><label>Ally x-ray (through walls)</label><div class="opts" id="set-allyxray"><button class="opt" data-v="1">On</button><button class="opt" data-v="0">Off</button></div></div>
       <div class="row"><label>Enemy outlines</label><div class="opts" id="set-outline"><button class="opt" data-v="full">Full detail</button><button class="opt" data-v="low">Low detail</button><button class="opt" data-v="off">Off</button></div></div>
@@ -1184,7 +1225,7 @@ img{max-width:100%}
 #mp .sect{font:800 13px var(--f-display);letter-spacing:3px;text-transform:uppercase;color:#9aa8b3;margin:18px 0 10px}
 .mpbtn{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:var(--off);font:700 14px var(--f-body);letter-spacing:1px;text-transform:uppercase;padding:9px 14px;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
 .mpbtn:hover{background:rgba(63,208,200,.16);border-color:var(--teal)}
-.mpbtn.ghost{background:none}.mpbtn.sm{padding:5px 9px;font-size:12px}
+.mpbtn.ghost{background:none}.mpbtn.on{background:rgba(63,208,200,.18);border-color:var(--teal);color:var(--teal)}.mpbtn.sm{padding:5px 9px;font-size:12px}
 .mpname{display:flex;flex-direction:column;gap:6px;max-width:360px;font:700 13px var(--f-body);letter-spacing:1.5px;text-transform:uppercase;color:#9aa8b3}
 #mp input,#mp select{background:#0b141b;border:1px solid #2b4050;color:var(--off);font:600 17px var(--f-body);padding:10px 12px;outline:none}
 #mp input:focus,#mp select:focus{border-color:var(--teal)}
@@ -1258,15 +1299,71 @@ img{max-width:100%}
 .mpan{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
 .mpan b{font-size:15px}.mpan small{color:#8aa0ad;font-size:12px;white-space:nowrap}
 .mpabl p{margin:2px 0 0;color:#9aa8b3;font-size:13px;line-height:1.35}
+.mpacc{display:grid;grid-template-columns:minmax(260px,1.2fr) minmax(0,1.3fr) minmax(220px,1fr);gap:18px;align-items:center;background:linear-gradient(160deg,rgba(28,45,57,.9),rgba(16,27,35,.9));border:1px solid rgba(255,255,255,.08);padding:16px 18px}
+@media(max-width:980px){.mpacc{grid-template-columns:1fr}}
+.mpacc-id{display:flex;gap:14px;align-items:center}
+.mpacc-card{width:64px;height:78px;flex:none;display:grid;place-items:end center;overflow:hidden;clip-path:polygon(0 0,100% 0,100% 88%,88% 100%,0 100%)}
+.mpacc-card img{width:100%;object-fit:cover}
+.mpacc-nm{flex:1;min-width:0}.mpacc-nm label{display:flex;flex-direction:column;gap:5px;font:700 12px var(--f-body);letter-spacing:1.5px;text-transform:uppercase;color:#9aa8b3}
+.mpacc-nm input{font:700 18px var(--f-body)!important;padding:8px 10px!important}
+.mpacc-nm small,.mpacc-sv small{display:block;color:#7f95a3;font-size:12px;margin-top:6px;line-height:1.35}
+.mpacc-rks{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mpacc-rk{display:flex;gap:10px;align-items:center;padding:8px 10px;background:rgba(10,18,24,.55);border-left:3px solid var(--rc)}
+.mpacc-rk svg{width:44px;height:44px;flex:none}
+.mpacc-rk small{display:block;font:700 11px var(--f-body);letter-spacing:1.2px;text-transform:uppercase;color:#8aa0ad}
+.mpacc-rk b{display:block;font:900 20px var(--f-display);letter-spacing:1px;text-transform:uppercase;color:var(--rc);line-height:1.1}
+.mpacc-rk em{font-style:normal;font-size:12px;color:#c9d3da}
+.mprow.wrap{flex-wrap:wrap}
+.mpgrid{align-items:start}
+.mpside .cta.big{width:100%;font-size:26px;padding:14px 12px;white-space:nowrap}
+.mpside .cta.big:disabled{opacity:.5;cursor:default}
+.mprk.only{opacity:.85}
+.mpacc-rk small{white-space:nowrap;letter-spacing:.8px}
+.mpcap{margin-left:auto;font:700 13px var(--f-body);letter-spacing:1px;color:#8aa0ad}
+.mpmodes{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:16px 0 4px}
+@media(max-width:980px){.mpmodes{grid-template-columns:repeat(3,1fr)}}
+.mpmode{background:rgba(10,18,24,.6);border:1px solid rgba(255,255,255,.08);color:var(--off);text-align:left;padding:9px 11px;cursor:pointer;border-bottom:2px solid transparent}
+.mpmode b{display:block;font:800 15px var(--f-display);letter-spacing:.6px;text-transform:uppercase;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpmode small{display:block;color:#7f95a3;font-size:11.5px;margin-top:2px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpmode.rk b{color:var(--gold)}
+.mpmode:hover:not(:disabled){border-color:rgba(63,208,200,.5)}
+.mpmode.on{background:rgba(63,208,200,.12);border-color:rgba(63,208,200,.6);border-bottom-color:var(--teal)}
+.mpmode:disabled{cursor:default;opacity:.55}.mpmode.on:disabled{opacity:1}
+.mpsn{flex:1;min-width:0}
+.mpslot b i{font-style:normal;font-size:10px;letter-spacing:1.5px;color:var(--gold);margin-left:7px}.mpslot b i.you{color:var(--teal)}
+.mprk{display:inline-flex;align-items:center;gap:6px;flex:none;max-width:132px}
+.mprk svg{width:22px;height:22px;flex:none}
+.mprk em{font-style:normal;font:700 12px var(--f-body);color:var(--rc);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpstep{display:inline-flex;align-items:center;gap:4px}.mpstep b{min-width:16px;text-align:center;font:800 15px var(--f-display)}.mpstep small{color:#8aa0ad;font-size:12px;margin-left:2px}
+.mpstep .mpbtn{width:26px;padding:3px 0;text-align:center}.mpbtn:disabled{opacity:.35;cursor:default}
+.mpbc{color:#8aa0ad;font-size:12px}
+.mpffa{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:230px;text-align:center;color:#9aa8b3}
+.mpffa b{font:900 64px var(--f-display);color:var(--red);line-height:1}.mpffa span{font:800 14px var(--f-display);letter-spacing:2px;text-transform:uppercase;color:var(--off)}.mpffa small{max-width:260px;font-size:13px}
+.mpnote.sm{font-size:13px;margin-top:4px}
+.mpspin{width:26px;height:26px;margin:0 auto 14px;border:3px solid rgba(63,208,200,.25);border-top-color:var(--teal);border-radius:50%;animation:mpspin .8s linear infinite}
+@keyframes mpspin{to{transform:rotate(360deg)}}
+.mpsbrk{display:inline-flex;vertical-align:-3px;margin-right:6px}.mpsbrk svg{width:16px;height:16px}
+#mp-endranks{margin:18px auto 0;max-width:760px;text-align:left}
+.mpe-h{font:800 13px var(--f-display);letter-spacing:3px;text-transform:uppercase;color:#9aa8b3;margin-bottom:8px}
+.mpe-cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.mpe-t{background:rgba(10,18,24,.6);border-top:2px solid var(--ally,#3fd0c8);padding:8px 10px}.mpe-t.enemy{border-top-color:var(--enemy,#ff4655)}
+.mpe-t em{display:block;font-style:normal;font:700 11px var(--f-body);letter-spacing:1.5px;text-transform:uppercase;color:#8aa0ad;margin-bottom:4px}
+.mperow{display:grid;grid-template-columns:28px 1fr auto auto;gap:8px;align-items:center;padding:4px 0;border-bottom:1px solid rgba(255,255,255,.05)}
+.mperow.me b{color:var(--teal)}.mperow b{font-size:14px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.mperow small{color:#8aa0ad;font-size:12px}
+.mperk svg{width:26px;height:26px}
+.mper{font:800 13px var(--f-display);letter-spacing:.5px;min-width:64px;text-align:right}.mper.up{color:#5fe0b5}.mper.down{color:var(--red)}.mper.ai,.mper.wait{color:#5f7482}.mper.pl{color:var(--gold)}
+.mpslot.masked{border-left-color:rgba(255,70,85,.35);background:repeating-linear-gradient(135deg,rgba(255,255,255,.025) 0 6px,transparent 6px 12px)}
+.mpslot.masked b{color:#c9d3da}.mpslot .bi.lock{color:#8aa0ad}
+.mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
   <div class="mpwrap">
     <div class="mphead"><div class="brand">Rift<span>line</span><em>Multiplayer</em></div><div class="sp"></div><button class="mpbtn ghost" id="mp-close">← Back to menu</button></div>
     <section id="mp-home">
-      <label class="mpname">Your name<input id="mp-name" maxlength="16" placeholder="Player" autocomplete="off"></label>
+      <div class="mpacc" id="mp-acct"></div>
       <div class="mpcards">
-        <div class="mpcard"><h3>Host a game</h3><p>Get a 5-letter code to share. Put friends on either team; bots take every empty slot of the 5v5.</p><button class="cta" id="mp-host">Host</button></div>
+        <div class="mpcard"><h3>Host a game</h3><p>Get a 5-letter code to share. Play Custom 5v5s with your own bot mix, or queue any mode as a party of up to 5.</p><button class="cta" id="mp-host">Host</button></div>
         <div class="mpcard j"><h3>Join a game</h3><p>Enter the code your host shared, or open their invite link.</p><div class="row"><input id="mp-code" maxlength="5" placeholder="CODE" autocomplete="off" spellcheck="false"><button class="cta" id="mp-join">Join</button></div></div>
       </div>
       <p class="mpnote" id="mp-net"></p>
@@ -1332,7 +1429,7 @@ function keyName(c) {
 }
 const Settings = {
   graphics: 'high', sens: 0.6, arrowSens: 1, fov: 103, vol: 0.7, crouchKey: 'auto', minimap: 'rotate', showFps: 1,
-  dpi: 800, rawInput: 1, customWin: 9, hand: 'right', dmPrimary: 'reaver', dmSecondary: 'kestrel', invertY: 0, shadows: 1, resScale: 1, particles: 'high', tracers: 'high', outline: 'full', nameplates: 1, allyXray: 1, adsMode: 'hold', enemyCol: 'red', fullscreen: 0, comms: 1, radioVo: 1, region: 'na', lang: 'en', teamAlly: '#3fa9ff', teamEnemy: '#ff4655',
+  dpi: 800, rawInput: 1, customWin: 9, hand: 'right', dmPrimary: 'reaver', dmSecondary: 'kestrel', invertY: 0, shadows: 1, resScale: 1, particles: 'high', tracers: 'high', outline: 'full', nameplates: 1, combatReport: 1, allyXray: 1, adsMode: 'hold', enemyCol: 'red', fullscreen: 0, comms: 1, radioVo: 1, region: 'na', lang: 'en', teamAlly: '#3fa9ff', teamEnemy: '#ff4655',
   xh: Object.assign({}, XH_PRESETS.Standard),
   mode: 'quick', diff: 1, agent: 'vanta', map: 'random', loadout: null, bindsV: 0,
   load() { try { const s = JSON.parse(localStorage.getItem('riftline.settings') || '{}'); for (const k in s) if (k in this && typeof this[k] !== 'function') this[k] = s[k]; } catch (e) { } },
@@ -3195,6 +3292,170 @@ const DiffBlend = {
     o.name = 'Rank-scaled'; this.cache.set(s, o); return o;
   },
 };
+// ============================================================ v33 SAVE EXPORT + v34 SAVE IMPORT
+// Export snapshots every persistent Riftline key in this browser (profile: level, wallet, ranks/RR, match history, Act wins,
+// owned + equipped cosmetics; settings + keybinds; leaderboard ladders; range bests; vista unlocks) into one timestamped JSON
+// file and hands it to the viewer to save. It only ever READS storage.
+//
+// v34 adds the matching Import (SaveImport, below), at the player's request, so a backup can be restored in another browser or
+// after clearing site data. It is a full restore, never a merge: the file must be a riftline-save of a known version, its
+// SHA-256 must match its data block (so a hand-edited or truncated file is refused), every key must sit under `riftline.`,
+// and the profile must pass shape / range checks. The player sees what the file holds and confirms; current keys are kept
+// in memory and put back if any write fails; then storage writes are locked and the page reloads into the restored save.
+// The hash stops casual edits and corruption, not a determined tamperer (anyone can recompute it): progression in a
+// single-player browser game is the player's own data.
+//
+// Delivery: inside claude.ai the page asks the viewer through the `downloads` capability (frames cannot download
+// directly); opened as a plain file it falls back to Blob + an <a download> click, revoking the object URL right after.
+const SaveExport = {
+  FORMAT: 'riftline-save', VERSION: 1, PREFIX: 'riftline.', stats: { exports: 0, saved: 0, declined: 0, fallback: 0, failed: 0 },
+  _dl: null,
+  init() { try { if (window.claude && claude.use) this._dl = claude.use('downloads').catch(() => null); } catch (e) { this._dl = null; } },
+  // every key under our prefix, parsed when it is JSON (read-only)
+  snapshot() {
+    const keys = {}; let n = 0;
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (!k || !k.startsWith(this.PREFIX)) continue; const raw = localStorage.getItem(k); let v = raw; try { v = JSON.parse(raw); } catch (e) {} keys[k] = v; n++; } } catch (e) {}
+    // the live in-memory copies are newer than storage if a save was just throttled
+    try { keys['riftline.profile'] = JSON.parse(JSON.stringify(Profile.get())); } catch (e) {}
+    try { keys['riftline.settings'] = JSON.parse(JSON.stringify(Settings, (k, v) => typeof v === 'function' ? undefined : v)); } catch (e) {}
+    return { keys, count: Object.keys(keys).length || n };
+  },
+  summary(prof) {
+    const out = { level: prof.level, xp: prof.xp, wallet: prof.wallet, matches: (prof.history || []).length };
+    try { const R = prof.ranks || {}; for (const m of Object.keys(R)) { const r = R[m]; out['rank_' + m] = r.placed >= PLACEMENTS ? `${Rank.name(r.idx)} · ${r.rr} RR` : `Unranked (${r.placed || 0}/${PLACEMENTS} placements)`; if (r.peak != null) out['peak_' + m] = Rank.name(r.peak); } } catch (e) {}
+    try { out.skinsOwned = Object.keys(prof.owned || {}).length; } catch (e) {}
+    try { out.actWins = (prof.act && prof.act.wins || []).length; } catch (e) {}
+    return out;
+  },
+  async digest(text) { try { const b = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text)); return [...new Uint8Array(b)].map(x => x.toString(16).padStart(2, '0')).join(''); } catch (e) { return null; } },
+  async build() {
+    const snap = this.snapshot(), now = new Date(), prof = snap.keys['riftline.profile'] || {};
+    const data = JSON.stringify(snap.keys);
+    const file = {
+      format: this.FORMAT, version: this.VERSION, exportedAt: now.toISOString(),
+      note: 'Backup of your Riftline progress in this browser. Restore it with Import (Career or Settings). Edited files are refused: the sha256 must match the data block.',
+      summary: this.summary(prof), keys: snap.count, sha256: await this.digest(data), data: snap.keys,
+    };
+    const d = now.toISOString().slice(0, 10);
+    return { filename: `riftline-save-${d}.json`, text: JSON.stringify(file, null, 2), bytes: 0 };
+  },
+  // UI entry point: resolves { ok, how, filename } and never throws
+  async download() {
+    this.stats.exports++;
+    let f; try { f = await this.build(); } catch (e) { this.stats.failed++; return { ok: false, how: 'build', error: String(e) }; }
+    const dl = this._dl ? await this._dl : null;
+    if (dl) {
+      try { await dl.save({ filename: f.filename, data: f.text }); this.stats.saved++; return { ok: true, how: 'downloads', filename: f.filename }; }
+      catch (e) { const c = e && e.code; if (c === 'declined') { this.stats.declined++; return { ok: false, how: 'declined', filename: f.filename }; } if (c === 'rate_limited') return { ok: false, how: 'busy', filename: f.filename }; if (c === 'host_unavailable') return { ok: false, how: 'host', filename: f.filename }; /* otherwise fall through */ }
+    }
+    try {
+      const url = URL.createObjectURL(new Blob([f.text], { type: 'application/json' })), a = document.createElement('a');
+      a.href = url; a.download = f.filename; a.style.display = 'none'; document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(url), 1500);   // free the blob once the browser has taken it
+      this.stats.fallback++; return { ok: true, how: 'blob', filename: f.filename };
+    } catch (e) { this.stats.failed++; return { ok: false, how: 'blob', error: String(e) }; }
+  },
+  // shared button handler for Career and Settings: status text + toast
+  async run(statusEl) {
+    const set = t => { if (statusEl) statusEl.textContent = t; };
+    set('Preparing your save file…');
+    const r = await this.download();
+    const msg = r.ok ? `Saved ${r.filename}` : r.how === 'declined' ? 'Export cancelled' : r.how === 'busy' ? 'A save prompt is already open' : r.how === 'host' ? 'This app cannot save files — open Riftline in a browser to export' : 'Export failed — try again';
+    set(msg); UI.toast(msg, r.ok ? 'info' : 'enemy'); return r;
+  },
+};
+SaveExport.init();
+
+// ============================================================ v34 SAVE IMPORT (validated full restore from an exported file)
+const SaveImport = {
+  MAX_BYTES: 8 * 1024 * 1024, MAX_KEYS: 256, stats: { picks: 0, ok: 0, refused: 0, cancelled: 0, failed: 0 }, _inp: null, _locked: false,
+  esc(v) { return String(v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); },
+  input() {
+    if (this._inp) return this._inp;
+    const i = document.createElement('input'); i.type = 'file'; i.accept = '.json,application/json'; i.style.display = 'none'; i.tabIndex = -1;
+    document.body.appendChild(i); return (this._inp = i);
+  },
+  // parse + validate text; resolves { ok, file, reason }
+  async check(text) {
+    const no = reason => ({ ok: false, reason });
+    if (typeof text !== 'string' || !text.length) return no('The file is empty.');
+    if (text.length > this.MAX_BYTES) return no('The file is too large to be a Riftline save.');
+    let f; try { f = JSON.parse(text); } catch (e) { return no('The file is not valid JSON.'); }
+    if (!f || typeof f !== 'object' || f.format !== SaveExport.FORMAT) return no('This is not a Riftline save file.');
+    if (!Number.isInteger(f.version) || f.version < 1 || f.version > SaveExport.VERSION) return no(`Unsupported save version (${this.esc(f.version)}).`);
+    const D = f.data; if (!D || typeof D !== 'object' || Array.isArray(D)) return no('The save has no data block.');
+    const keys = Object.keys(D); if (!keys.length) return no('The save holds no data.'); if (keys.length > this.MAX_KEYS) return no('The save holds too many entries.');
+    for (const k of keys) { if (!k.startsWith(SaveExport.PREFIX) || k.length > 128 || !/^[\w.\-]+$/.test(k)) return no('The save contains keys Riftline does not use.'); }
+    if (typeof f.sha256 !== 'string' || !/^[0-9a-f]{64}$/.test(f.sha256)) return no('The save is missing its checksum.');
+    const h = await SaveExport.digest(JSON.stringify(D)); if (!h) return no('This browser cannot verify the checksum.');
+    if (h !== f.sha256) return no('The checksum does not match: the file was edited or damaged.');
+    const P = D['riftline.profile']; if (!P || typeof P !== 'object') return no('The save has no profile.');
+    const bad = this.profileIssue(P); if (bad) return no('The profile looks invalid (' + bad + ').');
+    if (D['riftline.settings'] != null && (typeof D['riftline.settings'] !== 'object' || Array.isArray(D['riftline.settings']))) return no('The settings block is invalid.');
+    return { ok: true, file: f };
+  },
+  profileIssue(P) {
+    const num = (v, lo, hi) => typeof v === 'number' && isFinite(v) && v >= lo && v <= hi;
+    if (!num(P.level, 1, 1000) || !Number.isInteger(P.level)) return 'level';
+    if (P.xp != null && !num(P.xp, 0, 1e9)) return 'xp';
+    if (P.wallet != null) { if (typeof P.wallet !== 'object') return 'wallet'; for (const k in P.wallet) if (!num(P.wallet[k], 0, 1e8)) return 'wallet'; }
+    if (P.ranks != null) { if (typeof P.ranks !== 'object') return 'ranks'; for (const m in P.ranks) { const r = P.ranks[m]; if (!r || typeof r !== 'object') return 'ranks'; if (r.idx != null && !num(r.idx, -1, 200)) return 'rank'; if (r.rr != null && !num(r.rr, -1000, 100000)) return 'RR'; } }
+    if (P.history != null && !Array.isArray(P.history)) return 'history';
+    if (P.owned != null && (typeof P.owned !== 'object' || Array.isArray(P.owned))) return 'owned skins';
+    return null;
+  },
+  // write the file's keys as the whole riftline.* set; restores the previous set if any write throws
+  apply(f) {
+    const prev = {}; let n = 0;
+    try { for (let i = 0; i < localStorage.length; i++) { const k = localStorage.key(i); if (k && k.startsWith(SaveExport.PREFIX)) prev[k] = localStorage.getItem(k); } } catch (e) { return { ok: false, reason: 'Browser storage is unavailable here.' }; }
+    try {
+      for (const k of Object.keys(prev)) localStorage.removeItem(k);
+      for (const k of Object.keys(f.data)) { const v = f.data[k]; localStorage.setItem(k, typeof v === 'string' ? v : JSON.stringify(v)); n++; }
+    } catch (e) {
+      try { for (const k of Object.keys(f.data)) localStorage.removeItem(k); for (const k of Object.keys(prev)) localStorage.setItem(k, prev[k]); } catch (e2) {}
+      return { ok: false, reason: 'Not enough browser storage: nothing was changed.' };
+    }
+    this.lock(); return { ok: true, keys: n };
+  },
+  // after a restore, nothing in memory may overwrite it before the reload lands
+  lock() {
+    if (this._locked) return; this._locked = true;
+    try { const set = Storage.prototype.setItem; Storage.prototype.setItem = function (k, v) { if (typeof k === 'string' && k.startsWith(SaveExport.PREFIX)) return; return set.call(this, k, v); }; } catch (e) {}
+  },
+  confirmBox(f, onOk) {
+    const S = f.summary || {}, rows = [['Level', S.level], ['Matches', S.matches], ['Skins owned', S.skinsOwned], ['Act wins', S.actWins]];
+    for (const k in S) if (k.startsWith('rank_')) rows.push([k === 'rank_rq' ? 'Rank · ranked' : k === 'rank_rs' ? 'Rank · solo' : 'Rank', S[k]]);
+    const when = (() => { const d = new Date(f.exportedAt); return isNaN(d) ? 'unknown date' : d.toLocaleString(); })();
+    const body = rows.filter(r => r[1] != null).map(r => `<div class="imp-row"><span>${this.esc(r[0])}</span><b>${this.esc(r[1])}</b></div>`).join('');
+    const M = typeof $ === 'function' && $('modal');
+    if (!M || typeof Lobby === 'undefined') { onOk(); return; }
+    M.innerHTML = `<div class="mbox"><em>Import save data</em><h3>Restore this save?</h3><p>Exported ${this.esc(when)} · ${this.esc(f.keys != null ? f.keys : Object.keys(f.data).length)} entries</p><div class="imp-sum">${body}</div><p class="warn">This replaces all Riftline progress, settings and keybinds in this browser. The page reloads afterwards.</p><div class="mrow"><button class="opt" data-m="cancel">Cancel</button><button class="opt on" data-m="ok">Restore save</button></div></div>`;
+    Lobby.pending = onOk; M.classList.remove('hidden');
+  },
+  // shared button handler for Career and Settings
+  run(statusEl) {
+    const set = t => { if (statusEl) statusEl.textContent = t; }, toast = (m, ok) => { set(m); if (typeof UI !== 'undefined' && UI.toast) UI.toast(m, ok ? 'info' : 'enemy'); };
+    if (typeof G !== 'undefined' && G.running && G.mode && !G.mode.over) { toast('Finish or leave the match before importing a save', false); return; }
+    const inp = this.input(); inp.value = ''; this.stats.picks++;
+    inp.onchange = async () => {
+      const file = inp.files && inp.files[0]; inp.onchange = null;
+      if (!file) { this.stats.cancelled++; return; }
+      if (file.size > this.MAX_BYTES) { this.stats.refused++; toast('Import refused: the file is too large to be a Riftline save', false); return; }
+      set('Checking ' + file.name + '…');
+      let text = ''; try { text = await file.text(); } catch (e) { this.stats.failed++; toast('Could not read that file', false); return; }
+      const r = await this.check(text);
+      if (!r.ok) { this.stats.refused++; toast('Import refused: ' + r.reason, false); return; }
+      set('Ready to restore ' + file.name);
+      this.confirmBox(r.file, () => {
+        const a = this.apply(r.file);
+        if (!a.ok) { this.stats.failed++; toast('Import failed: ' + a.reason, false); return; }
+        this.stats.ok++; toast(`Save restored (${a.keys} entries) · reloading…`, true);
+        setTimeout(() => { try { location.reload(); } catch (e) {} }, 700);
+      });
+    };
+    inp.click();
+  },
+};
 // ============================================================ v28 RANK CRESTS — clean vector badges, decoupled from rank state
 // Pure presentation: Crest.svg(idx, size) → SVG string. It reads only RANK_COLS / RANK_TOP; nothing here touches profiles,
 // RR or the ladder. Every badge is built once per (idx, scale class) and cached, so scoreboards / leaderboard refreshes only
@@ -4161,6 +4422,125 @@ for (const id in MAP_ROUTES) {
   }
   def.callouts = extra.concat(def.callouts); def.routes = extra.map(e => e[0]);
 }
+// ============================================================ v34 BUY ZONES: data-driven buy-phase barrier placement + audit
+// Map layout data stays as authored; this module re-derives where the buy-phase barriers stand on every competitive map,
+// applied to the char grid inside World.load (after any route rework), before the World arrays are built.
+//
+// Rules (Valorant's convention):
+//   · DEFENDERS own their spawn, every plant site and a short apron in front of each site, so they can walk on, climb
+//     perches and set traps before the round; their barrier ('-') sits at the attacker-side mouths of the site entrances
+//     and across the defender half of mid.
+//   · ATTACKERS own their spawn courtyard plus the first stretch of every lane leaving it, so they can split and stage
+//     left / mid / right; their barrier ('=') sits at the lane-split junctions, not at the spawn door.
+//   · A neutral band always separates the two zones: no cell inside one zone may have line of sight to a cell inside the
+//     other when the barriers drop, and the first possible sight contact must be ≥ 2 s of running for both sides.
+// Method: walking distance fields from each spawn (4-connected, 2 m cells, low props cost 2, teleporters linked) give each
+// cell a progress value f = dA / (dA + dD). Zones are grown from the spawns by f thresholds chosen per map (defenders: just
+// in front of the most forward site cell; attackers: ~30 % of the way), then shrunk step by step until the sightline
+// and contact-time audit passes. The barrier is the one-cell ring of floor around each zone (8-connected, so nothing leaks).
+const BuyZones = {
+  RUN: 6.75, MIN_CONTACT: 2.0, ENGAGE: 20, stats: {},   // ENGAGE: contact counts sightlines up to 20 cells (40 m); longer lanes are reported, not gated
+  pass(c) { const t = TILE[c]; if (!t) return 1; if (CLIMB.includes(c) && t.h <= 1.15) return 2; return 0; },
+  field(g, w, h, seeds, tele) {
+    const N = w * h, d = new Float32Array(N).fill(1e9), q = [];
+    for (const i of seeds) { d[i] = 0; q.push(i); }
+    // small dial queue: costs are 1 or 2
+    for (let qi = 0; qi < q.length; qi++) {
+      const i = q[qi], x = i % w, z = (i / w) | 0;
+      const nb = [[x + 1, z], [x - 1, z], [x, z + 1], [x, z - 1]]; const tp = tele.get(i); if (tp != null) nb.push([tp % w, (tp / w) | 0]);
+      for (const [nx, nz] of nb) { if (nx < 0 || nz < 0 || nx >= w || nz >= h) continue; const j = nz * w + nx, c = this.pass(g[nz][nx]); if (!c) continue; const nd = d[i] + c; if (nd < d[j]) { d[j] = nd; q.push(j); } }
+    }
+    return d;
+  },
+  // cheap grid LOS between two cell centres at eye height (walls ≥ 1.6 m block; low props don't)
+  los(g, w, x0, z0, x1, z1) {
+    const dx = x1 - x0, dz = z1 - z0, n = Math.ceil(Math.max(Math.abs(dx), Math.abs(dz)) * 2);
+    for (let s = 1; s < n; s++) { const x = Math.floor(x0 + 0.5 + dx * s / n), z = Math.floor(z0 + 0.5 + dz * s / n), t = TILE[g[z][x]]; if (t && t.h >= 1.6) return false; }
+    return true;
+  },
+  regions(g, w, h, f, fA, fD, aSeed, dSeed) {
+    const N = w * h, A = new Uint8Array(N), D = new Uint8Array(N), grow = (seed, R, ok) => { const q = seed.slice(); for (const i of q) R[i] = 1; for (let k = 0; k < q.length; k++) { const i = q[k], x = i % w, z = (i / w) | 0; for (const [nx, nz] of [[x + 1, z], [x - 1, z], [x, z + 1], [x, z - 1]]) { if (nx < 0 || nz < 0 || nx >= w || nz >= h) continue; const j = nz * w + nx; if (R[j] || !this.pass(g[nz][nx]) || !ok(j)) continue; R[j] = 1; q.push(j); } } };
+    grow(aSeed, A, j => f[j] <= fA); grow(dSeed, D, j => f[j] >= fD);
+    return { A, D };
+  },
+  // ring = floor cells outside a zone touching it (8-neighbours); never a spawn / site / teleporter cell
+  ring(g, w, h, R, other, tele) {
+    const out = [];
+    for (let z = 1; z < h - 1; z++) for (let x = 1; x < w - 1; x++) {
+      const i = z * w + x; if (R[i] || other[i] || !this.pass(g[z][x]) || tele.has(i)) continue; const c = g[z][x]; if (c === 'a' || c === 'd' || c === 't' || c === 'T') continue;
+      let touch = false; for (const [dx, dz] of N8) if (R[(z + dz) * w + x + dx]) { touch = true; break; }
+      if (touch) out.push(i);
+    }
+    return out;
+  },
+  // first-contact estimate: earliest time (s) at which some attacker-reachable cell sees some defender-reachable cell,
+  // both measured from their zone edges at barrier drop; plus a check that the zones themselves never see each other
+  audit(g, w, h, A, D, aRing, dRing, tele) {
+    const fa = this.field(g, w, h, aRing, tele), fd = this.field(g, w, h, dRing, tele), cells = [];
+    for (let z = 1; z < h - 1; z += 1) for (let x = 1; x < w - 1; x += 1) { const i = z * w + x; if (!this.pass(g[z][x])) continue; if ((x + z) % 2) continue; cells.push(i); }
+    let cross = 0, best = 1e9, bestPair = null, longT = 1e9;
+    const aCells = cells.filter(i => A[i]), dCells = cells.filter(i => D[i]);
+    for (const a of aCells) for (const d of dCells) if (this.los(g, w, a % w, (a / w) | 0, d % w, (d / w) | 0)) { cross++; if (cross > 3) break; }
+    // contact: cells sorted by attacker time; pair with defender cells it can see
+    const byA = cells.filter(i => fa[i] < 1e8 && !A[i]).sort((p, q) => fa[p] - fa[q]).slice(0, 700), byD = cells.filter(i => fd[i] < 1e8 && !D[i]).sort((p, q) => fd[p] - fd[q]).slice(0, 700);
+    for (const a of byA) { if (fa[a] * 2 / this.RUN >= best) break; for (const d of byD) { const t = Math.max(fa[a], fd[d]) * 2 / this.RUN; if (t >= best) break; const ax = a % w, az = (a / w) | 0, dx = d % w, dz = (d / w) | 0, far = Math.hypot(ax - dx, az - dz) > this.ENGAGE;
+        if (this.los(g, w, ax, az, dx, dz)) { if (far) { if (t < longT) longT = t; continue; } best = t; bestPair = [a, d, fa[a], fd[d]]; break; } } }
+    return { cross, contact: best, pair: bestPair, longLane: longT };
+  },
+  apply(def, M) {
+    if (!def.sites || !def.sites.length || def.noBuyZones) return null;
+    const g = M.g, w = M.w, h = M.h, N = w * h, tele = new Map();
+    for (const t of def.teleporters || []) tele.set(t.pad[1] * w + t.pad[0], t.exit[1] * w + t.exit[0]);
+    const aSeed = [], dSeed = [], site = [];
+    for (let z = 0; z < h; z++) for (let x = 0; x < w; x++) { const c = g[z][x], i = z * w + x; if (c === '=' || c === '-') g[z][x] = '.'; if (c === 'a') aSeed.push(i); else if (c === 'd') dSeed.push(i); else if (def.sites.includes(c)) site.push(i); }
+    if (!aSeed.length || !dSeed.length) return null;
+    const dA = this.field(g, w, h, aSeed, tele), dD = this.field(g, w, h, dSeed, tele), f = new Float32Array(N);
+    for (let i = 0; i < N; i++) f[i] = dA[i] < 1e8 && dD[i] < 1e8 ? dA[i] / (dA[i] + dD[i]) : (dA[i] < 1e8 ? 0 : 1);
+    const siteF = Math.min(...site.map(i => f[i]));
+    let fD = siteF - 0.07, fA = Math.min(0.34, fD - 0.24), res = null, tries = 0, A, D, aRing, dRing;
+    for (; tries < 24; tries++) {
+      ({ A, D } = this.regions(g, w, h, f, fA, fD, aSeed, dSeed));
+      for (const i of site) if (!D[i]) D[i] = 1;   // every plant cell is defender-reachable even on odd layouts
+      aRing = this.ring(g, w, h, A, D, tele); dRing = this.ring(g, w, h, D, A, tele);
+      res = this.audit(g, w, h, A, D, aRing, dRing, tele);
+      if (res.cross === 0 && res.contact >= this.MIN_CONTACT) break;
+      // trim whichever side reaches the first contact sooner (attackers never below their spawn courtyard, defenders never off a site)
+      const defFaster = res.pair && res.pair[3] < res.pair[2];
+      if (res.cross) { if (fA > 0.12) fA -= 0.03; else if (fD < siteF - 0.01) fD += 0.02; else break; }
+      else if (defFaster && fD < siteF - 0.01) fD += 0.015; else if (fA > 0.12) fA -= 0.025; else if (fD < siteF - 0.01) fD += 0.015; else break;
+    }
+    for (const i of aRing) g[(i / w) | 0][i % w] = '=';
+    for (const i of dRing) g[(i / w) | 0][i % w] = '-';
+    let sitesIn = 0; for (const i of site) if (D[i]) sitesIn++;
+    const st = { fA: +fA.toFixed(2), fD: +fD.toFixed(2), siteF: +siteF.toFixed(2), contact: +res.contact.toFixed(2), longLane: res.longLane < 1e8 ? +res.longLane.toFixed(2) : null, cross: res.cross, sitesInDef: +(sitesIn / site.length).toFixed(2), atkCells: A.reduce((s, v) => s + v, 0), defCells: D.reduce((s, v) => s + v, 0), aRing: aRing.length, dRing: dRing.length, tries, pair: res.pair ? [[res.pair[0] % w, (res.pair[0] / w) | 0], [res.pair[1] % w, (res.pair[1] / w) | 0], res.pair[2], res.pair[3]] : null };
+    this.stats[def.id || def.name] = st; return st;
+  },
+};
+// test / tuning helper: per-map report (and an ASCII picture of the zones)
+const BarrierAudit = {
+  // the hand-authored barriers, measured the same way (for before/after comparisons)
+  baseline(id) {
+    const def = MAPS[id]; def.noBuyZones = true; try { World.load(def, true); } finally { def.noBuyZones = false; }
+    const w = GW, h = GH, g = []; for (let z = 0; z < h; z++) { const r = []; for (let x = 0; x < w; x++) r.push(World.ch[z * w + x]); g.push(r); }
+    const tele = new Map(); for (const t of def.teleporters || []) tele.set(t.pad[1] * w + t.pad[0], t.exit[1] * w + t.exit[0]);
+    const zone = (ch) => { const R = new Uint8Array(w * h), q = []; for (let i = 0; i < w * h; i++) if (World.ch[i] === ch) { R[i] = 1; q.push(i); } for (let k = 0; k < q.length; k++) { const i = q[k], x = i % w, z = (i / w) | 0; for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz; if (nx < 0 || nz < 0 || nx >= w || nz >= h) continue; const j = nz * w + nx, c = g[nz][nx]; if (R[j] || c === '=' || c === '-' || !BuyZones.pass(c)) continue; R[j] = 1; q.push(j); } } return R; };
+    const A = zone('a'), D = zone('d'), aRing = [], dRing = [];
+    for (let i = 0; i < w * h; i++) { const c = World.ch[i]; if (c === '=') aRing.push(i); else if (c === '-') dRing.push(i); }
+    let site = 0, sin = 0; for (let i = 0; i < w * h; i++) if (def.sites.includes(World.ch[i])) { site++; if (D[i]) sin++; }
+    const r = BuyZones.audit(g, w, h, A, D, aRing, dRing, tele);
+    return { contact: +r.contact.toFixed(2), cross: r.cross, sitesInDef: +(sin / site).toFixed(2), atkCells: A.reduce((s, v) => s + v, 0), defCells: D.reduce((s, v) => s + v, 0) };
+  },
+  run(id, ascii) {
+    const def = MAPS[id]; World.load(def, true); const st = BuyZones.stats[def.id || def.name] || {};
+    const out = Object.assign({}, st);
+    // walk check with barriers up: both zones sealed, every walkable cell reachable once they drop
+    const reach = (up) => { World.barriersUp.atk = World.barriersUp.def = up; const seen = new Uint8Array(GW * GH), q = []; for (let i = 0; i < GW * GH; i++) if (World.ch[i] === 'a') { seen[i] = 1; q.push(i); } for (let k = 0; k < q.length; k++) { const i = q[k], x = i % GW, z = (i / GW) | 0; for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz; if (!World.inb(nx, nz)) continue; const j = nz * GW + nx; if (seen[j] || World.navH(nx, nz) < 0 || World.blockH(nx, nz) > 1.2) continue; seen[j] = 1; q.push(j); } } return seen; };
+    const up = reach(true), down = reach(false); let leak = 0, unreach = 0; for (let i = 0; i < GW * GH; i++) { if (up[i] && World.ch[i] === 'd') leak++; if (World.walk[i] && !down[i] && World.ch[i] !== 'v') unreach++; }
+    World.barriersUp.atk = World.barriersUp.def = false; out.leak = leak; out.unreachable = unreach;
+    if (ascii) { const rows = []; for (let z = 0; z < GH; z++) { let r = ''; for (let x = 0; x < GW; x++) { const c = World.ch[z * GW + x]; r += c === '#' || c === 'W' || c === 'w' ? '#' : c; } rows.push(r); } out.ascii = rows.join('\n'); }
+    return out;
+  },
+};
 // ============================================================ WORLD GRID: collision, raycasts, navigation, tactical analysis
 const CELL = 2;
 let GW = 44, GH = 58, MAP = null;
@@ -4182,6 +4562,7 @@ const World = {
   load(def, light) {
     MAP = def; GW = def.w; GH = def.h;
     const M = MapGrid(GW, GH); def.build(M);
+    if (typeof BuyZones !== 'undefined') BuyZones.apply(def, M);   // v34: buy-phase barriers derived per map (defenders on site, attackers staged)
     const N = GW * GH;
     this.h = new Float32Array(N); this.mat = new Uint8Array(N); this.zone = new Uint8Array(N); this.walk = new Uint8Array(N); this.barrier = new Uint8Array(N); this.ceil = new Float32Array(N); this.nav = new Float32Array(N);
     this.ch = new Array(N); this.voidC = new Uint8Array(N); this.siteLetters = def.sites.slice(); this.temp = [];
@@ -6718,6 +7099,109 @@ const SkinChassis = {
     },
   },
 };
+// ============================================================ v34 ADS SIGHTLINE FIT (viewmodel only; world/bot models untouched)
+// Aiming down sights puts the gun's centre plane (x = 0) on the screen axis, so anything on that plane above the pivot's ADS
+// height covers the crosshair. Per weapon + skin this measures the gun's real silhouette in a thin slab around x = 0 (exact
+// triangle clipping, no bounding boxes), then:
+//   S      = sight-mount height: the receiver top in the slab, capped at A.top + CAP so tall ornaments can't push the gun off-screen
+//   flat   = an ADS copy of the static mesh (core + baked addons + glow) with every vertex above S in the forward band pressed
+//            down to S — fins, rails, front posts and crowns fold flat while aiming and come back at hip
+//   hide   = animated skin-rig nodes whose rest box rises above S inside the band; they scale out with ADS
+//   holo   = a flip-up holographic sight (open frame, faint glass, additive reticle) mounted on the rail at S for rifles, SMGs and
+//            heavies, whose window centre is the exact point the pivot puts on the screen axis
+//   adsY   = pivot height that puts that window centre (or, for pistols/shotguns, S plus a small clearance) on the axis
+// Cached on the gunGeo result, so each weapon/skin pays the cost once (≈1–3 ms) the first time it is equipped.
+const ADSFit = {
+  HW: 0.03, BAND: 0.13, ZMAX: 0.24, CAP: 0.03, WIN: 0.026, CLEAR: 0.02, HOLO: { rifle: 1, smg: 1, heavy: 1 },
+  stats: { fits: 0, ms: 0 },
+  // clip polygon (array of [x,y,z]) to the half-space s*p[ax] <= lim
+  clip(poly, ax, lim, s) {
+    const out = [];
+    for (let i = 0; i < poly.length; i++) {
+      const a = poly[i], b = poly[(i + 1) % poly.length], da = s * a[ax] - lim, db = s * b[ax] - lim;
+      if (da <= 0) out.push(a);
+      if ((da < 0 && db > 0) || (da > 0 && db < 0)) { const t = da / (da - db); out.push([a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t]); }
+    }
+    return out;
+  },
+  // highest surface point inside |x| <= hw and z in [z0, z1]
+  slabTop(geo, hw, z0, z1) {
+    if (!geo || !geo.attributes || !geo.attributes.position) return -Infinity;
+    const P = geo.attributes.position.array, I = geo.index ? geo.index.array : null, n = I ? I.length : P.length / 3; let top = -Infinity;
+    const v = k => { const j = (I ? I[k] : k) * 3; return [P[j], P[j + 1], P[j + 2]]; };
+    for (let t = 0; t + 2 < n; t += 3) {
+      const a = v(t), b = v(t + 1), c = v(t + 2);
+      if (Math.max(a[1], b[1], c[1]) <= top) continue;
+      if ((a[0] > hw && b[0] > hw && c[0] > hw) || (a[0] < -hw && b[0] < -hw && c[0] < -hw)) continue;
+      if ((a[2] > z1 && b[2] > z1 && c[2] > z1) || (a[2] < z0 && b[2] < z0 && c[2] < z0)) continue;
+      let p = [a, b, c]; p = this.clip(p, 0, hw, 1); p = this.clip(p, 0, hw, -1); p = this.clip(p, 2, z1, 1); p = this.clip(p, 2, -z0, -1);
+      for (const q of p) if (q[1] > top) top = q[1];
+    }
+    return top;
+  },
+  // ADS copy: vertices in the forward band above s are pressed to s
+  flatten(geo, s) {
+    if (!geo) return null;
+    const g = geo.clone(), P = g.attributes.position.array; let n = 0;
+    for (let i = 0; i < P.length; i += 3) if (P[i + 1] > s && Math.abs(P[i]) < this.BAND && P[i + 2] < this.ZMAX) { P[i + 1] = s; n++; }
+    if (!n) { g.dispose(); return geo; }
+    g.attributes.position.needsUpdate = true; g.computeBoundingSphere(); return g;
+  },
+  get(G, id) {
+    if (G._ads) return G._ads;
+    const t0 = performance.now(), W = WEAPONS[id] || {}, cls = W.cls, core = G.core || G, A = G.A || { top: 0.03, z1: 0.05, z0: -0.2 };
+    let top = -Infinity; for (const g of [core.geo, core.glow]) top = Math.max(top, this.slabTop(g, this.HW, -9, this.ZMAX));
+    const S = isFinite(top) ? Math.min(top, A.top + this.CAP) : A.top;
+    const holo = !!this.HOLO[cls] && !G.arch;
+    const zS = clamp((A.z1 != null ? A.z1 : 0.05) - 0.1, -0.2, 0.0);
+    let under = -Infinity; for (const g of [core.geo, core.glow]) under = Math.max(under, this.slabTop(g, 0.034, zS - 0.035, zS + 0.035));
+    const o = { S, holo, zS, under: isFinite(under) ? Math.min(under, S) : S - 0.02, adsY: -(S + (holo ? this.WIN : this.CLEAR)),
+      flatHi: this.flatten(core.geo, S), flatLo: this.flatten(core.geoLo, S), flatGlow: this.flatten(core.glow, S), top };
+    this.stats.fits++; this.stats.ms += performance.now() - t0;
+    return (G._ads = o);
+  },
+  // rig nodes (built for the viewmodel, not yet parented) whose rest box enters the sight band above S
+  rigHide(rig, S) {
+    const out = []; if (!rig) return out;
+    rig.root.updateMatrixWorld(true); const b = new THREE.Box3(), tb = new THREE.Box3();
+    for (const n of rig.nodes) {
+      b.makeEmpty();
+      for (const m of [n.mesh, n.gm]) if (m && m.geometry) { if (!m.geometry.boundingBox) m.geometry.computeBoundingBox(); tb.copy(m.geometry.boundingBox).applyMatrix4(m.matrixWorld); b.union(tb); }
+      if (b.isEmpty()) continue;
+      if (b.max.y > S + 0.002 && b.min.x < this.BAND && b.max.x > -this.BAND && b.min.z < this.ZMAX) out.push(n);
+    }
+    return out;
+  },
+  // flip-up holographic sight: open frame on a riser, faint glass, additive reticle at the window centre
+  _ret: null,
+  reticleTex() {
+    if (this._ret) return this._ret;
+    return (this._ret = R.canvasTex(64, 64, x => {
+      x.clearRect(0, 0, 64, 64); x.strokeStyle = '#fff'; x.fillStyle = '#fff'; x.lineCap = 'round';
+      x.lineWidth = 3.2; x.beginPath(); x.arc(32, 32, 22, 0, Math.PI * 2); x.stroke();
+      x.lineWidth = 3.6; for (const [a, b] of [[[32, 4], [32, 12]], [[32, 52], [32, 60]], [[4, 32], [12, 32]], [[52, 32], [60, 32]]]) { x.beginPath(); x.moveTo(...a); x.lineTo(...b); x.stroke(); }
+      x.beginPath(); x.arc(32, 32, 3.4, 0, Math.PI * 2); x.fill();
+    }));
+  },
+  buildHolo(F, tint, frameC, accC) {
+    const grp = new THREE.Group(), WIN = this.WIN, s = F.S, z = F.zS, base = Math.max(0.006, s - F.under + 0.006);
+    const B = new MeshBuf(false), Gw = new MeshBuf(false), box = (w, h, l, x, y, zz, c, buf) => (buf || B).add(Prim.rbox(w, h, l, Math.min(w, h, l) * 0.3, 1), TRS(x, y, zz), c);
+    box(0.034, base, 0.06, 0, s - base / 2 + 0.003, z + 0.004, frameC);                        // riser / rail clamp
+    box(0.006, WIN * 2 - 0.006, 0.03, -0.029, s + WIN, z, frameC); box(0.006, WIN * 2 - 0.006, 0.03, 0.029, s + WIN, z, frameC);   // side posts
+    box(0.064, 0.006, 0.03, 0, s + WIN * 2 - 0.001, z, frameC);                                // hood
+    box(0.05, 0.003, 0.004, 0, s + WIN * 2 + 0.003, z - 0.014, accC, Gw);                      // accent lip (glow)
+    box(0.012, 0.008, 0.016, 0.022, s + 0.006, z + 0.022, accC, Gw);                           // emitter
+    const frame = new THREE.Mesh(B.build(false), R.propMat.hi); frame.userData.mset = R.propMat; frame.userData.noShadow = true;
+    const glow = new THREE.Mesh(Gw.build(false), GlowMat); glow.userData.noShadow = true;
+    const glass = new THREE.Mesh(new THREE.PlaneGeometry(0.052, WIN * 2 - 0.004), new THREE.MeshBasicMaterial({ color: tint, transparent: true, opacity: 0.1, depthWrite: false, side: THREE.DoubleSide }));
+    glass.position.set(0, s + WIN, z - 0.002); glass.renderOrder = 5;
+    const ret = new THREE.Mesh(new THREE.PlaneGeometry(0.019, 0.019), new THREE.MeshBasicMaterial({ map: this.reticleTex(), color: tint, transparent: true, opacity: 1, depthWrite: false, blending: THREE.AdditiveBlending }));
+    ret.position.set(0, s + WIN, z - 0.004); ret.renderOrder = 6;
+    for (const m of [frame, glow, glass, ret]) { m.frustumCulled = false; grp.add(m); }
+    grp.userData = { frame, glow, glass, ret, pivotY: s, top: s + WIN * 2 + 0.005 };
+    return grp;
+  },
+};
 // ============================================================ VIEWMODEL (first-person gun + arms, animated)
 const VM_GRIP = { rifle: -0.3, smg: -0.22, shotgun: -0.34, sniper: -0.34, heavy: -0.4 };
 // ---- weapon inspect choreography: keyframes relative to the ready pose. p = offset (m), r = rotation (rad, XYZ), t = 0..1
@@ -6783,7 +7267,16 @@ const VM = {
     this.mag.visible = !!G.mag; if (G.mag) this.setGeo(this.mag, G.mag, G.magLo); else { this.mag.userData.geoHi = null; this.mag.geometry = new THREE.BufferGeometry(); }   // no stale magazine on melee
     this.glow.geometry = core.glow || new THREE.BufferGeometry();
     if (this.rig) { this.gunG.remove(this.rig.root); this.rig = null; }
-    if (G.parts) { this.rig = SkinRig.make(G, R.quality === 'high' ? R.propMat.hi : R.propMat.lo, this.glow.material, true); this.gunG.add(this.rig.root); }
+    if (G.parts) this.rig = SkinRig.make(G, R.quality === 'high' ? R.propMat.hi : R.propMat.lo, this.glow.material, true);
+    // v34 ADS sightline fit: measured sight height, flattened ADS mesh, rig parts to fold away, flip-up holo sight
+    this.coreG = core; this.adsF = (W.cls === 'melee' || W.cls === 'blades' || W.cls === 'charge' || W.cls === 'sniper' || G.arch) ? null : ADSFit.get(G, id);
+    this.adsHide = this.adsF ? ADSFit.rigHide(this.rig, this.adsF.S) : [];
+    if (this.rig) this.gunG.add(this.rig.root);
+    if (this.holo) { this.gunG.remove(this.holo); this.holo.traverse(o => { if (o.isMesh && o.geometry) o.geometry.dispose(); }); this.holo = null; }
+    if (this.adsF && this.adsF.holo) {
+      const pal = sk ? Skins.palette(sk).p : null, tint = (sk && Skins.tracer(w)) || (pal ? pal[2] : 0xff4a5c), inner = ADSFit.buildHolo(this.adsF, tint, pal ? pal[3] : 0x22262b, pal ? pal[2] : 0xff4a5c);
+      this.holo = new THREE.Group(); this.holo.position.set(0, this.adsF.S, 0); inner.position.set(0, -this.adsF.S, 0); this.holo.add(inner); this.holo.userData = inner.userData; this.holo.visible = false; this.gunG.add(this.holo);
+    }
     this.skin = sk; this.line = sk && SKINS[sk.id] ? SKIN_LINES[SKINS[sk.id].line] : null; this.archId = G.arch; this.arch = G.arch ? MELEE_ARCH[G.arch] : null;
     const mc = Skins.tracer(w) || (W.pal && W.pal[2]); if (mc) this.muzzle.material.color.copy(new THREE.Color(mc).lerp(new THREE.Color(0xffffff), 0.55));
     const fs = this.line && sk.lvl >= 2 && this.line.flash; this.muzzle.material.map = fs ? FlashTex.get(fs) : this.flashDefault; this.muzzle.material.needsUpdate = true;
@@ -6853,18 +7346,19 @@ const VM = {
     this.equipT = Math.max(0, this.equipT - dt * 3.2); this.castT = Math.max(0, this.castT - dt * 1.8); this.swingT = Math.max(0, this.swingT - dt * 3.2);
     this.boltT = Math.max(0, this.boltT - dt * (w.def.rps || 1) * 1.3);
     const pist = c === 'pistol' || this.wid === 'snub';
-    let x = lerp(pist ? 0.15 : 0.17, 0.0, ads), y = lerp(pist ? -0.15 : -0.17, -0.095, ads), z = lerp(pist ? -0.36 : -0.38, -0.3, ads);
+    const F = this.adsF, kA = 1 - 0.8 * ads;   // ADS: pivot height from the measured sight line; recoil + sway tamed so the gun never climbs into the dot
+    let x = lerp(pist ? 0.15 : 0.17, 0.0, ads), y = lerp(pist ? -0.15 : -0.17, F ? F.adsY : -0.095, ads), z = lerp(pist ? -0.36 : -0.38, -0.3, ads);
     if (this.oneHand) { x = 0.2; y = -0.2; z = -0.32; }
     const AP = this.arch && this.arch.pose; if (AP) { x = AP[0]; y = AP[1]; z = AP[2]; }
     if (c === 'charge') { x = 0.06; y = -0.2; z = -0.36; }
     const ba = 1 - ads * 0.85;
-    x += Math.cos(this.bob) * 0.011 * bobA * ba + this.swayX; y += Math.abs(Math.sin(this.bob)) * 0.013 * bobA * ba + this.swayY;
+    const sa = 1 - 0.75 * ads; x += Math.cos(this.bob) * 0.011 * bobA * ba + this.swayX * sa; y += Math.abs(Math.sin(this.bob)) * 0.013 * bobA * ba + this.swayY * sa;
     // reload choreography
     let rp = -1; if (ag.reloading()) rp = clamp((G.time - ag.reloadStart) / ag.reloadDur, 0, 1);
     const env = rp >= 0 ? Math.pow(Math.sin(rp * Math.PI), 0.6) : 0;
-    let rx = this.kickR * 0.06 - this.equipT * 0.9 + env * 0.15 + this.boltT * 0.18 + (AP ? AP[3] : 0), ry = AP ? AP[4] : 0, rz = (AP ? AP[5] : 0) + -env * (pist ? 0.25 : 0.45) + (this.kickRoll || 0) * this.kick + this.boltT * -0.15;
+    let rx = this.kickR * 0.06 * kA - this.equipT * 0.9 + env * 0.15 + this.boltT * 0.18 + (AP ? AP[3] : 0), ry = AP ? AP[4] : 0, rz = (AP ? AP[5] : 0) + -env * (pist ? 0.25 : 0.45) + (this.kickRoll || 0) * this.kick * kA + this.boltT * -0.15;
     this.holdK += ((this.holdOn ? 1 : 0) - this.holdK) * Math.min(1, dt * 12); const hk = this.holdK;
-    y += -this.equipT * 0.22 - env * 0.04 - this.castT * 0.06 - hk * 0.3; z += this.kick * 0.045 + hk * 0.06; rx -= hk * 0.7;
+    y += -this.equipT * 0.22 - env * 0.04 - this.castT * 0.06 - hk * 0.3; z += this.kick * 0.045 * (1 - 0.5 * ads) + hk * 0.06; rx -= hk * 0.7;
     // mag + left hand
     const lb = this.leftBase; let lx = lb.x, ly = lb.y, lz = lb.z, my = 0, mvis = true;
     if (rp >= 0 && !this.oneHand) {
@@ -6906,10 +7400,22 @@ const VM = {
     this.orb.visible = this.castT > 0.05; if (this.orb.visible) { const s = 0.8 + Math.sin(this.castT * 20) * 0.2; this.orb.scale.setScalar(s); }
     this.root.scale.x = Settings.hand === 'left' ? -1 : 1;   // left-handed: mirror arms + gun across the screen axis
     this.pivot.position.set(x, y, z); this.pivot.rotation.set(rx, ry, rz);
+    this.adsView(ads);
     this.mag.position.set(0, my, my * 0.2); this.mag.rotation.x = my * 0.6 + (this.twirl || 0); this.mag.visible = mvis && !!this.mag.userData.geoHi;
     this.armL.position.set(lx, ly, lz); this.armL.visible = !this.oneHand || this.castT > 0;
     this.swayX *= Math.pow(0.0001, dt); this.swayY *= Math.pow(0.0001, dt);
     this.skinFx(dt, ag, ch);
+  },
+  // v34: ADS-safe mesh swap (ornaments above the sight line pressed flat), flip-up holo, muzzle flash kept small under the dot
+  adsView(ads) {
+    const F = this.adsF, C = this.coreG; if (!C) return;
+    const flat = !!F && ads > 0.45, hi = R.quality === 'high';
+    const want = flat ? (hi ? F.flatHi : (F.flatLo || F.flatHi)) : (hi ? C.geo : (C.geoLo || C.geo));
+    if (want && this.gun.geometry !== want) this.gun.geometry = want;
+    const wg = flat ? F.flatGlow : C.glow; if (wg && this.glow.geometry !== wg) this.glow.geometry = wg;
+    this.adsHideK = F ? clamp((ads - 0.25) / 0.4, 0, 1) : 0;
+    if (this.holo) { const k = clamp((ads - 0.12) / 0.6, 0, 1), e = k * k * (3 - 2 * k), U = this.holo.userData; this.holo.visible = e > 0.01; this.holo.scale.set(1, Math.max(0.01, e), 1); U.ret.material.opacity = e; U.glass.material.opacity = 0.1 * e; }
+    this.muzzle.scale.setScalar(0.2 * (1 - 0.55 * ads));
   },
   // live skin rig: part animation, particle emitters, blade trail, flip / spin foley
   skinFx(dt, ag, ch) {
@@ -6926,6 +7432,7 @@ const VM = {
       st.t = G.time; st.dt = dt; st.insp = this.inspEnv; st.open = ch.o; st.spread = this.spread; st.kills = ag.roundKills || 0; st.mkills = ag.kills || 0;
       st.top = !!(G.agents && ag.kills >= 5 && G.agents.every(a => a === ag || a.kills < ag.kills)); st.draw = 1 - (this.drawT || 0); st.fire = clamp(this.kick, 0, 1); st.hp = ag.hp;
       SkinRig.update(this.rig, st);
+      if (this.adsHideK > 0) { const f = Math.max(0.001, 1 - this.adsHideK); for (const n of this.adsHide) n.g.scale.multiplyScalar(f); }   // ornaments above the sight line fold away while aiming
       this.root.updateMatrixWorld(true);
       const q = R.quality === 'high' ? 1 : 0.5;
       for (const n of this.rig.nodes) { const e = n.s.emit; if (!e || !n.g.visible) continue; n.acc = (n.acc || 0) + dt * (e.r + e.rI * this.inspEnv) * q;
@@ -6986,6 +7493,7 @@ class Agent {
     if (!this.weapons[this.slot]) this.slot = this.weapons.primary ? 'primary' : 'secondary';
     this.model.visible = true; this.model.rotation.set(0, 0, 0);
     this.roundKills = 0; this.roundDmg = 0;
+    if (typeof CombatLog !== 'undefined') CombatLog.spawned(this);   // v35: a new life for the combat report
   }
   equip(slot, quiet) {
     if (!this.weapons[slot] || slot === this.slot) return;
@@ -7187,7 +7695,7 @@ function traceBullet(shooter, o, d, def, range, dmgScale, quietFx) {
     else if (best.part === 'device') { Abil.damageTarget(bestA, Math.max(10, damageFor(def, best.t, 'body') * factor * (dmgScale || 1)), shooter); FX.emit('spark', hitPoint, { n: 6, speed: 5 }); }
     else {
       const dmg = damageFor(def, best.t, best.part) * factor * (dmgScale || 1);
-      applyDamage(bestA, dmg, shooter, { part: best.part, weapon: def.name, wid: def.id, wallbang: pens > 0, from: o });
+      applyDamage(bestA, dmg, shooter, { part: best.part, weapon: def.name, wid: def.id, wallbang: pens > 0, from: o, shot: shooter ? shooter._shotId : 0 });
       FX.emit('blood', hitPoint, { n: best.part === 'head' ? 10 : 6, dir: d, cone: 1.2, speed: 3, color: best.part === 'head' ? 0xffd27a : 0xd23a4c, life: 0.4 });
     }
   } else {
@@ -7281,6 +7789,7 @@ function startReload(ag) {
 function finishReloadNow(ag) { const w = ag.weapon(); if (!w.def.mag || w.def.ult) return; const need = w.def.mag - w.mag, take = G.mode.infiniteAmmo ? need : Math.min(need, w.reserve); w.mag += take; if (!G.mode.infiniteAmmo) w.reserve -= take; ag.reloadEnd = 0; }
 function fireOnce(ag, w, extraSpread) {
   const def = w.def; if (!(G.mode.noReload && !def.ult && (ag.isHuman || G.mode.state !== 'drill'))) w.mag--; w.lastShot = G.time;   // the Range: magazines never empty
+  ag._shotId = (ag._shotId || 0) + 1;   // one id per trigger pull: a shotgun's pellets count as one hit in the combat log
   const o = ag.eye(new V3()), pellets = def.pellets || 1, skc = Skins.tracer(ag.weapon()), tc = (skc || def.pal) ? new THREE.Color(skc || def.pal[2]).lerp(new THREE.Color(0xffffff), 0.25).getHex() : 0xffe2a0;
   for (let k = 0; k < pellets; k++) {
     const d = shotDir(ag, w, extraSpread, new V3());
@@ -7319,7 +7828,7 @@ function melee(ag, heavy) {
   }
 }
 function throwBlade(ag, w, offsetDeg) {
-  w.mag--; w.lastShot = G.time;
+  w.mag--; w.lastShot = G.time; ag._shotId = (ag._shotId || 0) + 1;
   const o = ag.eye(new V3()), d = dirFromAngles(ag.yaw + offsetDeg * DEG, ag.pitch, new V3());
   const res = traceBullet(ag, o, d, w.def, 80, 1, false);
   FX.tracer(tmpA.copy(o).addScaledVector(d, 0.6).add(new V3(0, -0.1, 0)), res.end, 0x9ff3ff, 0.12);
@@ -7340,12 +7849,14 @@ function applyDamage(victim, dmg, attacker, info) {
   if (victim.st.vulnU > G.time) dmg *= 2;
   dmg = Math.round(dmg);
   if (G.mode.dmgHook && G.mode.dmgHook(victim, dmg, attacker, info)) return;
+  const hp0 = victim.hp, ar0 = victim.armor;   // v35: pre-hit state for the combat log
   if (info.decay) { // decay cannot kill; lost health slowly returns
     const d = Math.min(dmg, victim.hp - 1); if (d <= 0) return; victim.hp -= d; victim.decay = Math.min(100, victim.decay + d); victim.decayT = G.time;
   } else {
     const absorbed = Math.min(victim.armor, dmg); victim.armor -= absorbed; victim.hp -= dmg - absorbed;
   }
   victim.lastHurtT = G.time; victim.healPool = 0;
+  CombatLog.hit(victim, attacker, info, dmg, hp0, ar0);
   if (attacker && attacker !== victim) (victim._dmgBy || (victim._dmgBy = new Map())).set(attacker, G.time);   // for Soul Harvest's 3 s rule
   if (attacker && attacker !== victim) { victim.lastDamagers.set(attacker, G.time); attacker.roundDmg = (attacker.roundDmg || 0) + dmg; if (attacker.team !== victim.team) attacker.matchDmg = (attacker.matchDmg || 0) + Math.min(dmg, 150); }
   if (victim.isHuman) { UI.hurt(attacker, info); Sfx.hurt(); }
@@ -7360,7 +7871,7 @@ function killAgent(victim, attacker, info) {
   victim.alive = false; victim.hp = 0; victim.deaths++; victim.deadT = 0; victim.planting = victim.defusing = 0; victim.corpse = victim.pos.clone(); victim.diedAt = G.time;
   victim.ultPts = Math.min(victim.A.abilities.X.points, victim.ultPts + (G.mode.abilities ? 1 : 0));
   if (victim.drone) Abil.endDrone(victim.drone);
-  victim.railstorm = null; victim.clearStatus();
+  victim.railstorm = null; victim.clearStatus(); victim.flashT = 0;   // v35: a flash never carries onto the death camera
   const fair = attacker && attacker !== victim;
   Bots.onDeath(victim, fair ? attacker : null);
   if (fair) { const ws = attacker.weapon().skin; if (ws && ws.lvl >= 4) { const c = Skins.palette(ws).tr; FX.emit('glow', tmpA.set(victim.pos.x, victim.pos.y + 1.1, victim.pos.z), { n: 26, speed: 4, up: 2.5, life: 0.8, size: 0.22, color: c, g: -2 }); R.flashLight(tmpA, c, 3, 0.35); }
@@ -7396,6 +7907,7 @@ function killAgent(victim, attacker, info) {
   victim.weapons.ult = null; victim.armor = 0; victim.armorType = null; victim.regenPool = 0;
   if (victim.slot !== 'secondary') victim.slot = 'secondary';
   UI.killfeed(attacker, victim, info);
+  CombatLog.kill(victim, attacker, info);   // v35: telemetry + post-death report trigger (listeners, no UI calls here)
   G.mode.onKill && G.mode.onKill(victim, attacker, info);
   if (victim === G.player) UI.onPlayerDeath(attacker, info);
 }
@@ -7423,6 +7935,83 @@ const Drops = {
   remove(d) { R.scene.remove(d.mesh); this.list.splice(this.list.indexOf(d), 1); },
   clear() { for (const d of this.list) R.scene.remove(d.mesh); this.list.length = 0; },
   update(dt) { for (const d of this.list) d.mesh.rotation.y += dt * 0.6; },
+};
+// ============================================================ v35 COMBAT LOG (pure telemetry; no DOM, no rendering)
+// One record per damage application, written by applyDamage after every gate (teams, invulnerability, phase, duels, shields,
+// mode hooks) so only damage that really landed is logged. Each record keeps what the hit was worth before and after
+// mitigation:
+//   raw    — damage after multipliers (vulnerable etc.), before armor
+//   armor  — the part armor soaked
+//   hp     — health actually removed (raw − armor, clipped at the victim's remaining health)
+//   dealt  — armor + hp: what the hit really took off the target (overkill is not counted, like a real combat report)
+// plus the body part, weapon/ability source, wallbang, decay (temporary damage), and the shot id so a shotgun's pellets count as
+// one hit. Kills record the killer, the finishing hit and the assisters (teammates of the killer who hurt the victim in the
+// last ASSIST_S seconds — the same rule killAgent uses to award assists).
+//
+// Scope is a "life": every agent's records since their last spawn. In round modes a life is the round (logs clear at
+// round start); in Deathmatch each respawn starts a new life. Records are flat objects keyed by agent uid, so a netcode layer
+// could replicate them as-is; in this build all agents are local, so nothing is sent anywhere.
+// Listeners (the post-death report) subscribe with CombatLog.on('death' | 'kill' | 'round', fn): the logger never calls UI.
+const CombatLog = {
+  ASSIST_S: 5, CAP: 6000,
+  hits: [], kills: [], round: 0, seq: 0, lifeStart: new Map(), subs: {}, stats: { hits: 0, kills: 0, dropped: 0, resets: 0 },
+  on(ev, fn) { (this.subs[ev] || (this.subs[ev] = [])).push(fn); },
+  emit(ev, a, b) { const L = this.subs[ev]; if (L) for (const fn of L) { try { fn(a, b); } catch (e) { console.error(e); } } },
+  kind(info) { const w = info && info.wid; if (w === 'knife') return 'melee'; if (w && w !== 'ability' && WEAPONS[w]) return 'gun'; return 'ability'; },
+  // called by applyDamage with the victim's health/armor from before this hit
+  hit(victim, attacker, info, raw, hp0, ar0) {
+    const armor = Math.max(0, ar0 - victim.armor), hp = Math.max(0, Math.min(hp0, hp0 - victim.hp));
+    if (this.hits.length >= this.CAP) { this.hits.shift(); this.stats.dropped++; }
+    const k = this.kind(info);
+    const r = { id: ++this.seq, t: G.time, round: this.round, att: attacker || null, vic: victim, attU: attacker ? attacker.uid : 0, vicU: victim.uid,
+      raw, armor, hp, dealt: armor + hp, part: k === 'ability' ? null : (info.part === 'leg' ? 'legs' : info.part === 'head' ? 'head' : 'body'),
+      kind: k, src: (info && info.weapon) || 'Unknown', wid: (info && info.wid) || null, shot: (info && info.shot) || 0, wall: !!(info && info.wallbang), decay: !!(info && info.decay) };
+    this.hits.push(r); this.stats.hits++; return r;
+  },
+  kill(victim, attacker, info) {
+    const t = G.time, fair = attacker && attacker !== victim, assists = [];
+    if (fair) { const seen = new Set(); for (let i = this.hits.length - 1; i >= 0; i--) { const h = this.hits[i]; if (t - h.t > this.ASSIST_S) break;
+      if (h.vic === victim && h.att && h.att !== attacker && h.att.team === attacker.team && !seen.has(h.att)) { seen.add(h.att); assists.push(h.att); } } }
+    const last = this.lastHit(victim), r = { t, round: this.round, vic: victim, att: attacker || null, src: (info && info.weapon) || (last && last.src) || '—', wid: (info && info.wid) || null,
+      part: info && info.part === 'head' ? 'head' : info && info.part === 'leg' ? 'legs' : 'body', wall: !!(info && info.wallbang), assists };
+    this.kills.push(r); this.stats.kills++;
+    this.emit('kill', r); if (victim === G.player) this.emit('death', victim, r);
+    return r;
+  },
+  lastHit(victim) { for (let i = this.hits.length - 1; i >= 0; i--) if (this.hits[i].vic === victim) return this.hits[i]; return null; },
+  spawned(ag) { this.lifeStart.set(ag, G.time); this.emit('spawn', ag); },
+  newRound(n) { this.round = n; this.hits.length = 0; this.kills.length = 0; this.lifeStart.clear(); this.stats.resets++; this.emit('round', n); },
+  clear() { this.hits.length = 0; this.kills.length = 0; this.lifeStart.clear(); this.round = 0; },
+  since(ag) { return this.lifeStart.has(ag) ? this.lifeStart.get(ag) : -Infinity; },
+  // ---- per-life aggregation for one agent (pure function of the log)
+  report(me) {
+    const t0 = this.since(me), dealt = new Map(), taken = new Map(), deathKill = this.kills.find(k => k.vic === me && k.t >= t0) || null;
+    const row = (m, who) => { let r = m.get(who); if (!r) m.set(who, r = { who, dmg: 0, armor: 0, hp: 0, raw: 0, decay: 0, hits: 0, pellets: 0, parts: { head: 0, body: 0, legs: 0 }, src: new Map(), shots: new Set(), abil: 0, wall: 0, first: Infinity, last: 0 }); return r; };
+    const add = (r, h) => {
+      r.dmg += h.dealt; r.armor += h.armor; r.hp += h.hp; r.raw += h.raw; if (h.decay) r.decay += h.dealt; if (h.wall) r.wall++;
+      if (h.kind === 'ability') r.abil += h.dealt; else { r.pellets++; if (h.part) r.parts[h.part]++; const key = h.shot ? h.attU + ':' + h.shot : 'h' + h.id; if (!r.shots.has(key)) { r.shots.add(key); r.hits++; } }
+      const s = r.src.get(h.src) || { name: h.src, wid: h.wid, kind: h.kind, dmg: 0, n: 0 }; s.dmg += h.dealt; s.n++; r.src.set(h.src, s);
+      r.first = Math.min(r.first, h.t); r.last = Math.max(r.last, h.t);
+    };
+    for (const h of this.hits) {
+      if (h.att === me && h.vic !== me && h.t >= t0 && (!deathKill || h.t <= deathKill.t)) add(row(dealt, h.vic), h);
+      if (h.vic === me && h.t >= t0) add(row(taken, h.att || null), h);
+    }
+    const fin = r => { r.shots = undefined; r.src = [...r.src.values()].sort((a, b) => b.dmg - a.dmg); return r; };
+    const D = [...dealt.values()].map(fin).sort((a, b) => b.dmg - a.dmg), T = [...taken.values()].map(fin).sort((a, b) => b.dmg - a.dmg);
+    const sum = (L, f) => L.reduce((s, r) => s + r[f], 0);
+    return { me, round: this.round, t: deathKill ? deathKill.t : G.time, death: deathKill, dealt: D, taken: T,
+      totals: { dealt: sum(D, 'dmg'), taken: sum(T, 'dmg'), armorTaken: sum(T, 'armor'), hitsDealt: sum(D, 'hits'), hitsTaken: sum(T, 'hits') } };
+  },
+  // how a target stands right now, from the reporter's side: killed (by whom, assists) or still up with health/armor
+  status(target, me) {
+    const k = [...this.kills].reverse().find(x => x.vic === target && x.t >= this.since(target));
+    if (k) return { dead: true, byMe: k.att === me, assist: k.assists.includes(me), by: k.att, src: k.src, part: k.part, t: k.t };
+    if (!target.alive) return { dead: true, by: null };
+    return { dead: false, hp: Math.max(0, Math.round(target.hp)), armor: Math.round(target.armor || 0), decay: Math.round(target.decay || 0) };
+  },
+  // serializable form (uids + names) for debugging / replication
+  toJSON() { return { round: this.round, hits: this.hits.map(h => Object.assign({}, h, { att: h.att ? h.att.name : null, vic: h.vic.name })), kills: this.kills.map(k => ({ t: k.t, vic: k.vic.name, att: k.att ? k.att.name : null, src: k.src, part: k.part, assists: k.assists.map(a => a.name) })) }; },
 };
 // ============================================================ ABILITY ENGINE (data-driven: each agent ability = kind + params)
 const Abil = {
@@ -9332,7 +9921,8 @@ const Brain = {
           }
         }
       } else {
-        if (M.phase === 'live' && !plan.setupDone && M.liveTime() > 1.5) { plan.setupDone = true; this.setupUtil(plan, bots); }
+        // v34: defenders can reach their sites during the buy phase, so traps / cameras / turrets go down before barriers drop
+        if (!plan.setupDone && ((M.phase === 'live' && M.liveTime() > 1.5) || (M.phase === 'buy' && M.timer < 6 && bots.every(b => !b.ai.hold || b.pos.distanceTo(b.ai.hold.pos) < 4 || BuyStage.stuck(b))))) { plan.setupDone = true; this.setupUtil(plan, bots); }
         if (M.phase === 'live' && now > (plan.smT || 0)) { plan.smT = now + 0.5; this.ctrlSmokes(plan, bots); }   // controllers block a confirmed push
         if (M.charge.state === 'planted') {
           if (plan.phase !== 'retake') { plan.phase = 'retake'; plan.retakeAt = now; plan.site = M.charge.site; plan.goAt = 0; this.say(team, bots[0], `Charge down ${plan.site} — group for the retake`, true); }
@@ -9459,7 +10049,8 @@ const Brain = {
       let d = null, bd = 9; for (const q of Drops.list) { if (q.w.giftTo && q.w.giftTo !== ag && q.w.giftTo.alive) continue; if (q.w.def.cost < 1600 && q.w.giftTo !== ag) continue; const dd = Math.hypot(q.pos.x - ag.pos.x, q.pos.z - ag.pos.z); if (dd < bd) { bd = dd; d = q; } }
       if (d) { if (Bots.moveTo(ag, d.pos, { tol: 0.6 })) Drops.pickup(ag, d); Bots.faceMove(ag, dt); return; } ai.pickT = now + 1;
     }
-    if (!plan || M.phase === 'buy') { inp.f = inp.r = 0; return; }
+    if (!plan) { inp.f = inp.r = 0; return; }
+    if (M.phase === 'buy') { BuyStage.drive(ag, plan, dt); return; }   // v34: walk to an on-site hold (defense) or a lane staging spot (attack)
     const ch = M.charge;
     if (ch.state !== 'planted' && Orbs.botDrive(ag, dt, plan)) return;   // ultimate orb on the way, if it looks safe
     if (plan.side === 'atk') {
@@ -9567,6 +10158,36 @@ const Brain = {
       const off = tmpD.set(ch.pos.x + Math.sin(ag.uid) * 4, 0, ch.pos.z + Math.cos(ag.uid) * 4); Abil.snapWalk(off);
       if (Bots.moveTo(ag, off, { tol: 1.5 })) this.holdAngle(ag, dt, cpos(S.atkCh.length ? S.atkCh[0].c : S.center).setY(1.45)); else Bots.sliceMove(ag, dt, S, true);
     }
+  },
+};
+
+// ============================================================ v34 BUY-PHASE STAGING (bot positioning while the barriers are up)
+// Defenders walk out to the hold Brain gave them (on site, on a perch, or at the front of their zone) and watch its angle;
+// attackers spread to the edge of their zone nearest their default lane, so the team is already split left / mid / right
+// when the barriers drop. Targets outside the zone are clamped to the nearest zone cell reachable with barriers up.
+const BuyStage = {
+  stats: { def: 0, atk: 0, clamped: 0 },
+  // nearest cell to `goal` that this bot can actually reach while barriers stand (bounded BFS, cached per round)
+  reach(ag, goal) {
+    const ai = ag.ai, key = G.mode.round + ':' + Math.round(goal.x) + ',' + Math.round(goal.z); if (ai.bsKey === key) return ai.bsPos;
+    const [sx, sz] = World.cellOf(ag.pos.x, ag.pos.z), [gx, gz] = World.cellOf(goal.x, goal.z), seen = new Set([sz * GW + sx]), q = [[sx, sz]];
+    let best = [sx, sz], bd = Math.hypot(sx - gx, sz - gz);
+    for (let k = 0; k < q.length && k < 2600; k++) { const [x, z] = q[k]; const d = Math.hypot(x - gx, z - gz); if (d < bd) { bd = d; best = [x, z]; } if (!d) break;
+      for (const [dx, dz] of N4) { const nx = x + dx, nz = z + dz, j = nz * GW + nx; if (seen.has(j) || World.navH(nx, nz) < 0 || World.blockH(nx, nz) > 1.2) continue; seen.add(j); q.push([nx, nz]); } }
+    if (bd > 0.5) this.stats.clamped++;
+    ai.bsKey = key; ai.bsPos = cpos(best); ai.bsFar = bd; return ai.bsPos;
+  },
+  stuck(b) { return b.ai.bsFar > 0.5 && b.ai.bsPos && b.pos.distanceTo(b.ai.bsPos) < 1.5; },
+  drive(ag, plan, dt) {
+    const ai = ag.ai, inp = ag.input, M = G.mode;
+    if (M.timer > (M.buyTotal || 30) - 1.2) { inp.f = inp.r = 0; return; }   // buy first
+    let goal = null, look = null;
+    if (plan.side !== 'atk' && ai.hold) { goal = ai.hold.pos; look = ai.hold.look; this.stats.def++; }
+    else if (plan.side === 'atk' && ai.lane) { goal = ai.lane.pos ? ai.lane.pos.clone() : cpos(World.sites[World.siteLetters[0]].center); this.stats.atk++; }
+    if (!goal) { inp.f = inp.r = 0; return; }
+    const tgt = this.reach(ag, goal);
+    if (Bots.moveTo(ag, tgt, { tol: 0.8 })) { inp.f = inp.r = 0; if (look) Bots.lookPoint(ag, look, dt, 140); else Bots.lookPoint(ag, goal.clone().setY(1.5), dt, 140); }
+    else Bots.faceMove(ag, dt);
   },
 };
 // ============================================================ SPATIAL & SQUAD AWARENESS (rank-scaled)
@@ -11213,6 +11834,7 @@ class PlantMode {
   resetPlayerForHalf(a) { a.creds = ECON.start; a.boughtThisRound = []; a.weapons.primary = null; a.weapons.secondary = makeWeapon('pike'); a.armor = 0; a.armorType = null; a.charges = { C: 0, Q: 0, E: 0, X: 0 }; a.ultPts = 0; a.slot = 'secondary'; }
   startRound() {
     Souls.reset();
+    CombatLog.newRound(this.round + 1);   // v35: round-based reset (the report closes, logs start empty)
     this.round++; G.round++;
     let swap = false;
     if (this.round === this.halfAt + 1) swap = true;
@@ -13064,12 +13686,13 @@ const UI = {
     if (V.decay > 0.5) chips += `<span style="--c:#9be03a">Decay</span>`; if (V.healPool > 0.5) chips += `<span style="--c:#5bd88a">Healing</span>`; if (V.stimT > now) chips += `<span style="--c:#ff8a3d">Stim</span>`;
     if (V.revealBy && Object.keys(V.revealBy).some(t => t != V.team && V.revealBy[t] > now)) chips += `<span style="--c:#ff4655">Revealed</span>`;
     this.set('status', 'html', chips);
-    const fl = V.flashT > now ? clamp((V.flashT - now) / Math.max(0.3, V.flashMax * 0.6), 0, 1) : 0;
+    const live = V.alive;   // v35: the death camera never inherits status overlays
+    const fl = live && V.flashT > now ? clamp((V.flashT - now) / Math.max(0.3, V.flashMax * 0.6), 0, 1) : 0;
     this.set('flash', 'opacity', fl.toFixed(2));
-    const dz = V.st.dazeU > now ? Math.min(1, (V.st.dazeU - now) / 1.2) : 0; if (R.post) R.post.uniforms.daze.value = R.quality === 'high' ? dz : 0;
+    const dz = live && V.st.dazeU > now ? Math.min(1, (V.st.dazeU - now) / 1.2) : 0; if (R.post) R.post.uniforms.daze.value = R.quality === 'high' ? dz : 0;
     this.set('dazeov', 'opacity', (dz * (R.quality === 'high' ? 0.5 : 0.9)).toFixed(2));
-    this.set('vulnov', 'opacity', V.st.vulnU > now ? '1' : '0'); this.set('detainov', 'opacity', V.st.detainU > now ? '1' : '0');
-    const sm = Abil.insideSmoke(V.eye(tmpA)); this.set('smokeov', 'opacity', (sm * 0.92).toFixed(2));
+    this.set('vulnov', 'opacity', live && V.st.vulnU > now ? '1' : '0'); this.set('detainov', 'opacity', live && V.st.detainU > now ? '1' : '0');
+    const sm = live ? Abil.insideSmoke(V.eye(tmpA)) : 0; this.set('smokeov', 'opacity', (sm * 0.92).toFixed(2));
     this.set('vignette', 'opacity', V.alive && V.hp < 35 ? '1' : '0');
     const scoped = V === P && P.alive && w.def.alt === 'scope' && w.scope > 0;
     this.set('scope', 'hidden', !scoped); const specV = !P.alive && G.viewer && G.viewer !== P && G.viewer.alive; this.set('crosshair', 'hidden', scoped || (!P.alive && !specV) || !!(P.drone && P.drone.ctrl));
@@ -13091,7 +13714,7 @@ const UI = {
     if (!hint && P.alive) { const d = Drops.nearest(P, 1.6); if (d) hint = '<b>F</b> pick up ' + d.w.def.name; }
     if (!hint && P.alive) for (const k of ['C', 'Q', 'E']) if (P.abilState[k] && P.A.abilities[k].kind === 'anchor') hint = 'Press <b>' + keyName(Input.key('abil' + k)) + '</b> to return to your mark';
     if (P.drone && P.drone.ctrl) hint = Possess.hint(P.drone);
-    if (P.st.detainU > now) hint = 'Detained · no weapons or abilities';
+    if (P.alive && P.st.detainU > now) hint = 'Detained · no weapons or abilities';
     this.set('interact', 'html', hint); this.set('interact', 'hidden', !hint);
     const spec = !P.alive && G.viewer && G.viewer !== P && G.viewer.alive;
     this.set('spectate', 'hidden', P.alive || spec);
@@ -13106,7 +13729,7 @@ const UI = {
   // spectator loadout bar: who, health/armour, weapon + skin, ammo, abilities/ult, and their crosshair
   specBar(V) {
     const el = $('specbar'); if (!V) { if (this._spec) { el.classList.add('hidden'); $('hud').classList.remove('specmode'); this._spec = null; this.drawCrosshair($('xh'), 0); } return; }
-    if (this._spec !== V) { this._spec = V; el.classList.remove('hidden'); $('hud').classList.add('specmode'); this.drawCrosshair($('xh'), 0, V.isHuman ? null : this.botXh(V)); }
+    if (this._spec !== V) { this._spec = V; el.classList.remove('hidden'); $('hud').classList.add('specmode'); this.drawCrosshair($('xh'), 0, V.isHuman ? null : this.botXh(V)); this._specFit = true; }
     const w = V.weapon(), sk = w.skin, sname = sk ? SKIN_LINES[SKINS[sk.id].line].name + (sk.lvl > 1 ? ' · Lv' + sk.lvl : '') : 'Standard';
     const ab = G.mode.abilities ? ['C', 'Q', 'E'].map(k => `<span class="sb-ab" title="${V.A.abilities[k].name}">${abilSvg(V.A.abilities[k], V.A.cssAccent)}<i>${'◆'.repeat(Math.max(0, V.charges[k] || 0))}</i></span>`).join('') + `<span class="sb-ult${V.ultPts >= V.A.abilities.X.points ? ' ready' : ''}">${abilSvg(V.A.abilities.X, V.A.cssAccent)}<i>${V.ultPts}/${V.A.abilities.X.points}</i></span>` : '';
     const key = [V.uid, V.hp | 0, V.armor | 0, w.id, w.mag, w.reserve, ab.length, V.ultPts, V.charges.C, V.charges.Q, V.charges.E].join('|'); if (key === this._specKey) return; this._specKey = key;
@@ -13114,6 +13737,7 @@ const UI = {
       <div class="sb-hp"><div class="sb-bar"><i style="width:${V.hp}%"></i></div><div class="sb-bar ar"><i style="width:${Math.min(100, V.armor * 2)}%"></i></div><b>${V.hp | 0}</b><small>${V.armor | 0} armor</small></div>
       <div class="sb-gun">${GunIcons.img(w.id, 'sb-gi')}<div><b>${w.def.name}</b><small style="color:${sk ? Skins.tierOf(sk.id).col : 'var(--dim)'}">${sname}</small></div><div class="sb-ammo"><b>${w.def.mag ? w.mag : '—'}</b><small>/ ${w.def.mag ? w.reserve : '∞'}</small></div></div>
       <div class="sb-abil">${ab}</div>`;
+    if (this._specFit) { this._specFit = false; if (typeof CombatReport !== 'undefined') CombatReport.fit(); }   // v35: the report makes room for the bar
   },
   updateAbilities(ag) {
     const M = G.mode, el = $('abilities');
@@ -13171,7 +13795,26 @@ const UI = {
   },
   killfeedRevive(a, b) { this.pushFeed(`${this.portrait(a, 'kfp ' + this.rel(a))}<span class="${this.rel(a)}">${a.name}</span><span class="tag rv">REVIVED</span><span class="${this.rel(b)}">${b.name}</span>${this.portrait(b, 'kfp ' + this.rel(b))}`, b === G.player); },
   onPlayerDeath() { this.closeBuy(); G.deathT = G.time; },
-  onPlayerRevive() { G.viewer = G.player; UI.toast('You were revived', 'ally'); },
+  // v35: one place that takes every transient HUD element off screen (pending timers too), used at match start, quit and
+  // match end, so nothing from one match (or from the live HUD) is left on the next screen
+  resetTransient() {
+    for (const t of ['_bn', '_rc', '_rcAce', '_ts', '_kb', '_ace', '_hm', '_sf', '_ki']) { clearTimeout(this[t]); this[t] = 0; }
+    this._aceUntil = 0;
+    for (const id of ['banner', 'roundcard', 'toast', 'killbanner', 'aceshow', 'progress', 'interact', 'spectate', 'specbar', 'scope', 'board', 'bigmap', 'clickplay', 'rangeresult']) { const el = $(id); if (el) el.classList.add('hidden'); }
+    for (const id of ['aceshow', 'killbanner', 'roundcard']) { const el = $(id); if (el) el.innerHTML = ''; }
+    for (const id of ['flash', 'smokeov', 'dazeov', 'vulnov', 'detainov', 'vignette', 'statusflash', 'hitmark']) { const el = $(id); if (el) el.style.opacity = 0; }
+    { const p = $('pulse'); if (p) p.classList.remove('go'); const n = $('nearsight'); if (n) n.classList.remove('on'); if (R.post) R.post.uniforms.daze.value = 0; }
+    for (const id of ['comms', 'dmgdir', 'status', 'killfeed']) { const el = $(id); if (el) el.innerHTML = ''; }
+    this.feed = []; this.dd = []; this.boardOpen = false; this.bigOpen = false; this._spec = null; this._specKey = null; this.cache = {};
+    $('hud').classList.remove('specmode');
+    if (this.buyOpen) this.closeBuy();
+    if (typeof Wheel !== 'undefined' && Wheel.open) Wheel.close();
+    if (typeof Placement !== 'undefined' && Placement.mode) Placement.close();
+    if (typeof AbilHand !== 'undefined' && AbilHand.key) AbilHand.cancel(G.player, true); { const h = $('abilhint'); if (h) h.classList.add('hidden'); }
+    if (typeof CombatReport !== 'undefined') CombatReport.hide();
+    if (typeof AllyHUD !== 'undefined') AllyHUD.clear();
+  },
+  onPlayerRevive() { G.viewer = G.player; UI.toast('You were revived', 'ally'); CombatReport.hide(); },
   banner(t, s, cls, dur) {
     const b = $('banner'); b.className = cls; b.querySelector('.t').textContent = t; b.querySelector('.s').textContent = s || ''; b.classList.remove('hidden');
     clearTimeout(this._bn); this._bn = setTimeout(() => b.classList.add('hidden'), (dur || 2) * 1000);
@@ -13285,12 +13928,12 @@ const UI = {
     h += `<tr><th></th><th>Player</th><th class="num">K</th><th class="num">D</th><th class="num">A</th>${M.teamBased ? '<th>Loadout</th><th class="num">Creds</th><th class="num">Ult</th>' : ''}</tr>`;
     for (const a of rows) {
       const ally = M.teamBased ? a.team === P.team : a === P, pri = a.weapons.primary ? a.weapons.primary.id : a.weapons.secondary.id;
-      h += `<tr class="t${ally ? 0 : 1}${a === P ? ' me' : ''}${a.alive ? '' : ' dead'}"><td>${this.portrait(a, 'sbp')}</td><td><b>${a.name}</b><small>${a.A.name} · ${a.A.role}</small></td><td class="num">${a.kills}</td><td class="num">${a.deaths}</td><td class="num">${a.assists}</td>${M.teamBased ? `<td>${ally ? GunIcons.img(pri, 'sbg') + (a.armorType ? `<span class="sbs ${a.armorType}"></span>` : '') : ''}</td><td class="num">${ally ? '¤' + a.creds : '—'}</td><td class="num">${a.ultPts}/${a.A.abilities.X.points}</td>` : ''}</tr>`;
+      h += `<tr class="t${ally ? 0 : 1}${a === P ? ' me' : ''}${a.alive ? '' : ' dead'}"><td>${this.portrait(a, 'sbp')}</td><td><b>${mpRankChip(a)}${a.name}</b><small>${a.A.name} · ${a.A.role}</small></td><td class="num">${a.kills}</td><td class="num">${a.deaths}</td><td class="num">${a.assists}</td>${M.teamBased ? `<td>${ally ? GunIcons.img(pri, 'sbg') + (a.armorType ? `<span class="sbs ${a.armorType}"></span>` : '') : ''}</td><td class="num">${ally ? '¤' + a.creds : '—'}</td><td class="num">${a.ultPts}/${a.A.abilities.X.points}</td>` : ''}</tr>`;
     }
     if (this.cache.board !== h) { this.cache.board = h; $('board-t').innerHTML = h; }
   },
   endScreen(title, score, won) {
-    G.running = false; Input.unlock();
+    G.running = false; Input.unlock(); this.resetTransient();   // v35: nothing from the live HUD survives onto the end screen
     $('end-title').textContent = title; $('end-title').style.color = won == null ? 'var(--fg, #ece8e1)' : won ? 'var(--ally)' : 'var(--enemy)'; $('end-score').textContent = score;
     const P = G.player; $('end-note').textContent = `${P.A.name} on ${MAP.name} · ${P.kills} kills, ${P.deaths} deaths, ${P.assists} assists`;
     $('end-por').innerHTML = `<img src="${Portraits.getFull(P.agentId)}" alt="">`;
@@ -13585,6 +14228,89 @@ const AllyHUD = {
   },
   clear() { for (const d of this.plates.values()) d.remove(); this.plates.clear(); },
 };
+// ============================================================ v35 POST-DEATH COMBAT REPORT (render layer only)
+// Reads CombatLog.report(player) the frame the player is eliminated and draws a side panel on the right edge, between the
+// kill feed and the credits readout, so the spectating view, spectator bar, minimap and comms stay clear.
+//   Damage dealt  — every enemy the player hit this life: damage, hits, head/body/legs split, and how that enemy stands
+//                   (killed by you, killed with your assist, killed by someone else, or the health + armor they had when
+//                   you died — a snapshot, so a dead player never gets live enemy health)
+//   Damage taken  — everyone who hurt the player: damage, hits, split, weapon/ability sources; the killer is marked
+// Built once per death (plus a cheap re-render when a target you hit dies later that round), never per frame.
+// Hidden on respawn, revive, round start, leaving the match, or with Settings → Combat report: Off.
+const CombatReport = {
+  el: null, open: false, rep: null, snap: null, stats: { shown: 0, refresh: 0, ms: 0 },
+  esc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]); },
+  init() {
+    this.el = $('combatrep');
+    CombatLog.on('death', (me) => this.show(me));
+    CombatLog.on('kill', (k) => { if (this.open && this.rep && this.rep.dealt.some(r => r.who === k.vic)) { this.stats.refresh++; this.render(); } });
+    CombatLog.on('round', () => this.hide());
+    CombatLog.on('spawn', (ag) => { if (ag === G.player) this.hide(); });
+    addEventListener('resize', () => this.fit());
+  },
+  show(me) {
+    if (!this.el || !Settings.combatReport || (G.mode && G.mode.noCombatReport)) return;
+    const t0 = performance.now();
+    this.rep = CombatLog.report(me);
+    // health snapshot at the moment of death (status re-reads only kills afterwards, never live health)
+    this.snap = new Map(); for (const r of this.rep.dealt) this.snap.set(r.who, CombatLog.status(r.who, me));
+    this.cap = 6; this.render(); this.open = true; this.fit(); this.stats.shown++; this.stats.ms = performance.now() - t0;
+  },
+  // keep the panel in the free band between the kill feed and whatever sits below it on the right (spectator bar, bottom HUD,
+  // credits): measured, so it holds on any window size; fewer rows (with a "+N more" line) instead of overlapping anything
+  fit() {
+    if (!this.open || !this.el) return;
+    const el = this.el, W = innerWidth, H = innerHeight, kf = $('killfeed').getBoundingClientRect();
+    el.style.top = ''; el.style.maxHeight = '';
+    const css = parseFloat(getComputedStyle(el).top) || 204, top = Math.min(css, Math.max(56, (kf.height ? kf.bottom : 12) + 8));
+    const box = el.getBoundingClientRect(), x0 = box.left, x1 = box.right;
+    let lim = H - 12;
+    for (const id of ['specbar', 'bottom', 'creds', 'abilities']) { const o = $(id); if (!o || o.classList.contains('hidden')) continue; const r = o.getBoundingClientRect(); if (!r.width || !r.height) continue; if (r.right > x0 && r.left < x1 && r.top > top) lim = Math.min(lim, r.top - 8); }
+    const avail = Math.max(110, lim - top), cap = clamp(Math.floor((avail - 74) / 2 / 30), 1, 6);
+    el.style.top = top + 'px'; el.style.maxHeight = avail + 'px';
+    if (cap !== this.cap) { this.cap = cap; this.render(); }
+  },
+  hide() { if (!this.el) return; this.open = false; this.rep = null; this.snap = null; this.el.classList.add('hidden'); this.el.innerHTML = ''; this.el.style.top = ''; this.el.style.maxHeight = ''; },
+  who(a) {
+    if (!a) return `<span class="cr-p cr-world">✕</span><div class="cr-n"><b>World</b><span>Environment</span></div>`;
+    if (a === this.rep.me) return `<span class="cr-p cr-world">↺</span><div class="cr-n"><b>Yourself</b><span>Own utility</span></div>`;
+    return `${UI.portrait(a, 'cr-p')}<div class="cr-n"><b>${this.esc(a.name)}</b><span>${this.esc(a.A.name)}</span></div>`;
+  },
+  parts(p, n) {
+    if (!n) return '<div class="cr-parts none">—</div>';
+    const pc = k => Math.round(p[k] / n * 100);
+    return `<div class="cr-parts" title="Head ${p.head} · Body ${p.body} · Legs ${p.legs}"><svg viewBox="0 0 14 30" aria-hidden="true"><circle cx="7" cy="4" r="3.4" class="${p.head ? 'on h' : ''}"/><rect x="3" y="8.5" width="8" height="10.5" rx="2" class="${p.body ? 'on' : ''}"/><rect x="3.2" y="20" width="3.3" height="9.5" rx="1.4" class="${p.legs ? 'on' : ''}"/><rect x="7.5" y="20" width="3.3" height="9.5" rx="1.4" class="${p.legs ? 'on' : ''}"/></svg>`
+      + `<div class="cr-pl"><span class="h">H ${p.head}<i>${pc('head')}%</i></span><span>B ${p.body}<i>${pc('body')}%</i></span><span>L ${p.legs}<i>${pc('legs')}%</i></span></div></div>`;
+  },
+  srcs(list) {
+    return list.slice(0, 3).map(s => `<span class="cr-src" title="${this.esc(s.name)} · ${s.dmg} damage">${s.kind !== 'ability' && s.wid && s.wid !== 'knife' ? GunIcons.img(s.wid, 'cr-g') : `<em>${this.esc(s.name)}</em>`}<b>${s.dmg}</b></span>`).join('') + (list.length > 3 ? `<span class="cr-src more">+${list.length - 3}</span>` : '');
+  },
+  state(r) {
+    const s = CombatLog.status(r.who, this.rep.me), snap = this.snap && this.snap.get(r.who);
+    if (s.dead) {
+      if (s.byMe) return `<span class="cr-st kill">Killed${s.part === 'head' ? '<i class="cr-hs">HS</i>' : ''}</span>`;
+      if (s.assist) return `<span class="cr-st asst">Assist</span>`;
+      return `<span class="cr-st dead">Down${s.by ? ' · ' + this.esc(s.by.name) : ''}</span>`;
+    }
+    const h = snap && !snap.dead ? snap : s, hp = clamp(h.hp, 0, 100), ar = clamp(h.armor, 0, 50);
+    return `<span class="cr-st up" title="Health and armor when you died"><span class="cr-bar"><i style="width:${hp}%"></i><u style="width:${ar}%"></u></span><span>${hp}<small>HP</small>${ar ? ` ${ar}<small>AR</small>` : ''}</span></span>`;
+  },
+  render() {
+    const R0 = this.rep; if (!R0 || !this.el) return;
+    const me = R0.me, K = R0.death, T = R0.totals;
+    const killer = K && K.att && K.att !== me ? K.att : null;
+    const head = `<div class="cr-head"><div><em>Combat report</em><b>${G.mode && G.mode.teamBased ? 'Round ' + this.esc(R0.round || 1) : 'This life'}</b></div>`
+      + (K ? `<div class="cr-kb">${killer ? `<small>Eliminated by</small><span class="cr-kn">${UI.portrait(killer, 'cr-kp')}<b>${this.esc(killer.name)}</b></span><span class="cr-kw">${K.wid && WEAPONS[K.wid] && K.wid !== 'knife' ? GunIcons.img(K.wid, 'cr-g') : `<em>${this.esc(K.src)}</em>`}${K.part === 'head' ? '<i class="hs">HEAD</i>' : ''}${K.wall ? '<i>WALL</i>' : ''}</span>` : `<small>Eliminated</small><span class="cr-kn"><b>${K.att === me ? 'Own utility' : this.esc(K.src)}</b></span>`}</div>` : '') + `</div>`;
+    // compact screens keep the two biggest rows per section (plus a count); desktop shows up to six
+    const cap = this.cap || 6, more = n => n > cap ? `<p class="cr-more">+${n - cap} more</p>` : '';
+    const dealtRows = R0.dealt.slice(0, cap).map(r => `<div class="cr-row">${this.who(r.who)}<div class="cr-d"><b>${r.dmg}</b><span>${r.hits} hit${r.hits === 1 ? '' : 's'}</span>${r.abil ? `<span>${r.abil} util</span>` : ''}</div>${this.parts(r.parts, r.pellets)}${this.state(r)}</div>`).join('');
+    const takenRows = R0.taken.slice(0, cap).map(r => `<div class="cr-row${killer && r.who === killer ? ' killer' : ''}">${this.who(r.who)}<div class="cr-d"><b>${r.dmg}</b><span>${r.hits} hit${r.hits === 1 ? '' : 's'}</span>${r.armor ? `<span class="ar">${r.armor} armor</span>` : ''}</div>${this.parts(r.parts, r.pellets)}<div class="cr-srcs">${this.srcs(r.src)}</div></div>`).join('');
+    this.el.innerHTML = head
+      + `<section class="cr-sec out"><h4><span>Damage dealt</span><b>${T.dealt}</b><small>${T.hitsDealt} hits</small></h4>${dealtRows || '<p class="cr-empty">You did not hit an enemy this life.</p>'}${more(R0.dealt.length)}</section>`
+      + `<section class="cr-sec in"><h4><span>Damage taken</span><b>${T.taken}</b><small>${T.hitsTaken} hits${T.armorTaken ? ` · ${T.armorTaken} absorbed` : ''}</small></h4>${takenRows || '<p class="cr-empty">No damage recorded.</p>'}${more(R0.taken.length)}</section>`;
+    this.el.classList.remove('hidden');
+  },
+};
 // ============================================================ LOBBY: nav, Play / Collection / Shop / Career, inspect view, end-of-match progression
 const fmt = n => Math.round(n).toLocaleString('en-US');
 const MODE_LABEL = { quick: 'Unrated · Quick', standard: 'Unrated · Standard', rq: 'Quick Ranked', rs: 'Standard Ranked', dm: 'Deathmatch', range: 'The Range', custom: 'Custom Match' };
@@ -13613,6 +14339,8 @@ const Lobby = {
     $('shop-grid').addEventListener('click', e => { const c = e.target.closest('[data-skin-id]'); if (!c) return; ShopView.openSkin(c.dataset.skinId, [...document.querySelectorAll('#shop-grid [data-skin-id]')].map(x => x.dataset.skinId)); });   // a card is the inspect
     $('shop-lines').addEventListener('click', e => { const b = e.target.closest('[data-line]'); if (!b) return; const L = this.lineDeal(b.dataset.line); if (L.ids.length) this.confirmBuy(L.ids, L.price, SKIN_LINES[b.dataset.line].name + ' collection'); });
     $('career').addEventListener('click', e => {
+      const ex = e.target.closest('[data-export]'); if (ex) { Sfx.ui(); SaveExport.run($('career-export-status')); return; }   // JSON backup
+      const im = e.target.closest('[data-import]'); if (im) { Sfx.ui(); SaveImport.run($('career-export-status')); return; }   // v34: validated restore
       const lq = e.target.closest('[data-lbq]'); if (lq) { this.lbQ = lq.dataset.lbq; Sfx.ui(); this.renderCareer(); return; }
       const t = e.target.closest('[data-title]'), c = e.target.closest('[data-card]'), r = e.target.closest('[data-reset]');
       if (t) { Profile.get().title = t.dataset.title; Profile.save(); }
@@ -13885,13 +14613,14 @@ const Lobby = {
         <div><b>${s.matches}</b><small>Matches</small></div><div><b>${wr}%</b><small>Win rate</small></div><div><b>${kd}</b><small>K/D</small></div><div><b>${fmt(s.kills)}</b><small>Kills</small></div>
         <div><b>${s.kills ? Math.round(100 * s.hs / s.kills) : 0}%</b><small>Headshot kills</small></div><div><b>${s.ranked}</b><small>Ranked played</small></div><div><b>${s.rankedWins}</b><small>Ranked wins</small></div><div><b>${s.rounds}</b><small>Rounds</small></div></div></div>
       <div class="cbox wide"><div class="sect">Match history</div>${d.history.length ? `<div class="hist">${d.history.map(h => `<div class="hrow ${h.won ? 'w' : 'l'}"><img src="${Portraits.get(h.agent) || ''}" alt=""><b>${h.won ? 'Victory' : 'Defeat'}</b><span>${MODE_LABEL[h.mode] || h.mode}</span><span>${h.map}</span><span class="sc">${h.score}</span><span>${h.k} / ${h.d} / ${h.a}</span><span class="rr">${h.rr == null ? (h.mode === 'rq' || h.mode === 'rs' ? 'Placement' : '') : (h.rr > 0 ? '+' : '') + h.rr + ' RR'}</span><small>${new Date(h.t).toLocaleDateString()}</small></div>`).join('')}</div>` : '<p class="note">Play a match to start your history.</p>'}</div>
+      <div class="cbox wide savebox"><div class="savebtns"><button class="opt" data-export="1">Export save data</button><button class="opt" data-import="1">Import save data</button></div><small id="career-export-status">Export downloads a JSON backup of your rank, history, cosmetics, settings and keys. Import restores one of those files (edited files are refused) and replaces what is in this browser.</small></div>
       <div class="cbox wide danger"><button class="opt" data-reset="1">Reset progress</button><small>Progress is saved in this browser only.</small></div>
     </div>`;
   },
   // ------------------------------------------------ match loading card + end-of-match progression
   loadCard() {
     const M = G.mode, el = $('loadcard'), P = G.player, R = Profile.rankFor(M.modeId), ranked = M.ranked;
-    const team = t => G.agents.filter(a => a.team === t).map(a => `<div class="lc-ag${a === P ? ' me' : ''}"><img src="${Portraits.get(a.agentId) || ''}" alt=""><b>${a.name}</b><small>${a.A.name}${ranked ? ' · ' + Rank.name(a === P ? R.idx : Math.max(0, Math.min(RANK_TOP, Math.round(G.rankIdx + (((a.uid * 7) % 5) - 2) * 0.6)))) : ''}</small></div>`).join('');
+    const team = t => G.agents.filter(a => a.team === t).map(a => `<div class="lc-ag${a === P ? ' me' : ''}"><img src="${Portraits.get(a.agentId) || ''}" alt=""><b>${a.name}</b><small>${a.A.name}${ranked ? ' · ' + (a.netRank != null ? Rank.name(a.netRank) : Rank.name(a === P ? R.idx : Math.max(0, Math.min(RANK_TOP, Math.round(G.rankIdx + (((a.uid * 7) % 5) - 2) * 0.6))))) : ''}${mpRankChip(a, 18)}</small></div>`).join('');
     el.innerHTML = M.teamBased ? `<div class="lc-head"><em>${MODE_LABEL[M.modeId] || ''}</em><h2>${MAP.name}</h2><small>${MAP.sub}</small>${typeof MAP_LOC !== 'undefined' && MAP_LOC[MAP.id] ? `<div class="lc-loc">${MAP_LOC[MAP.id][0]} · <em>${MAP_LOC[MAP.id][1]}</em></div>` : ''}</div><div class="lc-teams"><div class="lc-t ally">${team(P.team)}</div><div class="lc-vs">VS</div><div class="lc-t enemy">${team(1 - P.team)}</div></div>`
       : `<div class="lc-head"><em>Deathmatch</em><h2>${MAP.name}</h2><small>${MAP.sub}</small>${typeof MAP_LOC !== 'undefined' && MAP_LOC[MAP.id] ? `<div class="lc-loc">${MAP_LOC[MAP.id][0]} · <em>${MAP_LOC[MAP.id][1]}</em></div>` : ''}</div>`;
     const vu = typeof Vista !== 'undefined' && Vista.url(MAP.id); el.style.backgroundImage = vu ? `linear-gradient(180deg,rgba(8,12,16,.55),rgba(8,12,16,.92) 70%),url(${vu})` : ''; el.classList.toggle('vista', !!vu);
@@ -14471,6 +15200,7 @@ const Input = {
 
 // ============================================================ GAME FLOW
 function clearGame() {
+  CombatLog.clear(); UI.resetTransient();   // v35: no agent references or transient HUD survive the match
   for (const a of G.agents) R.scene.remove(a.model);
   if (G.mode && G.mode.charge && G.mode.charge.mesh) R.scene.remove(G.mode.charge.mesh);
   if (G.mode && G.mode.packs) for (const p of G.mode.packs) R.scene.remove(p.mesh);
@@ -14509,6 +15239,7 @@ function startGame(fromClick) {
 function pause(on) {   // pausing never leaves an ability, pad or drone half-open
   if (!G.running) return;
   G.paused = on; $('pausemenu').classList.toggle('hidden', !on); if (!on) $('pause').classList.add('hidden');
+  if (on) { $('clickplay').classList.add('hidden'); UI.boardOpen = false; $('board').classList.add('hidden'); }   // v35: the pause menu is the only prompt on screen
   if (!on) Input.capture = null;
   if (on) { if (G.player) AbilHand.cancel(G.player, true); Placement.close(); UI.toggleBigMap(false);  syncSettingsUI(); Input.keys = {}; if (G.player) { G.player.input.fire = false; G.player.input.alt = false; } }
 }
@@ -14676,8 +15407,11 @@ function initMenus() {
   syncers.push(bindOpts('set-part', () => Settings.particles, v => { Settings.particles = v; FX.setQuality(R.quality); }));
   syncers.push(bindOpts('set-tracers', () => Settings.tracers, v => Settings.tracers = v));
   syncers.push(bindOpts('set-outline', () => Settings.outline, v => { Settings.outline = v; Outline.apply(); }));
+  $('btn-export-save').addEventListener('click', () => SaveExport.run($('set-export-status')));
+  $('btn-import-save').addEventListener('click', () => SaveImport.run($('set-export-status')));
   syncers.push(bindOpts('set-adsmode', () => Settings.adsMode, v => { Settings.adsMode = v; Input.adsT = false; }));
   syncers.push(bindOpts('set-nameplates', () => Settings.nameplates, v => { Settings.nameplates = +v; }));
+  syncers.push(bindOpts('set-combatrep', () => Settings.combatReport, v => { Settings.combatReport = +v; if (!Settings.combatReport) CombatReport.hide(); }));
   syncers.push(bindOpts('set-allyxray', () => Settings.allyXray, v => { Settings.allyXray = +v; }));
   syncers.push(bindOpts('set-enemycol', () => Settings.enemyCol, v => { Settings.enemyCol = v; Outline.apply(); }));
   syncers.push(bindOpts('set-fs', () => Settings.fullscreen, v => Settings.fullscreen = +v));
@@ -14867,14 +15601,41 @@ class NetPeer {
   close() { this.h = {}; try { this.peer && this.peer.destroy(); } catch (e) { } }
 }
 
+const MP_MODES = {
+  custom: { label: 'Custom', sub: 'Up to 10 · pick teams & bots', party: false },
+  standard: { label: 'Unrated', sub: 'First to 13', party: true },
+  quick: { label: 'Swiftplay', sub: 'First to 5', party: true },
+  dm: { label: 'Deathmatch', sub: 'Free-for-all · 30 kills', party: true },
+  rq: { label: 'Quick Ranked', sub: 'First to 7 · RR', party: true, ranked: true },
+  rs: { label: 'Standard Ranked', sub: 'First to 13 · RR', party: true, ranked: true },
+};
+const MP_DENY = {
+  LOBBY_FULL: 'That lobby is full (10 players).', PARTY_FULL: 'That party is full (5 players).', MATCH_IN_PROGRESS: 'That lobby is in a match right now. Try again when it ends.',
+  KICKED: 'The host removed you from the lobby.', JOIN_TIMEOUT: 'The host didn’t answer. Check the code and try again.', ROOM_FULL: 'That room is full.',
+};
 const Net = {
   tx: null, role: null, myId: null, code: '', active: false, info: null, lobby: null, relay: false,
   INTERP: 0.1, sendAcc: 0, fastAcc: 0, slowAcc: 0, peerIn: {}, dropId: 0, myFix: 0, hostT: 0, hostRecv: 0, ownHold: 0, pending: null, saved: null,
   _dirs: null, _rec: null, _allow: false, _kill: false, _lastErr: '',
   isHost() { return this.active && this.role === 'host'; },
   isClient() { return this.active && this.role === 'client'; },
-  name() { try { return localStorage.getItem('riftline.mpname') || ''; } catch (e) { return ''; } },
-  setName(n) { try { localStorage.setItem('riftline.mpname', n); } catch (e) { } },
+  // the player name from Settings (Profile.name) is the account name everywhere
+  name() { try { return Profile.get().name || 'Player'; } catch (e) { return 'Player'; } },
+  setName(n) { try { const d = Profile.get(); if (d.name !== n) { d.name = n; Profile.save(); const si = $('set-name'); if (si && document.activeElement !== si) si.value = n; Lobby.refreshNav && Lobby.refreshNav(); } } catch (e) { } },
+  // rank / level from the local save (imported or earned here); Unranked until placements are done
+  account() {
+    const out = { lv: 1, rq: { i: -1, p: 0, m: 6, r: 0 }, rs: { i: -1, p: 0, m: 6, r: 0 } };
+    try { const d = Profile.get(); out.lv = d.level | 0; for (const q of ['rq', 'rs']) { const R = d.ranks && d.ranks[q]; if (R) out[q] = { i: R.placed >= PLACEMENTS ? R.idx | 0 : -1, p: R.placed | 0, m: +(+R.mmr || 0).toFixed(2), r: R.rr | 0 }; } } catch (e) { }
+    return out;
+  },
+  cleanAcct(a) {
+    const n = (v, lo, hi, d) => typeof v === 'number' && isFinite(v) ? clamp(v, lo, hi) : d, R = r => ({ i: Math.round(n(r && r.i, -1, RANK_TOP, -1)), p: Math.round(n(r && r.p, 0, 99, 0)), m: n(r && r.m, 0, RANK_TOP, 6), r: Math.round(n(r && r.r, 0, 9999, 0)) });
+    a = a && typeof a === 'object' ? a : {}; return { lv: Math.round(n(a.lv, 1, 1000, 1)), rq: R(a.rq), rs: R(a.rs) };
+  },
+  myLoadout() { return { primary: WEAPONS[Settings.dmPrimary] ? Settings.dmPrimary : 'reaver', secondary: WEAPONS[Settings.dmSecondary] ? Settings.dmSecondary : 'kestrel' }; },
+  cleanLoadout(l) { const ok = (id, slot, d) => WEAPONS[id] && WEAPONS[id].slot === slot ? id : d; return { primary: ok(l && l.primary, 'primary', 'reaver'), secondary: ok(l && l.secondary, 'secondary', 'kestrel') }; },
+  // everything a player brings to a lobby (sent on join and whenever it may have changed)
+  myCard() { return { name: this.cleanName(this.name()), agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta', sk: this.mySkins(), acct: this.account(), dl: this.myLoadout() }; },
   cleanName(n) { n = String(n || '').replace(/[^\w .\-]/g, '').trim().slice(0, 16); return n || 'Player'; },
 
   // ------------------------------------------------------------ boot: UI wiring, transport probe, engine hooks
@@ -14883,8 +15644,9 @@ const Net = {
     fetch('rl-relay.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { this.relay = !!(j && j.relay); this.renderHome(); }).catch(() => { this.relay = false; this.renderHome(); });
     $('nav-mp').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.open(); });
     $('mp-close').addEventListener('click', () => { Sfx.ui(); this.close(); });
-    $('mp-name').value = this.name();
-    $('mp-name').addEventListener('change', () => { const n = this.cleanName($('mp-name').value); $('mp-name').value = n; this.setName(n); if (this.role && this.lobby) this.rename(n); });
+    this.renderAccount();
+    // the Settings name is the account name: renaming there renames you in the lobby too
+    const sn = $('set-name'); if (sn) sn.addEventListener('input', () => { clearTimeout(this._snT); this._snT = setTimeout(() => { this.renderAccount(); if (this.role && this.lobby && !this.lobby.inGame) this.rename(this.name()); }, 700); });
     $('mp-host').addEventListener('click', () => this.hostRoom());
     $('mp-join').addEventListener('click', () => this.joinRoom($('mp-code').value));
     $('mp-code').addEventListener('keydown', e => { if (e.key === 'Enter') this.joinRoom($('mp-code').value); });
@@ -14899,10 +15661,32 @@ const Net = {
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
-  open() { $('mp').classList.remove('hidden'); if (this.role === 'client') this.up({ e: 'lset', sk: this.mySkins() }); this.render(); },   // re-send in case the locker changed
+  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); },
+  // re-send what may have changed outside the lobby (locker skins, imported save, DM loadout, Settings name)
+  syncCard() {
+    if (!this.role || !this.lobby) return; const c = this.myCard();
+    if (this.role === 'client') this.up({ e: 'lset', sk: c.sk, acct: c.acct, dl: c.dl });
+    else { const me = this.me(); if (me) { me.sk = c.sk; me.acct = c.acct; me.dl = c.dl; this.pushLobby(); } }
+    if (c.name !== this._askName && !this.lobby.inGame) this.rename(c.name);   // only a name changed since we last asked
+  },
   close() { $('mp').classList.add('hidden'); },
   err(msg) { this._lastErr = msg || ''; const el = $('mp-err'); if (el) el.textContent = this._lastErr; },
+  renderAccount() {
+    const el = $('mp-acct'); if (!el) return; let d; try { d = Profile.get(); } catch (e) { return; }
+    const A = this.account(), card = (typeof PLAYER_CARDS !== 'undefined' && PLAYER_CARDS[d.card]) || {}, st = d.stats || {};
+    const rk = q => { const r = A[q], R = d.ranks && d.ranks[q]; return `<div class="mpacc-rk" style="--rc:${Rank.col(r.i)}">${this.badge(r.i, 44)}<div><small>${q === 'rq' ? 'Quick Ranked' : 'Standard Ranked'}</small><b>${NetU.esc(Rank.name(r.i))}</b><em>${r.i >= 0 ? r.r + ' RR' : 'Placements ' + Math.min(r.p, PLACEMENTS) + '/' + PLACEMENTS}</em></div></div>`; };
+    const focus = document.activeElement && document.activeElement.id === 'mp-name';
+    el.innerHTML = `<div class="mpacc-id"><div class="mpacc-card" style="background:${card.bg || '#1c2d39'}"><img src="${Portraits.get(d.avatar) || Portraits.get(Settings.agent) || ''}" alt=""></div>
+        <div class="mpacc-nm"><label>Player name<input id="mp-name" maxlength="16" value="${NetU.esc(this.cleanName(d.name || 'Player'))}" autocomplete="off" spellcheck="false"></label><small>Level ${d.level | 0} · ${st.matches | 0} matches · ${st.wins | 0} wins · same name as Settings</small></div></div>
+      <div class="mpacc-rks">${rk('rq')}${rk('rs')}</div>
+      <div class="mpacc-sv"><div class="mprow wrap"><button class="mpbtn sm" id="mp-imp">Import save</button><button class="mpbtn sm ghost" id="mp-exp">Export save</button></div><small id="mp-savest">Bring your rank, stats and skins from another copy of Riftline: export there, import here.</small></div>`;
+    $('mp-imp').onclick = () => { Sfx.init(); Sfx.ui(); try { SaveImport.run($('mp-savest')); } catch (e) { $('mp-savest').textContent = 'Import is not available in this version'; } };
+    $('mp-exp').onclick = () => { Sfx.init(); Sfx.ui(); try { SaveExport.run($('mp-savest')); } catch (e) { $('mp-savest').textContent = 'Export is not available in this version'; } };
+    const ni = $('mp-name'); ni.addEventListener('change', () => { const n = this.cleanName(ni.value); ni.value = n; this.setName(n); if (this.role && this.lobby) this.rename(n); });
+    if (focus) ni.focus();
+  },
   renderHome() {
+    this.renderAccount();
     const el = $('mp-net'); if (!el) return;
     const t = NetTurn.url(), st = !t ? 'no TURN relay — some networks will time out' : NetTurn.src === 'fail' ? '<span style="color:var(--red)">TURN key not working — check it</span>' : NetTurn.src === 'ok' ? 'TURN relay ready' : 'TURN relay configured' + (t === NET_TURN_URL ? ' (built in)' : '');
     el.innerHTML = this.relay ? 'Connection: <b>game server relay</b> (this page is served by server.js)' : `Connection: <b>peer-to-peer</b> (WebRTC via PeerJS) · ${st}`;
@@ -14921,30 +15705,41 @@ const Net = {
   // ------------------------------------------------------------ rooms
   async hostRoom() {
     if (this.role) return; this.err(''); Sfx.init(); Sfx.ui();
-    const n = this.cleanName($('mp-name').value); this.setName(n); $('mp-name').value = n;
     $('mp-host').disabled = true; $('mp-host').textContent = 'Opening…';
     try {
       const tx = this.newTx(); const code = await tx.host();
       this.tx = tx; this.role = 'host'; this.myId = 'H'; this.code = code;
-      this.lobby = { players: [{ id: 'H', name: n, team: 0, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta' }], map: 'random', mode: 'quick', cwin: 9, diff: Settings.diff, bots: true, inGame: false };
+      const c = this.myCard(); this._askName = c.name;
+      this.lobby = { players: [{ id: 'H', name: c.name, team: 0, agent: c.agent, sk: c.sk, acct: c.acct, dl: c.dl }], map: 'random', mode: 'custom', cwin: 9, diff: Settings.diff, bots: [4, 5], fill: true, inGame: false, starting: false };
       tx.on('msg', (cid, m) => this.hostMsg(cid, m)); tx.on('leave', cid => this.peerLeft(cid)); tx.on('close', () => this.lostLink('Lost connection to the relay server'));
       this.render();
     } catch (e) { this.err(e.message); }
     $('mp-host').disabled = false; $('mp-host').textContent = 'Host';
   },
   async joinRoom(code) {
-    if (this.role) return; this.err(''); Sfx.init(); Sfx.ui();
+    if (this.role || this._joining) return; this.err(''); Sfx.init(); Sfx.ui();
     code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (code.length !== 5) { this.err('Codes are 5 characters'); return; }
-    const n = this.cleanName($('mp-name').value); this.setName(n); $('mp-name').value = n;
-    $('mp-join').disabled = true; $('mp-join').textContent = 'Joining…';
+    this._joining = true; $('mp-join').disabled = true; $('mp-join').textContent = 'Joining…';
     try {
       const tx = this.newTx(); const id = await tx.join(code);
-      this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null; this._named = false; this._wantName = n;
-      tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink('Disconnected from the host'));
-      this.up({ e: 'hello', name: n, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta', sk: this.mySkins() });
+      this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null; this._named = false;
+      const c = this.myCard(); this._wantName = c.name; this._askName = c.name;
+      tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink(this.lobby ? 'Disconnected from the host' : MP_DENY.JOIN_TIMEOUT));
+      this.up(Object.assign({ e: 'hello' }, c));
+      // never wait forever: if the host doesn't admit or refuse us, give up cleanly
+      clearTimeout(this._joinT); this._joinT = setTimeout(() => { if (this.role === 'client' && !this.lobby) this.refused('JOIN_TIMEOUT'); }, 9000);
       this.render();
-    } catch (e) { this.err(e.message); }
-    $('mp-join').disabled = false; $('mp-join').textContent = 'Join';
+    } catch (e) { this.err(/full/i.test(e.message) ? MP_DENY.ROOM_FULL : e.message); }
+    this._joining = false; $('mp-join').disabled = false; $('mp-join').textContent = 'Join';
+  },
+  // a join that was refused (or timed out): drop the connection, back to the Multiplayer home with the reason
+  refused(code, msg) {
+    clearTimeout(this._joinT);
+    const text = msg || MP_DENY[code] || 'Could not join that lobby.';
+    if (this.tx) { this.tx.h = {}; this.tx.close(); }
+    this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.pending = null;
+    this.err(text + (code ? ' (' + code + ')' : '')); this.render(); this.open();
+    try { UI.toast(text, 'enemy'); } catch (e) { }
   },
   leaveRoom() {
     if (this.tx) { if (this.role === 'host') this.tx.bcast({ e: 'bye' }); this.tx.close(); }
@@ -14963,19 +15758,22 @@ const Net = {
   bcast(d, ex) { if (this.tx && this.role === 'host') this.tx.bcast(d, ex); },
   pushLobby() {
     if (this.role !== 'host') return;
+    this.clampBots();   // bot counts always match the teams as they stand
     const seen = [new Set(), new Set()];   // never two of one agent on a team: later arrivals move to a free agent
     for (const p of this.lobby.players) { if (seen[p.team].has(p.agent)) p.agent = AGENT_IDS.find(id => !seen[p.team].has(id)) || p.agent; seen[p.team].add(p.agent); }
-    this.bcast({ e: 'lobby', l: this.lobby }); this.render();
+    if (this.tx) for (const p of this.lobby.players) if (p.id !== 'H') this.tx.send(p.id, { e: 'lobby', l: this.lobbyFor(p.id) });
+    this.render();
   },
   note(msg) { this._note = msg; clearTimeout(this._noteT); this._noteT = setTimeout(() => { this._note = ""; this.render(); }, 4000); this.render(); },
   // equipped skins travel with each player so everyone sees them (validated against this build's skin list)
   mySkins() { const o = {}; try { for (const w of SKIN_WEAPONS) { const e = Profile.equippedSkin(w); if (e) o[w] = { id: e.id, lvl: e.lvl, v: e.v }; } } catch (e) { } return o; },
   cleanSkins(sk) { const o = {}; if (sk && typeof sk === 'object') for (const w in sk) { const e = sk[w]; if (e && SKINS[e.id] && SKINS[e.id].weapon === w) o[w] = { id: e.id, lvl: clamp(e.lvl | 0, 1, 9), v: clamp(e.v | 0, 0, 9) }; } return o; },
-  nameTaken(n, exceptId) { const k = String(n).toLowerCase(); return this.lobby.players.some(p => p.id !== exceptId && p.name.toLowerCase() === k); },
+  nameTaken(n, exceptId) { const k = String(n).toLowerCase(); return this.lobby.players.some(p => p.id !== exceptId && (p.name || '').toLowerCase() === k); },
   uniqueName(n, exceptId) { n = this.cleanName(n); if (!this.nameTaken(n, exceptId)) return n; for (let i = 2; i < 99; i++) { const c = n.slice(0, 16 - String(i).length - 1) + ' ' + i; if (!this.nameTaken(c, exceptId)) return c; } return n; },
   // rename from the lobby (host applies it directly, guests ask the host); taken names are refused
   rename(raw) {
     const n = this.cleanName(raw), me = this.me(); if (!me || !this.lobby) return;
+    this._askName = n;
     if (n === me.name) { this.renderName(); return; }
     if (this.lobby.inGame) { this.note('Names can be changed between matches'); this.renderName(); return; }
     this.setName(n); this._wantName = n;
@@ -14985,27 +15783,42 @@ const Net = {
   renderName() { const i = $('mp-rname'), me = this.me(); if (i && me && document.activeElement !== i) i.value = me.name; },
   teamCount(t) { return this.lobby.players.filter(p => p.team === t).length; },
   // one of each agent per team: keep the player's pick if it's free on that team, otherwise give them the first free one
-  takenOn(t, exceptId) { return new Set(this.lobby.players.filter(p => p.team === t && p.id !== exceptId).map(p => p.agent)); },
+  takenOn(t, exceptId) { return new Set(this.lobby.players.filter(p => p.team === t && p.id !== exceptId && p.agent).map(p => p.agent)); },
   freeAgent(t, pref, exceptId) { const tk = this.takenOn(t, exceptId); if (AGENTS[pref] && !tk.has(pref)) return pref; return AGENT_IDS.find(id => !tk.has(id)) || pref; },
   fixAgent(p) { const was = p.agent; p.agent = this.freeAgent(p.team, p.agent, p.id); return was !== p.agent; },
 
+  partyMode(L) { L = L || this.lobby; return !!(MP_MODES[L.mode] && MP_MODES[L.mode].party); },
+  // custom lobbies: bot counts per team never exceed that team's open slots
+  clampBots() { const L = this.lobby; if (!L || this.partyMode()) return; L.bots = [0, 1].map(t => L.fill ? 5 - this.teamCount(t) : clamp(L.bots[t] | 0, 0, 5 - this.teamCount(t))); },   // fill mode: bots always take every open slot
+  // the join gate. The host handles messages one at a time, so check → reserve → broadcast can't interleave with another join.
+  admit(cid, m) {
+    const L = this.lobby;
+    if (L.players.find(p => p.id === cid)) return null;   // duplicate hello: already in
+    if (L.inGame || L.starting) return 'MATCH_IN_PROGRESS';
+    if (this.partyMode()) { if (L.players.length >= 5) return 'PARTY_FULL'; }
+    else if (L.players.length >= 10) return 'LOBBY_FULL';
+    const team = this.partyMode() ? 0 : this.teamCount(0) <= this.teamCount(1) ? 0 : 1;
+    if (!this.partyMode() && this.teamCount(team) >= 5) return 'LOBBY_FULL';
+    L.players.push({ id: cid, name: this.uniqueName(m.name, cid), team, agent: this.freeAgent(team, AGENTS[m.agent] ? m.agent : 'vanta', cid), sk: this.cleanSkins(m.sk), acct: this.cleanAcct(m.acct), dl: this.cleanLoadout(m.dl) });
+    this.clampBots();   // a player takes a slot a bot was filling
+    return null;
+  },
   hostMsg(cid, m) {
     if (!m || !m.e) return;
-    const L = this.lobby;
+    const L = this.lobby; if (!L) return;
     if (m.e === 'hello') {
-      if (L.players.find(p => p.id === cid)) return;
-      if (L.inGame) { this.tx.send(cid, { e: 'deny', msg: 'A match is in progress — try again when it ends' }); return; }
-      if (L.players.length >= 10) { this.tx.send(cid, { e: 'deny', msg: 'The lobby is full (10 players)' }); return; }
-      const team = this.teamCount(0) <= this.teamCount(1) ? 0 : 1;
-      L.players.push({ id: cid, name: this.uniqueName(m.name, cid), team, agent: this.freeAgent(team, AGENTS[m.agent] ? m.agent : 'vanta', cid), sk: this.cleanSkins(m.sk) });
+      const no = this.admit(cid, m);
+      if (no) { this.tx.send(cid, { e: 'deny', code: no, msg: MP_DENY[no] }); return; }   // refused without touching the roster
       this.pushLobby(); return;
     }
     if (m.e === 'lset') {
       const p = L.players.find(x => x.id === cid); if (!p) return;
       if (m.name != null) { const n = this.cleanName(m.name); if (n !== p.name) { if (L.inGame) this.tx.send(cid, { e: 'note', msg: 'Names can be changed between matches' }); else if (this.nameTaken(n, cid)) this.tx.send(cid, { e: 'note', msg: '“' + n + '” is already taken in this lobby' }); else p.name = n; } }
       if (m.sk) p.sk = this.cleanSkins(m.sk);
+      if (m.acct) p.acct = this.cleanAcct(m.acct);
+      if (m.dl) p.dl = this.cleanLoadout(m.dl);
       if (m.agent && AGENTS[m.agent] && !L.inGame) { if (this.takenOn(p.team, p.id).has(m.agent)) this.tx.send(cid, { e: 'note', msg: AGENTS[m.agent].name + ' is taken on your team' }); else p.agent = m.agent; }
-      if ((m.team === 0 || m.team === 1) && m.team !== p.team && this.teamCount(m.team) < 5 && !L.inGame) { p.team = m.team; this.fixAgent(p); }
+      if ((m.team === 0 || m.team === 1) && m.team !== p.team && !this.partyMode() && this.teamCount(m.team) < 5 && !L.inGame) { p.team = m.team; this.fixAgent(p); this.clampBots(); }
       this.pushLobby(); return;
     }
     if (this.isHost()) this.hostGame(cid, m);
@@ -15013,10 +15826,10 @@ const Net = {
   peerLeft(cid) {
     if (this.role !== 'host' || !this.lobby) return;
     const p = this.lobby.players.find(x => x.id === cid);
-    this.lobby.players = this.lobby.players.filter(x => x.id !== cid); delete this.peerIn[cid];
+    this.lobby.players = this.lobby.players.filter(x => x.id !== cid); delete this.peerIn[cid]; this.clampBots();
     if (this.active) for (const a of G.agents) if (a.remote === cid) {
       a.remote = null; a.input.fire = false;
-      if (this.info && this.info.bots === false) { this.makeGone(a); UI.toast((p ? p.name : 'A player') + ' left the match', 'info'); }
+      if (this.info && this.info.leaveBot === false) { this.makeGone(a); UI.toast((p ? p.name : 'A player') + ' left the match', 'info'); }
       else { a.isBot = true; Bots.init(a); UI.toast((p ? p.name : 'A player') + ' left · a bot takes over', 'info'); }
     }
     this.pushLobby();
@@ -15024,20 +15837,20 @@ const Net = {
   clientMsg(m) {
     if (!m || !m.e) return;
     switch (m.e) {
-      case 'lobby': { const before = this.me() && this.me().agent; this.lobby = m.l; const me = this.me();
+      case 'lobby': { clearTimeout(this._joinT); const before = this.me() && this.me().agent; this.lobby = m.l; const me = this.me();
         if (me && this._wantName === undefined) this._wantName = this.cleanName($('mp-name').value);
         if (me && this._wantName && me.name !== this._wantName && !this._named) this.note('“' + this._wantName + '” was taken · you’re “' + me.name + '”');
-        if (me) { this._named = true; this._wantName = me.name; this.setName(me.name); $('mp-name').value = me.name; }
+        if (me) { this._named = true; this._wantName = me.name; }
         const wanted = before || Settings.agent;   // on first join, the agent this browser asked for
         if (me && AGENTS[wanted] && AGENTS[me.agent] && me.agent !== wanted) this.note(AGENTS[wanted].name + ' was taken on your team · you’re now ' + AGENTS[me.agent].name);
         this.render(); return; }
       case 'note': this.note(m.msg); return;
-      case 'deny': this.err(m.msg); this.tx.close(); this.tx = null; this.role = null; this.render(); return;
+      case 'deny': if (this.active) { this.endMatch(); quitToMenu(); } this.refused(m.code, m.msg); return;
       case 'bye': this.lostLink('The host closed the room'); return;
       case 'start': if (this.active) this.active = false; this.pending = m.i; return;   // the match begins with the first round event
       case 'abort': if (this.active) { this.endMatch(); quitToMenu(); this.err('The host ended the match'); this.open(); } return;
     }
-    if (m.e === 'r' && !this.active && this.pending) { this.info = this.pending; this.pending = null; this.beginMatch(false); }
+    if ((m.e === 'r' || m.e === 'go') && !this.active && this.pending) { this.info = this.pending; this.pending = null; this.beginMatch(false); }
     if (this.isClient()) { try { this.clientEvent(m); } catch (e) { console.error('net event', m.e, e); } }
   },
 
@@ -15048,44 +15861,112 @@ const Net = {
     $('nav-mp').classList.toggle('live', inRoom);
     if (!inRoom) { this.renderHome(); return; }
     const L = this.lobby, host = this.role === 'host';
-    if (!L) { $('mp-room').innerHTML = `<div class="mpwait">Connected · waiting for the lobby…</div>`; return; }
+    if (!L) { $('mp-room').innerHTML = `<div class="mpwait"><div class="mpspin"></div>Joining room <b>${NetU.esc(this.code)}</b>…</div>`; return; }
     const fi = $('mp-rname'), focus = fi && document.activeElement === fi ? { v: fi.value, s: fi.selectionStart, e: fi.selectionEnd } : null;
-    const me = this.me(), url = location.origin + location.pathname + '?join=' + this.code;
-    const col = t => {
-      const ps = L.players.filter(p => p.team === t);
-      const fill = L.bots !== false, gap = 5 - ps.length;
-      let h = `<div class="mpteam t${t}"><div class="mpth"><b>${t === 0 ? 'Team A' : 'Team B'}</b><span>${ps.length}/5 players${gap ? fill ? ` · ${gap} bot${gap === 1 ? '' : 's'}` : ` · ${gap} empty` : ''}</span>${me && me.team !== t && ps.length < 5 && !L.inGame ? `<button class="mpbtn sm" data-act="team" data-t="${t}">Join</button>` : ''}</div>`;
-      for (let i = 0; i < 5; i++) {
-        const p = ps[i];
-        if (p) { const A = AGENTS[p.agent] || AGENTS.vanta; h += `<div class="mpslot${p.id === this.myId ? ' me' : ''}" style="--c:${A.cssAccent}"><img src="${Portraits.get(A.id)}" alt=""><div><b>${NetU.esc(p.name)}${p.id === 'H' ? ' <i>HOST</i>' : ''}</b><small>${A.name} · ${A.role}</small></div>${host && p.id !== 'H' && !L.inGame ? `<button class="mpbtn sm ghost" data-act="move" data-id="${NetU.esc(p.id)}" title="Move to the other team">⇄</button><button class="mpbtn sm ghost" data-act="kick" data-id="${NetU.esc(p.id)}" title="Remove">✕</button>` : host && p.id === 'H' && !L.inGame ? `<button class="mpbtn sm ghost" data-act="move" data-id="H" title="Move to the other team">⇄</button>` : ''}</div>`; }
-        else h += fill ? `<div class="mpslot bot"><span class="bi">BOT</span><div><b>Bot</b><small>Fills this slot</small></div></div>` : `<div class="mpslot bot empty"><span class="bi">—</span><div><b>Empty</b><small>No bot · open slot</small></div></div>`;
-      }
-      return h + '</div>';
+    const me = this.me(), url = location.origin + location.pathname + '?join=' + this.code, MD = MP_MODES[L.mode] || MP_MODES.custom, party = MD.party, ranked = !!MD.ranked;
+    const lock = L.inGame || L.starting, key = this.rankKey(L), diffs = ['Easy', 'Medium', 'Hard', 'Radiant'];
+    const pslot = p => {
+      const A = AGENTS[p.agent] || AGENTS.vanta, r = this.rankOf(p, key), mineTag = p.id === this.myId;
+      const ctl = host && !lock && !party ? `<button class="mpbtn sm ghost" data-act="move" data-id="${NetU.esc(p.id)}" title="Move to the other team">⇄</button>` : '';
+      const kick = host && !lock && p.id !== 'H' ? `<button class="mpbtn sm ghost" data-act="kick" data-id="${NetU.esc(p.id)}" title="Remove from lobby">✕</button>` : '';
+      return `<div class="mpslot${mineTag ? ' me' : ''}" style="--c:${A.cssAccent}"><img src="${Portraits.get(A.id)}" alt=""><div class="mpsn"><b>${NetU.esc(p.name)}${p.id === 'H' ? '<i>HOST</i>' : ''}${mineTag ? '<i class="you">YOU</i>' : ''}</b><small>${A.name} · ${A.role} · Lv ${p.acct ? p.acct.lv : 1}</small></div>${ranked ? this.rankTag(r.i) : `<span class="mprk only" title="${NetU.esc((key === 'rq' ? 'Quick Ranked: ' : 'Standard Ranked: ') + Rank.name(r.i))}">${this.badge(r.i, 20)}</span>`}${ctl}${kick}</div>`;
     };
-    const taken = new Set(L.players.filter(p => me && p.team === me.team && p.id !== this.myId).map(p => p.agent));
+    const botslot = (label, sub, idx) => `<div class="mpslot bot"><span class="bi">AI</span><div class="mpsn"><b>${label}</b><small>${sub}</small></div>${idx !== undefined ? this.rankTag(idx) : ''}</div>`;
+    const emptyslot = () => `<div class="mpslot bot empty"><span class="bi">—</span><div class="mpsn"><b>Open slot</b><small>No bot</small></div></div>`;
+    let cols;
+    if (!party) {   // custom: two teams, bots by count
+      const col = t => {
+        const ps = L.players.filter(p => p.team === t), nb = Math.min(L.bots[t] | 0, 5 - ps.length), open = 5 - ps.length - nb, foe = me && t !== me.team;
+        const step = host && !lock ? `<span class="mpstep"><button class="mpbtn sm ghost" data-act="bot" data-t="${t}" data-d="-1"${nb <= 0 ? ' disabled' : ''} title="One bot fewer">−</button><b>${nb}</b><button class="mpbtn sm ghost" data-act="bot" data-t="${t}" data-d="1"${ps.length + nb >= 5 ? ' disabled' : ''} title="One bot more">+</button><small>bots</small></span>` : `<small class="mpbc">${nb} bot${nb === 1 ? '' : 's'}</small>`;
+        let h = `<div class="mpteam t${t}"><div class="mpth"><b>${t === 0 ? 'Team A' : 'Team B'}</b><span>${ps.length} player${ps.length === 1 ? '' : 's'}</span>${step}${me && me.team !== t && ps.length < 5 && !lock ? `<button class="mpbtn sm" data-act="team" data-t="${t}">Join</button>` : ''}</div>`;
+        ps.forEach((p, k) => { h += foe ? this.maskSlot(k, host && !lock ? p.id : null) : pslot(p); });
+        for (let k = 0; k < nb; k++) h += botslot('Bot', diffs[+L.diff] || 'Medium');
+        for (let k = 0; k < open; k++) h += emptyslot();
+        return h + '</div>';
+      };
+      cols = col(0) + col(1);
+    } else if (L.mode === 'dm') {
+      const n = L.players.length;
+      cols = `<div class="mpteam t0"><div class="mpth"><b>Your party</b><span>${n}/5 · everyone for themselves</span></div>${L.players.map(pslot).join('')}</div>
+        <div class="mpteam t1"><div class="mpth"><b>Opponents</b><span>${10 - n} AI · ${diffs[+L.diff] || 'Medium'}</span></div><div class="mpffa"><b>${10 - n + n}</b><span>players in the arena</span><small>${n} from your party, ${10 - n} AI. Party members fight each other too.</small></div></div>`;
+    } else {   // party vs AI; in ranked the AI mirrors the party's ranks slot by slot
+      const plan = ranked ? this.matchmake(L, true) : null, ps = L.players;
+      let a = `<div class="mpteam t0"><div class="mpth"><b>Your party</b><span>${ps.length}/5${ps.length < 5 ? ` · ${5 - ps.length} AI fill` : ''}</span></div>`;
+      ps.forEach(p => { a += pslot(p); });
+      for (let k = ps.length; k < 5; k++) a += botslot('Fill', ranked ? 'Ranked near your party' : diffs[+L.diff] || 'Medium', ranked ? plan.ally[k].i : undefined);
+      const lo = ranked ? Rank.name(clamp(Math.floor(plan.avg - plan.tol), 0, RANK_TOP)) : '', hi = ranked ? Rank.name(clamp(Math.ceil(plan.avg + plan.tol), 0, RANK_TOP)) : '';
+      let b = `<div class="mpteam t1"><div class="mpth"><b>Opponents</b><span>Hidden until the loading screen</span></div>`;
+      for (let k = 0; k < 5; k++) b += this.maskSlot(k);
+      b += `<p class="mpband">${ranked ? `Matched within <b>${NetU.esc(lo)}</b> – <b>${NetU.esc(hi)}</b> · team average ≈ <b>${NetU.esc(Rank.name(Math.round(plan.avg)))}</b>` : 'AI opponents · ' + (diffs[+L.diff] || 'Medium')}</p>`;
+      cols = a + '</div>' + b + '</div>';
+    }
+    const taken = new Set(L.players.filter(p => me && p.team === me.team && p.id !== this.myId && L.mode !== 'dm').map(p => p.agent));
     const agents = AGENT_IDS.map(id => { const A = AGENTS[id]; return `<button class="mpag${me && me.agent === id ? ' on' : ''}${taken.has(id) ? ' tk' : ''}" data-act="agent" data-a="${id}"${taken.has(id) ? ' aria-disabled="true"' : ''} style="--c:${A.cssAccent}" title="${A.name} · ${A.role}${taken.has(id) ? ' (a teammate has it)' : ''}"><img src="${Portraits.get(id)}" alt=""><span>${A.name}</span></button>`; }).join('');
     const maps = MAP_IDS.filter(id => id !== 'range');
-    const modeName = L.mode === 'standard' ? 'Standard · first to 13' : L.mode === 'custom' ? 'Custom · first to ' + L.cwin : 'Quick · first to 5';
-    const diffs = ['Easy', 'Medium', 'Hard', 'Radiant'];
-    const set = host && !L.inGame ? `
-      <label>Map<select id="mp-map"><option value="random"${L.map === 'random' ? ' selected' : ''}>Random</option>${maps.map(id => `<option value="${id}"${L.map === id ? ' selected' : ''}>${NetU.esc(MAPS[id].name || id)}</option>`).join('')}</select></label>
-      <label>Mode<select id="mp-mode"><option value="quick"${L.mode === 'quick' ? ' selected' : ''}>Quick · first to 5</option><option value="standard"${L.mode === 'standard' ? ' selected' : ''}>Standard · first to 13</option><option value="c5"${L.mode === 'custom' && L.cwin === 5 ? ' selected' : ''}>Custom · first to 5</option><option value="c9"${L.mode === 'custom' && L.cwin === 9 ? ' selected' : ''}>Custom · first to 9</option><option value="c13"${L.mode === 'custom' && L.cwin === 13 ? ' selected' : ''}>Custom · first to 13</option></select></label>
-      <label>Bots<select id="mp-bots"><option value="1"${L.bots !== false ? ' selected' : ''}>Fill empty slots</option><option value="0"${L.bots === false ? ' selected' : ''}>No bots · players only</option></select></label>
-      <label${L.bots === false ? ' class="dim"' : ''}>Bot skill<select id="mp-diff"${L.bots === false ? ' disabled' : ''}>${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>
-      <button class="cta big" data-act="start">Start match</button>`
-      : `<div class="mpinfo"><div><span>Map</span><b>${L.map === 'random' ? 'Random' : NetU.esc((MAPS[L.map] || {}).name || L.map)}</b></div><div><span>Mode</span><b>${modeName}</b></div><div><span>Bots</span><b>${L.bots === false ? 'Off · players only' : diffs[+L.diff] || 'Medium'}</b></div></div>
-         <p class="mpnote">${L.inGame ? 'Match in progress…' : 'Waiting for the host to start'}</p>`;
-    const hostNote = host ? `<p class="mpnote">You’re the host: the match runs in this tab, so keep it in front while you play (browsers pause background tabs).</p>` : '';
+    const modeTabs = Object.keys(MP_MODES).map(id => { const M2 = MP_MODES[id], off = M2.party && L.players.length > 5; return `<button class="mpmode${L.mode === id ? ' on' : ''}${M2.ranked ? ' rk' : ''}" data-act="mode" data-m="${id}"${!host || lock || off ? ' disabled' : ''} title="${NetU.esc(M2.sub)}${off ? ' · parties of up to 5' : ''}"><b>${M2.label}</b><small>${M2.sub}</small></button>`; }).join('');
+    const mapSel = host && !lock ? `<label>Map<select id="mp-map"><option value="random"${L.map === 'random' ? ' selected' : ''}>Random</option>${maps.map(id => `<option value="${id}"${L.map === id ? ' selected' : ''}>${NetU.esc(MAPS[id].name || id)}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Map</span><b>${L.map === 'random' ? 'Random' : NetU.esc((MAPS[L.map] || {}).name || L.map)}</b></div></div>`;
+    const winSel = L.mode === 'custom' ? (host && !lock ? `<label>Rounds to win<select id="mp-cwin">${[5, 9, 13].map(n => `<option value="${n}"${L.cwin === n ? ' selected' : ''}>First to ${n}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Rounds</span><b>First to ${L.cwin}</b></div></div>`) : '';
+    const skillSel = ranked ? `<div class="mpinfo"><div><span>AI skill</span><b>Per opponent · by rank</b></div></div>` : host && !lock ? `<label>Bot skill<select id="mp-diff">${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Bot skill</span><b>${diffs[+L.diff] || 'Medium'}</b></div></div>`;
+    const botTools = !party && host && !lock ? `<div class="mprow wrap"><button class="mpbtn sm${L.fill ? ' on' : ' ghost'}" data-act="botsall" title="Bots take every open slot, also when players move or leave">Fill with bots</button><button class="mpbtn sm${!L.fill && !(L.bots[0] | 0) && !(L.bots[1] | 0) ? ' on' : ' ghost'}" data-act="botsnone">No bots</button><button class="mpbtn sm ghost" data-act="balance" title="Split players evenly across both teams">Balance teams</button></div>` : '';
+    const startLbl = party ? (ranked ? 'Queue' : 'Find match') : 'Start';
+    const action = host ? `<button class="cta big" data-act="start"${lock ? ' disabled' : ''}>${lock ? 'Match in progress…' : startLbl}</button>` : `<p class="mpnote">${lock ? 'Match in progress…' : 'Waiting for the host to start'}</p>`;
     $('mp-room').innerHTML = `
-      <div class="mpcode"><span>Room code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button><button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button></div>
-      <div class="mpgrid"><div class="mpteams">${col(0)}${col(1)}</div>
+      <div class="mpcode"><span>Room code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button><button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button><span class="mpcap">${L.players.length}/${party ? 5 : 10} players</span></div>
+      <div class="mpmodes">${modeTabs}</div>
+      ${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}
+      <div class="mpgrid"><div class="mpteams">${cols}</div>
         <div class="mpside"><div class="sect">You</div>
-          <label>Name<div class="mprow"><input id="mp-rname" maxlength="16" value="${NetU.esc(me ? me.name : '')}" autocomplete="off" spellcheck="false"${L.inGame ? ' disabled' : ''}><button class="mpbtn sm" data-act="rename"${L.inGame ? ' disabled' : ''}>Save</button></div></label>
-          <div class="sect">Match</div>${set}${hostNote}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
-      <div class="sect">Your agent <span class="mpsub">· one of each per team · hover to preview</span></div>${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}
+          <label>Name<div class="mprow"><input id="mp-rname" maxlength="16" value="${NetU.esc(me ? me.name : '')}" autocomplete="off" spellcheck="false"${lock ? ' disabled' : ''}><button class="mpbtn sm" data-act="rename"${lock ? ' disabled' : ''}>Save</button></div></label>
+          <div class="sect">${MD.label}</div>${mapSel}${winSel}${skillSel}${botTools}${action}
+          ${host ? `<p class="mpnote sm">The match runs in your tab. Keep it in front for the smoothest game.</p>` : ''}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
+      <div class="sect">Your agent <span class="mpsub">· ${L.mode === 'dm' ? 'any agent' : 'one of each per team'} · hover to preview</span></div>
       <div class="mpsel"><div class="mpags">${agents}</div><aside class="mpcardag" id="mp-agcard">${this.agentCard(me ? me.agent : 'vanta', true)}</aside></div>`;
     if (focus) { const i = $('mp-rname'); if (i) { i.value = focus.v; i.focus(); try { i.setSelectionRange(focus.s, focus.e); } catch (e) { } } }
     if (me && AGENTS[me.agent] && Settings.agent !== me.agent) { Settings.agent = me.agent; Settings.save(); }
+  },
+  // ---- modes: Custom (two teams, bots by count) or a party mode (≤ 5 players together vs an AI team)
+  setMode(id) {
+    const L = this.lobby; if (!MP_MODES[id] || L.inGame) return;
+    if (MP_MODES[id].party && L.players.length > 5) { this.note(MP_MODES[id].label + ' is for parties of up to 5 · this lobby has ' + L.players.length); return; }
+    L.mode = id;
+    if (MP_MODES[id].party) for (const p of L.players) { p.team = 0; } else { L.players.forEach((p, i) => { p.team = i % 2; }); L.fill = true; }
+    for (const p of L.players) this.fixAgent(p);
+    this.clampBots(); this.pushLobby();
+  },
+  // an opponent before the match: no name, agent or rank (the host may still move/remove the slot)
+  maskSlot(k, id) {
+    const ctl = id ? `<button class="mpbtn sm ghost" data-act="move" data-id="${NetU.esc(id)}" title="Move to the other team">⇄</button><button class="mpbtn sm ghost" data-act="kick" data-id="${NetU.esc(id)}" title="Remove from lobby">✕</button>` : '';
+    return `<div class="mpslot masked"><span class="bi lock"><svg viewBox="0 0 24 24" width="16" height="16"><path d="M7 10V8a5 5 0 0 1 10 0v2h1v11H6V10h1zm2 0h6V8a3 3 0 0 0-6 0v2z" fill="currentColor"/></svg></span><div class="mpsn"><b>Opponent ${k + 1}</b><small>Agent and rank hidden</small></div>${ctl}</div>`;
+  },
+  // what one viewer may see of the lobby: opposing players are stripped to their slot (sent per player, so nothing leaks to devtools)
+  lobbyFor(id) {
+    const L = this.lobby, me = L.players.find(p => p.id === id);
+    return Object.assign({}, L, { players: L.players.map(p => !me || p.team === me.team || this.partyMode() ? p : { id: p.id, team: p.team, name: '', agent: null, masked: true }) });
+  },
+  rankKey(L) { L = L || this.lobby; return L && L.mode === 'rq' ? 'rq' : 'rs'; },
+  rankOf(p, key) { const r = p && p.acct && p.acct[key || this.rankKey()]; return r ? r : { i: -1, p: 0, m: 6, r: 0 }; },
+  badge(idx, size) { try { return Rank.emblem(idx, size || 22); } catch (e) { return ''; } },
+  rankTag(idx, size) { return `<span class="mprk" style="--rc:${Rank.col(idx)}" title="${NetU.esc(Rank.name(idx))}">${this.badge(idx, size || 20)}<em>${NetU.esc(Rank.name(idx))}</em></span>`; },
+  // ---- ranked matchmaking: a tolerance band, not slot mirroring.
+  // Every AI gets a real rank (never Unranked) inside a narrow band around the party's average skill; the enemy team is then
+  // nudged until both team averages sit within TEAM_TOL divisions of each other (fair-match check, like a matchmaker's final pass).
+  skillIdx(r) { return r.i >= 0 ? r.i : r.m; },
+  band(skills) {   // tolerance widens a little for a wide-spread party (harder to match), capped at two divisions
+    const avg = skills.reduce((a, b) => a + b, 0) / Math.max(1, skills.length), spread = skills.length > 1 ? Math.max(...skills) - Math.min(...skills) : 0;
+    return { avg, tol: clamp(1 + spread * 0.12, 1, 2) };
+  },
+  botRank(avg, tol, exact) { const top = avg >= LB_IDX - 1 ? RANK_TOP : LB_IDX - 1; const j = clamp(Math.round(avg + (exact ? 0 : rand(-tol, tol))), 0, top); return { i: j, m: j }; },
+  matchmake(L, exact) {
+    const TEAM_TOL = 0.5, key = this.rankKey(L), hs = L.players.slice(0, 5).map(p => this.rankOf(p, key));
+    const { avg, tol } = this.band(hs.length ? hs.map(r => this.skillIdx(r)) : [6]);
+    const ally = hs.slice(); while (ally.length < 5) ally.push(Object.assign(this.botRank(avg, tol, exact), { fill: true }));
+    const allyAvg = ally.reduce((s, r) => s + this.skillIdx(r), 0) / 5;
+    const enemy = Array.from({ length: 5 }, () => this.botRank(allyAvg, tol, exact));
+    for (let k = 0; k < 40; k++) {   // nudge one opponent at a time toward the ally average until the teams are within tolerance
+      const eAvg = enemy.reduce((s, r) => s + r.i, 0) / 5, d = allyAvg - eAvg; if (Math.abs(d) <= TEAM_TOL) break;
+      const r = enemy[randi(0, 4)], j = clamp(r.i + Math.sign(d), Math.max(0, Math.floor(allyAvg - tol)), Math.ceil(allyAvg + tol)); r.i = r.m = j;
+    }
+    return { ally, enemy, avg: allyAvg, tol };
   },
   agentCard(id, mine) {
     const A = AGENTS[id]; if (!A) return '';
@@ -15109,46 +15990,67 @@ const Net = {
     if (act === 'team') { const t = +b.dataset.t; if (host) { const me = this.me(); if (this.teamCount(t) < 5) { me.team = t; this.fixAgent(me); } this.pushLobby(); } else this.up({ e: 'lset', team: t }); return; }
     if (!host || L.inGame) return;
     if (act === 'move') { const p = L.players.find(x => x.id === b.dataset.id); if (p && this.teamCount(1 - p.team) < 5) { p.team = 1 - p.team; this.fixAgent(p); } this.pushLobby(); return; }
-    if (act === 'kick') { const id = b.dataset.id; this.tx.send(id, { e: 'deny', msg: 'The host removed you from the lobby' }); L.players = L.players.filter(x => x.id !== id); this.pushLobby(); return; }
+    if (act === 'kick') { const id = b.dataset.id; this.tx.send(id, { e: 'deny', code: 'KICKED', msg: MP_DENY.KICKED }); L.players = L.players.filter(x => x.id !== id); this.clampBots(); this.pushLobby(); return; }
+    if (act === 'bot') { const t = +b.dataset.t, d = +b.dataset.d; L.fill = false; L.bots[t] = (L.bots[t] | 0) + d; this.clampBots(); this.pushLobby(); return; }
+    if (act === 'botsall') { L.fill = true; this.clampBots(); this.pushLobby(); return; }
+    if (act === 'botsnone') { L.fill = false; L.bots = [0, 0]; this.pushLobby(); return; }
+    if (act === 'balance') { const ps = L.players.slice(); ps.forEach((p, i) => { p.team = i % 2; this.fixAgent(p); }); this.clampBots(); this.pushLobby(); return; }
+    if (act === 'mode') { this.setMode(b.dataset.m); return; }
     if (act === 'start') this.hostStart();
   },
   roomChange(e) {
     if (e.target.id === 'mp-rname') return;
-    if (this.role !== 'host' || !this.lobby) return; const L = this.lobby, t = e.target;
-    if (t.id === 'mp-rname') return;
+    if (this.role !== 'host' || !this.lobby || this.lobby.inGame) return; const L = this.lobby, t = e.target;
     if (t.id === 'mp-map') L.map = t.value;
-    else if (t.id === 'mp-mode') { if (t.value[0] === 'c') { L.mode = 'custom'; L.cwin = +t.value.slice(1); } else L.mode = t.value; }
+    else if (t.id === 'mp-cwin') L.cwin = +t.value;
     else if (t.id === 'mp-diff') L.diff = +t.value;
-    else if (t.id === 'mp-bots') L.bots = t.value === '1';
     else return;
     this.pushLobby();
   },
 
   // ------------------------------------------------------------ match lifecycle
   hostStart() {
-    const L = this.lobby, maps = MAP_IDS.filter(id => id !== 'range'), fill = L.bots !== false;
-    if (!fill && (this.teamCount(0) < 1 || this.teamCount(1) < 1)) { this._lastErr = 'With bots off, each team needs at least one player'; this.render(); return; }
-    this._lastErr = '';
-    const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map;
-    const humanNames = new Set(L.players.map(p => p.name)), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n)));
-    const roster = [], teams = [0, 1].map(t => {
-      const hs = L.players.filter(p => p.team === t).slice(0, 5), ids = [];
-      for (const p of hs) { const id = !ids.includes(p.agent) ? p.agent : AGENT_IDS.find(x => !ids.includes(x)); p.agent = id; ids.push(id); }
-      const used = new Set(ids); while (fill && ids.length < 5) { const pool = AGENT_IDS.filter(x => !used.has(x)); const id = pool.length ? pick(pool) : pick(AGENT_IDS); ids.push(id); used.add(id); }
-      if (fill) try { Comp.repair(ids, hs.map((_, i) => i)); } catch (e) { }
-      hs.forEach((p, i) => { ids[i] = p.agent; });   // players' picks always stand; only bot slots get rebalanced
-      for (let i = hs.length; i < ids.length; i++) if (ids.indexOf(ids[i]) !== i || hs.some(p => p.agent === ids[i])) ids[i] = AGENT_IDS.find(x => !ids.includes(x)) || ids[i];   // bots never duplicate a teammate either
-      return ids.map((agentId, i) => hs[i] ? { name: hs[i].name, agentId, team: t, pid: hs[i].id, sk: hs[i].id === 'H' ? this.mySkins() : (hs[i].sk || {}) } : { name: names.pop() || 'Bot ' + (i + 1), agentId, team: t, pid: null });
-    });
-    for (let i = 0; i < 5; i++) for (const t of [0, 1]) if (teams[t][i]) roster.push(teams[t][i]);
-    this.info = { roster, map, mode: L.mode, cwin: L.cwin, diff: L.diff, bots: fill, sides: Math.random() < 0.5 ? ['atk', 'def'] : ['def', 'atk'] };
-    L.inGame = true; this.pushLobby();
+    const L = this.lobby; if (L.inGame || L.starting) return;
+    const maps = MAP_IDS.filter(id => id !== 'range'), MD = MP_MODES[L.mode] || MP_MODES.custom, party = MD.party;
+    if (!party && (this.teamCount(0) + (L.bots[0] | 0) < 1 || this.teamCount(1) + (L.bots[1] | 0) < 1)) { this._lastErr = 'Each team needs at least one player or bot'; this.render(); return; }
+    if (party && L.players.length > 5) { this._lastErr = 'Party modes are for up to 5 players'; this.render(); return; }
+    L.starting = true; this._lastErr = '';   // lock the lobby first: joins from here on get MATCH_IN_PROGRESS
+    const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map, key = this.rankKey(L);
+    const humanNames = new Set(L.players.map(p => p.name.toLowerCase())), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n.toLowerCase())));
+    const human = (p, agentId, team) => ({ name: p.name, agentId, team, pid: p.id, sk: p.id === 'H' ? this.mySkins() : (p.sk || {}), dl: p.id === 'H' ? this.myLoadout() : p.dl, rk: this.rankOf(p, key).i });
+    const bot = (agentId, team, r) => Object.assign({ name: names.pop() || 'Bot', agentId, team, pid: null }, r ? { rk: r.i, sk2: Rank.skill(this.skillIdx(r)) } : {});
+    const teamIds = (hs, n) => {   // players' picks stand; bots fill unique agents and the comp gets repaired around the players
+      const ids = []; for (const p of hs) { const id = !ids.includes(p.agent) ? p.agent : AGENT_IDS.find(x => !ids.includes(x)); p.agent = id; ids.push(id); }
+      const used = new Set(ids); while (ids.length < n) { const pool = AGENT_IDS.filter(x => !used.has(x)); const id = pool.length ? pick(pool) : pick(AGENT_IDS); ids.push(id); used.add(id); }
+      if (n === 5) { try { Comp.repair(ids, hs.map((_, i) => i)); } catch (e) { } hs.forEach((p, i) => { ids[i] = p.agent; }); for (let i = hs.length; i < ids.length; i++) if (ids.indexOf(ids[i]) !== i) ids[i] = AGENT_IDS.find(x => !ids.includes(x)) || ids[i]; }
+      return ids;
+    };
+    let roster = [], leaveBot = true;
+    if (L.mode === 'dm') {   // free-for-all: party + AI to 10, everyone on their own team
+      const hs = L.players.slice(0, 5);
+      hs.forEach((p, i) => roster.push(Object.assign(human(p, p.agent, i), { rk: undefined })));
+      for (let i = hs.length; i < 10; i++) roster.push(Object.assign(bot(pick(AGENT_IDS), i), { dl: { primary: pick(DM_PRIMARIES), secondary: pick(['kestrel', 'wisp', 'pike', 'rattler']) } }));
+    } else if (party) {      // party (team 0) vs an AI team; ranked: per-slot mirrored ranks on both sides
+      const hs = L.players.slice(0, 5), plan = MD.ranked ? this.matchmake(L) : null;
+      const a = teamIds(hs, 5), b = teamIds([], 5);
+      const t0 = a.map((id, i) => hs[i] ? human(hs[i], id, 0) : bot(id, 0, plan && plan.ally[i]));
+      const t1 = b.map((id, i) => bot(id, 1, plan && plan.enemy[i]));
+      if (!MD.ranked) { for (const e of t0.concat(t1)) if (!e.pid) delete e.rk; for (const e of t0) if (e.pid) delete e.rk; }
+      for (let i = 0; i < 5; i++) roster.push(t0[i], t1[i]);
+    } else {                 // custom: players where the host put them, plus the chosen number of bots per team
+      const teams = [0, 1].map(t => { const hs = L.players.filter(p => p.team === t).slice(0, 5), n = hs.length + Math.min(L.bots[t] | 0, 5 - hs.length); const ids = teamIds(hs, n); return ids.map((id, i) => hs[i] ? Object.assign(human(hs[i], id, t), { rk: undefined }) : bot(id, t)); });
+      for (let i = 0; i < 5; i++) for (const t of [0, 1]) if (teams[t][i]) roster.push(teams[t][i]);
+      leaveBot = !!L.fill || [0, 1].every(t => this.teamCount(t) + (L.bots[t] | 0) >= 5);   // full bot fill → a bot covers anyone who leaves; otherwise the slot stays empty
+    }
+    this.info = { roster, map, mode: L.mode, cwin: L.cwin, diff: L.diff, leaveBot, sides: Math.random() < 0.5 ? ['atk', 'def'] : ['def', 'atk'] };
+    L.inGame = true; L.starting = false; this.pushLobby();
     this.bcast({ e: 'start', i: this.info });
     this.beginMatch(true);
   },
   beginMatch(fromClick) {
     const I = this.info;
     if (!this.saved) this.saved = { mode: Settings.mode, map: Settings.map, customWin: Settings.customWin, diff: Settings.diff, agent: Settings.agent };
+    this._rr = {};   // post-match RR results reported by each player
     Settings.mode = I.mode; Settings.customWin = I.cwin; Settings.diff = I.diff; Settings.map = I.map;
     const mine = I.roster.find(e => e.pid === this.myId); if (mine) Settings.agent = mine.agentId;
     Lobby.flowMap = null; this.active = true; this.myFix = 0; this.peerIn = {}; this.fastAcc = this.slowAcc = this.sendAcc = 0; this.dropId = 0; this.ownHold = 0;
@@ -15181,21 +16083,38 @@ const Net = {
     setTimeout(() => { if (this.role) this.open(); }, 0);
   },
   // PlantMode.start replacement: the roster comes from the lobby, in the same order on every machine
-  modeStart(M) {
-    const I = this.info, mine = I.roster.find(e => e.pid === this.myId), myTeam = mine ? mine.team : 0;
+  makeAgents(teamColOf) {
+    const I = this.info;
     I.roster.forEach((e, i) => {
       const me = e.pid === this.myId;
-      const a = new Agent({ name: e.name, agentId: e.agentId, team: e.team, isHuman: me, teamCol: e.team === myTeam ? TEAM_COL.ally : TEAM_COL.enemy });
+      const a = new Agent({ name: e.name, agentId: e.agentId, team: e.team, isHuman: me, teamCol: teamColOf(e) });
       a.nid = i; G.agents.push(a);
-      if (e.pid && !me) a.netSkins = this.cleanSkins(e.sk);   // another human: show their equipped skins, not a random bot pick
+      if (e.rk !== undefined && e.rk !== null) a.netRank = e.rk;          // shown on the loading card, scoreboard and end screen
+      if (typeof e.sk2 === 'number') a.netSkill = e.sk2;               // this bot plays at its own (mirrored) rank
+      if (e.dl) a.loadout = this.cleanLoadout(e.dl);
+      if (e.pid && !me) a.netSkins = this.cleanSkins(e.sk);
       if (me) G.player = a;
       else if (this.role === 'host') { if (e.pid) { a.remote = e.pid; a.isBot = false; } else Bots.init(a); }
       else { a.isBot = false; a.netOther = true; a._buf = []; }
     });
+  },
+  modeStart(M) {
+    const I = this.info, mine = I.roster.find(e => e.pid === this.myId), myTeam = mine ? mine.team : 0;
+    this.makeAgents(e => e.team === myTeam ? TEAM_COL.ally : TEAM_COL.enemy);
     M.lbPlayers = null; M.sides = I.sides.slice(); M.buildChargeMesh();
     if (this.role === 'host') M.startRound();
   },
-
+  // Deathmatch: same roster idea, everyone an enemy; the host spawns, the guests follow its snapshots
+  dmStart(M) {
+    this.makeAgents(() => TEAM_COL.enemy);
+    M.spawnCells = [];
+    for (let i = 0; i < GW * GH; i++) if (World.walk[i] && !World.barrier[i] && !World.tp.has(i) && !Mech.doorAt[i] && !World.zl.has(i)) M.spawnCells.push([i % GW, (i / GW) | 0]);
+    Mech.reset();
+    for (const a of G.agents) if (!a.loadout) a.loadout = { primary: 'reaver', secondary: 'kestrel' };
+    if (this.role === 'host') { for (const a of G.agents) M.respawn(a); this.bcast({ e: 'go' }); }
+    World.barriersUp.atk = World.barriersUp.def = false; R.showBarriers(false, false);
+    UI.banner('Deathmatch', 'First to ' + M.target + ' kills', 'info', 2.5); Sfx.ui('round');
+  },
   // ------------------------------------------------------------ engine hooks (installed once; inert outside a match)
   installHooks() {
     const N = this;
@@ -15226,9 +16145,10 @@ const Net = {
     applyDamage = function (v, dmg, at, info) {
       if (!N.active) return _dmg(v, dmg, at, info);
       if (N.role === 'client') return;   // the host decides every hit
-      const h0 = v.hp + (v.armor || 0); _dmg(v, dmg, at, info);
+      const hp0 = v.hp, ar0 = v.armor || 0, h0 = hp0 + ar0; _dmg(v, dmg, at, info);
       const lost = h0 - (v.hp + (v.armor || 0));
-      if (lost > 0.5 && v.nid != null) N.bcast({ e: 'h', v: v.nid, a: at && at.nid != null ? at.nid : -1, p: info && info.part, dc: info && info.decay ? 1 : 0, wb: info && info.wallbang ? 1 : 0, hp: Math.round(v.hp), ar: Math.round(v.armor || 0) });
+      if (lost > 0.5 && v.nid != null) { const i = info ? { part: info.part, weapon: info.weapon, wid: info.wid, wallbang: info.wallbang, decay: info.decay, shot: info.shot, ability: info.ability, kind: info.kind } : {};
+        N.bcast({ e: 'h', v: v.nid, a: at && at.nid != null ? at.nid : -1, p: info && info.part, dc: info && info.decay ? 1 : 0, wb: info && info.wallbang ? 1 : 0, hp: v.hp, ar: v.armor || 0, h0: hp0, a0: ar0, dm: NetU.r1(+dmg || 0), i: N.ser(i) }); }
     };
     const _kill = killAgent;
     killAgent = function (v, at, info) {
@@ -15286,6 +16206,26 @@ const Net = {
       if (!N.isClient() || dr.owner === G.player || !dr._net) return _tick.call(this, dr, dt);
       const n = dr._net; dr.pos.set(n[0], n[1], n[2]); dr.yaw = n[3]; dr.pitch = n[4]; if (dr.mesh) { dr.mesh.position.copy(dr.pos); dr.mesh.rotation.y = dr.yaw; }
     };
+    // per-bot skill: in multiplayer ranked every AI plays at its own (mirrored) rank instead of one shared level
+    const dDesc = Object.getOwnPropertyDescriptor(Bots, 'D'), _upd = Bots.update;
+    if (dDesc && dDesc.get) Object.defineProperty(Bots, 'D', { configurable: true, get() { const a = Bots._cur; if (N.active && a && typeof a.netSkill === 'number' && G.mode && G.mode.ranked) return DiffBlend.at(a.netSkill); return dDesc.get.call(this); } });
+    Bots.update = function (a, dt) { const prev = Bots._cur; Bots._cur = a; try { return _upd.call(this, a, dt); } finally { Bots._cur = prev; } };
+    // Deathmatch: roster from the lobby; on guests the host decides respawns, kills and the finish
+    const D = DMMode.prototype, od = {}; for (const k of ['start', 'update', 'onKill', 'finish', 'purchase']) od[k] = D[k];
+    D.start = function () { if (!N.active) return od.start.call(this); N.dmStart(this); };
+    D.update = function (dt) {
+      if (!N.isClient()) return od.update.call(this, dt);
+      if (this.over) return; World.updateTeleports(dt); Mech.update(dt); this.timer = Math.max(0, this.timer - dt);
+      for (const a of G.agents) if (!a.alive && a.deadT > 3) a.model.visible = false;
+      this.packs = this.packs.filter(p => { p.mesh.rotation.y += dt * 2; p.mesh.position.y = 0.6 + Math.sin(G.time * 3) * 0.1;
+        if (G.time > p.until || G.agents.some(a => a.alive && Math.hypot(a.pos.x - p.pos.x, a.pos.z - p.pos.z) < 1.1)) { R.scene.remove(p.mesh); return false; } return true; });
+    };
+    D.onKill = function (v, k) { if (!N.isClient()) return od.onKill.call(this, v, k); const t = this.target; this.target = 1e9; try { od.onKill.call(this, v, k); } finally { this.target = t; } };
+    D.finish = function () { if (N.isHost() && !this.over) N.bcast({ e: 'fin' }); if (N.isClient() && !N._allow) return; return od.finish.call(this); };
+    D.purchase = function (ag, id) { if (N.isClient() && ag === G.player && !N._allow) { N.up({ e: 'buy', id }); N.ownHold = G.time + 0.8; } return od.purchase.call(this, ag, id); };
+    // end of match: every player's own save settles its RR; they share the result so everyone's end screen lists it
+    const _endP = Lobby.endProgress;
+    Lobby.endProgress = function (res) { const r = _endP.apply(this, arguments); try { N.matchResult(res); } catch (e) { console.warn(e); } return r; };
     const _spawnDrop = Drops.spawn, _pickup = Drops.pickup;
     Drops.spawn = function (w, pos) { if (N.isClient() && !N._allow) return; _spawnDrop.call(this, w, pos); const d = this.list[this.list.length - 1]; if (d) d.nid = ++N.dropId; };
     Drops.pickup = function (ag, d) { if (N.isClient()) return; return _pickup.call(this, ag, d); };
@@ -15394,7 +16334,7 @@ const Net = {
       dz: a.drone && a.drone.alive && a.drone.ctrl ? [r2(a.drone.pos.x), r2(a.drone.pos.y), r2(a.drone.pos.z), NetU.r3(a.drone.yaw), NetU.r3(a.drone.pitch)] : undefined };
   },
   fastSnap() {
-    const M = G.mode, c = M.charge, r2 = NetU.r2, r3 = NetU.r3;
+    const M = G.mode, c = M.charge && M.charge.pos ? M.charge : { state: 'none', pos: { x: 0, y: 0, z: 0 }, carrier: null }, r2 = NetU.r2, r3 = NetU.r3;
     return { e: 's', t: r3(G.time), a: G.agents.map(a => {
       const fl = (a.alive ? 1 : 0) | (a.grounded ? 2 : 0) | (a.ads ? 4 : 0) | (a.reloading() ? 8 : 0) | (a.planting > 0 ? 16 : 0) | (a.defusing > 0 ? 32 : 0) | (a.input.walk ? 64 : 0) | (a.zip ? 128 : 0);
       return [r2(a.pos.x), r3(a.pos.y), r2(a.pos.z), r3(a.yaw), r3(a.pitch), r2(a.crouchT), NetU.r1(a.vel.x), NetU.r1(a.vel.y), NetU.r1(a.vel.z), fl, Math.round(a.hp), a._fix | 0, r2(a.planting || 0)];
@@ -15407,9 +16347,9 @@ const Net = {
       const p = a.weapons.primary, s = a.weapons.secondary;
       return [Math.round(a.armor), a.armorType || 0, NetU.SLOTS.indexOf(a.slot), wid(p), wid(s), a.weapons.charge ? 1 : 0, wid(a.weapons.ult), a.creds, a.kills, a.deaths, a.assists, a.score, a.ultPts, a.charges.C, a.charges.Q, a.charges.E,
         p ? p.mag : 0, p ? p.reserve : 0, s ? s.mag : 0, s ? s.reserve : 0, NetU.r2(a.flashT || 0), NetU.r2(a.flashMax || 0), a.weapons.ult ? a.weapons.ult.mag : 0];
-    }), m: [M.score, M.round, M.sides, M.ot ? 1 : 0, M.loss, M.history.length], h: M.history.slice(-3),
+    }), m: M.teamBased ? [M.score, M.round, M.sides, M.ot ? 1 : 0, M.loss, M.history.length] : null, h: M.history ? M.history.slice(-3) : null,
       dr: Drops.list.map(d => [d.nid | 0, d.w.id, NetU.r2(d.pos.x), NetU.r2(d.pos.z), NetU.r2(d.mesh.rotation.y), d.w.mag, d.w.reserve]),
-      dw: Mech.doors.map(D => D.target > 0.5 ? 1 : 0), ob: Orbs.list.map(o => o.taken ? 1 : 0) };
+      dw: Mech.doors.map(D => D.target > 0.5 ? 1 : 0), ob: M.teamBased ? Orbs.list.map(o => o.taken ? 1 : 0) : [] };
   },
 
   // host: messages from a guest during the match
@@ -15423,8 +16363,10 @@ const Net = {
       case 'b': if (a.alive && a.weapons.ult && a.weapons.ult.def.cls === 'blades' && a.weapons.ult.mag > 0) { const y = a.yaw, pi = a.pitch; a.yaw = m.y; a.pitch = m.pi; this.rewind(a, m.rt, () => throwBlade(a, a.weapons.ult, +m.o || 0)); a.yaw = y; a.pitch = pi; if (a.weapons.ult.mag <= 0) { a.weapons.ult = null; a.equip(a.bestSlot(), true); } } return;
       case 'u': { a.yaw = m.y; a.pitch = m.pi; Abil.alt = !!m.al; try { Abil.use(a, m.k, this.deser(m.tg), this.deser(m.op) || undefined); } catch (e) { console.warn('remote cast', e); } finally { Abil.alt = false; } return; }
       case 'a': if (m.a === 'reload') a.input.reload = true; else if (m.a === 'use' && a.alive) playerUse(a); else if (m.a === 'drop' && a.alive) playerDrop(a); return;
+      case 'rr': if (m.r && typeof m.r === 'object') { const r = { d: typeof m.r.d === 'number' ? Math.round(clamp(m.r.d, -99, 99)) : null, to: typeof m.r.to === 'number' ? clamp(Math.round(m.r.to), -1, RANK_TOP) : null, pl: m.r.pl | 0, pd: m.r.pd ? 1 : 0 };
+        (this._rr = this._rr || {})[a.nid] = r; this.bcast({ e: 'rr', n: a.nid, r }); this.renderEndRanks(); } return;
       case 'da': { const dr = a.drone; if (dr && dr.alive && dr.key === m.k) Possess.action(dr); return; }
-      case 'dl': if (a.drone) Possess.leave(a, !!m.f); return;
+      case 'dl': { const st = this.peerIn[cid]; if (st) delete st.dz; if (a.drone) Possess.leave(a, !!m.f); return; }   // drop the pre-step-out drone pose so it can't re-take control
       case 'buy': if (G.mode.purchase) G.mode.purchase(a, m.id); return;
       case 'sell': if (G.mode.sell) G.mode.sell(a, m.id); return;
       case 'req': Econ.request(a, m.id); return;
@@ -15433,6 +16375,26 @@ const Net = {
     }
   },
   // lag compensation: put everyone else back where the shooter saw them (render time on their screen), then trace
+  // ---- post-match: each player's own save settles RR; results are shared so every end screen shows the whole lobby
+  matchResult(res) {
+    if (!this.active || !G.mode || !G.mode.ranked || !G.player) return;
+    const r = res ? { d: res.rrDelta == null ? null : res.rrDelta, to: res.rankTo == null ? null : res.rankTo, pl: res.placement || 0, pd: res.placed ? 1 : 0 } : null;
+    this._rr = this._rr || {}; if (r) this._rr[G.player.nid] = r;
+    if (r) { if (this.role === 'host') this.bcast({ e: 'rr', n: G.player.nid, r }); else this.up({ e: 'rr', r }); }
+    this.renderEndRanks();
+  },
+  renderEndRanks() {
+    const host = $('endscreen'); if (!host || !G.mode || !G.mode.ranked || !this.info) return;
+    let el = $('mp-endranks'); if (!el) { el = document.createElement('div'); el.id = 'mp-endranks'; const btn = $('btn-end'); if (btn && btn.parentNode) btn.parentNode.insertBefore(el, btn); else host.appendChild(el); }
+    const P = G.player, rr = this._rr || {};
+    const row = a => {
+      const r = rr[a.nid], idx = a.netRank != null ? a.netRank : -1, now = r && r.to != null && r.pd !== 0 ? r.to : idx;
+      const res = !a.isHuman && !a.remote && !(this.info.roster[a.nid] || {}).pid ? '<span class="mper ai">AI</span>' : !r ? '<span class="mper wait">…</span>' : r.d != null ? `<span class="mper ${r.d >= 0 ? 'up' : 'down'}">${r.d >= 0 ? '+' : ''}${r.d} RR</span>` : `<span class="mper pl">${r.pd ? 'Placed' : 'Placement ' + r.pl + '/' + PLACEMENTS}</span>`;
+      return `<div class="mperow${a === P ? ' me' : ''}"><span class="mperk" style="--rc:${Rank.col(now)}">${this.badge(now, 26)}</span><b>${NetU.esc(a.name)}</b><small>${NetU.esc(Rank.name(now))}</small>${res}</div>`;
+    };
+    const side = t => G.agents.filter(a => a.team === t).map(row).join('');
+    el.innerHTML = `<div class="mpe-h">${MP_MODES[this.info.mode] ? MP_MODES[this.info.mode].label : 'Ranked'} · lobby ranks</div><div class="mpe-cols"><div class="mpe-t ally"><em>Your team</em>${side(P.team)}</div><div class="mpe-t enemy"><em>Opponents</em>${side(1 - P.team)}</div></div>`;
+  },
   // host: a player who left a no-bots match: out of the round for good (dead, hidden, never respawned)
   makeGone(a) {
     if (a.gone) return; a.gone = true; a.isBot = false; a.ai = null;
@@ -15469,10 +16431,12 @@ const Net = {
       case 'm': { const a = A[m.n]; if (a && a !== G.player && a.alive) melee(a, !!m.h); return; }
       case 'b': { const a = A[m.n]; if (a && a !== G.player && a.alive) { const w = a.weapons.ult && a.weapons.ult.def.cls === 'blades' ? a.weapons.ult : makeWeapon('blades'); if (w.def) throwBlade(a, w, +m.o || 0); } return; }
       case 'u': this.replayCast(m); return;
+      case 'rr': (this._rr = this._rr || {})[m.n] = m.r; this.renderEndRanks(); return;
       case 'da': { const o = A[m.n]; if (!o || o === G.player) return; const dr = Abil.drones.find(d => d.alive && d.owner === o && d.key === m.k); if (dr) { this._allow = true; try { Possess.action(dr); } finally { this._allow = false; } } return; }
       case 'k': { const v = A[m.v], at = m.a >= 0 ? A[m.a] : null; if (!v || !v.alive) return; this._kill = true; try { killAgent(v, at, this.deser(m.i) || {}); } catch (e) { console.warn(e); } finally { this._kill = false; } return; }
       case 'h': { const v = A[m.v], at = m.a >= 0 ? A[m.a] : null; if (!v) return; v.hp = m.hp; v.armor = m.ar; v.lastHurtT = G.time;
-        const info = { part: m.p, decay: !!m.dc, wallbang: !!m.wb, from: at ? at.eye(new V3()) : null };
+        const info = Object.assign({ part: m.p, decay: !!m.dc, wallbang: !!m.wb }, this.deser(m.i) || {}, { from: at ? at.eye(new V3()) : null });
+        if (typeof CombatLog !== 'undefined' && m.h0 != null) try { CombatLog.hit(v, at, info, m.dm || 0, m.h0, m.a0); } catch (e) { }   // feeds the post-death combat report
         if (v === G.player) { try { UI.hurt(at, info); } catch (e) { } Sfx.hurt(); }
         if (at === G.player && v !== at && !m.dc) { UI.hitmark(m.p === 'head'); Sfx.hit(m.p === 'head'); }
         return; }
@@ -15521,12 +16485,15 @@ const Net = {
       a.ads = !!(s[9] & 4); a.input.walk = !!(s[9] & 64);
       const rl = !!(s[9] & 8); if (rl && !a.reloading()) { const w = a.weapon(); a.reloadStart = G.time; a.reloadDur = w.def.reload || 2; a.reloadEnd = G.time + a.reloadDur; } else if (!rl) a.reloadEnd = 0;
     });
-    const [ph, tm, cs, cx, cy, cz, car, dp, dfr] = m.m, c = M.charge;
+    const [ph, tm, cs, cx, cy, cz, car, dp, dfr] = m.m, c = M.charge && M.charge.pos ? M.charge : { pos: new V3() };
+    if (!M.teamBased) { M.timer = tm; }
+    else {
     if (M.phase === 'buy' && ph === 'live') { World.barriersUp.atk = World.barriersUp.def = false; R.showBarriers(false, false); UI.closeBuy(); UI.banner('Round start', '', 'info', 1.2); Sfx.ui('round'); }
     if (M.phase !== 'end' || ph !== 'live') M.phase = ph;
     M.timer = tm; M.defuseProg = dp; M.defuser = dfr >= 0 ? G.agents[dfr] : null;
     if (c.state !== cs || c.pos.x !== cx || c.pos.z !== cz) { c.state = cs; c.pos.set(cx, cy, cz); if (c.mesh) { c.mesh.visible = cs === 'dropped' || cs === 'planted'; c.mesh.position.copy(c.pos); } }
     c.carrier = car >= 0 ? G.agents[car] : null;
+    }
     // drones: follow the host; one the host no longer has (shot down, expired, spent) ends here too
     if (m.dn) {
       const live = new Map(m.dn.map(d => [d[0] + ':' + d[1], d]));
@@ -15563,9 +16530,7 @@ const Net = {
       if (!own) { if (sl && a.weapons[sl] && a.slot !== sl) a.slot = sl; }
       else if (!a.weapons[a.slot]) a.equip(sl && a.weapons[sl] ? sl : a.bestSlot(), true);
     });
-    const [sc, rd, sd, ot, ls, hn] = m.m;
-    M.score = sc; M.round = rd; G.round = rd; M.sides = sd; M.ot = !!ot; M.loss = ls;
-    if (M.history.length > hn) M.history.length = hn;
+    if (m.m && M.teamBased) { const [sc, rd, sd, ot, ls, hn] = m.m; M.score = sc; M.round = rd; G.round = rd; M.sides = sd; M.ot = !!ot; M.loss = ls; if (M.history.length > hn) M.history.length = hn; }
     // ground weapons
     const want = new Map(m.dr.map(d => [d[0], d])), have = new Map(Drops.list.map(d => [d.nid, d]));
     for (const [id, d] of have) if (!want.has(id)) Drops.remove(d);
@@ -15632,20 +16597,9 @@ function guestAct(P, a) {
   return true;
 }
 
-// multiplayer edition: every skin is free, fully upgraded, with every colour variant. Saved per website, so a
-// single-player save elsewhere is untouched; skins added in future updates unlock on the next page load.
-function mpUnlockAllSkins() {
-  try {
-    const d = Profile.get(); d.owned = d.owned || {}; d.equipped = d.equipped || {};
-    for (const id in SKINS) {
-      const T = Skins.tierOf(id), L = SKIN_LINES[SKINS[id].line] || {}, nv = Math.max(1, (L.vars || []).length);
-      const o = d.owned[id] || (d.owned[id] = { lvl: 1, v: 0, vars: [0] });
-      o.lvl = Math.max(o.lvl || 1, (T && T.levels) || 1);
-      o.vars = Array.from({ length: nv }, (_, i) => i); o.v = clamp(o.v | 0, 0, nv - 1);
-    }
-    Profile.save();
-  } catch (e) { console.warn('skin unlock', e); }
-}
+
+// scoreboard / loading card: rank badge for a multiplayer ranked match (empty otherwise)
+function mpRankChip(a, size) { if (!Net.active || !G.mode || !G.mode.ranked || a.netRank == null) return ''; return `<span class="mpsbrk" style="--rc:${Rank.col(a.netRank)}" title="${Rank.name(a.netRank)}">${Rank.emblem(a.netRank, size || 16)}</span>`; }
 
 // ============================================================ BOOT
 function boot() {
@@ -15655,7 +16609,7 @@ function boot() {
   World.load(MAPS.saltworks); R.buildMap(MAPS.saltworks);
   R.setQuality(Settings.graphics === 'low' ? 'low' : 'high');
   if (!['quick', 'standard', 'dm', 'rq', 'rs', 'range', 'custom'].includes(Settings.mode)) Settings.mode = 'quick';
-  mpUnlockAllSkins(); VM.init(); Portraits.init(); UI.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
+  VM.init(); Portraits.init(); UI.init(); CombatReport.init(); Input.init(); initMenus(); Lobby.init(); Vista.init(); Net.init();
   Input.resolveCrouch();
   $('loading').classList.add('hidden');
   const q = new URLSearchParams(location.search);
