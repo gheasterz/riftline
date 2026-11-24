@@ -1191,6 +1191,8 @@ img{max-width:100%}
 .mpslot b i{font-style:normal;font-size:11px;letter-spacing:1.5px;color:var(--gold);margin-left:6px}
 .mpslot small{color:#8aa0ad;font-size:13px}
 .mpslot.bot{opacity:.55;border-left-color:#2b4050}
+.mpslot.empty{opacity:.4;border-left-style:dashed}
+.mpside label.dim{opacity:.45}
 .mpslot .bi{width:40px;height:40px;display:grid;place-items:center;font:800 12px var(--f-display);letter-spacing:1px;background:#0b141b;color:#8aa0ad}
 .mpside{background:rgba(10,18,24,.6);border:1px solid rgba(255,255,255,.07);padding:4px 16px 16px;display:flex;flex-direction:column;gap:12px}
 .mpside label{display:flex;flex-direction:column;gap:5px;font:700 12px var(--f-body);letter-spacing:1.5px;text-transform:uppercase;color:#9aa8b3}
@@ -14643,7 +14645,7 @@ const Net = {
     try {
       const tx = this.newTx(); const code = await tx.host();
       this.tx = tx; this.role = 'host'; this.myId = 'H'; this.code = code;
-      this.lobby = { players: [{ id: 'H', name: n, team: 0, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta' }], map: 'random', mode: 'quick', cwin: 9, diff: Settings.diff, inGame: false };
+      this.lobby = { players: [{ id: 'H', name: n, team: 0, agent: AGENTS[Settings.agent] ? Settings.agent : 'vanta' }], map: 'random', mode: 'quick', cwin: 9, diff: Settings.diff, bots: true, inGame: false };
       tx.on('msg', (cid, m) => this.hostMsg(cid, m)); tx.on('leave', cid => this.peerLeft(cid)); tx.on('close', () => this.lostLink('Lost connection to the relay server'));
       this.render();
     } catch (e) { this.err(e.message); }
@@ -14719,7 +14721,11 @@ const Net = {
     if (this.role !== 'host' || !this.lobby) return;
     const p = this.lobby.players.find(x => x.id === cid);
     this.lobby.players = this.lobby.players.filter(x => x.id !== cid); delete this.peerIn[cid];
-    if (this.active) for (const a of G.agents) if (a.remote === cid) { a.remote = null; a.isBot = true; Bots.init(a); a.input.fire = false; UI.toast((p ? p.name : 'A player') + ' left · a bot takes over', 'info'); }
+    if (this.active) for (const a of G.agents) if (a.remote === cid) {
+      a.remote = null; a.input.fire = false;
+      if (this.info && this.info.bots === false) { this.makeGone(a); UI.toast((p ? p.name : 'A player') + ' left the match', 'info'); }
+      else { a.isBot = true; Bots.init(a); UI.toast((p ? p.name : 'A player') + ' left · a bot takes over', 'info'); }
+    }
     this.pushLobby();
   },
   clientMsg(m) {
@@ -14750,11 +14756,12 @@ const Net = {
     const me = this.me(), url = location.origin + location.pathname + '?join=' + this.code;
     const col = t => {
       const ps = L.players.filter(p => p.team === t);
-      let h = `<div class="mpteam t${t}"><div class="mpth"><b>${t === 0 ? 'Team A' : 'Team B'}</b><span>${ps.length}/5 players · ${5 - ps.length} bot${5 - ps.length === 1 ? '' : 's'}</span>${me && me.team !== t && ps.length < 5 && !L.inGame ? `<button class="mpbtn sm" data-act="team" data-t="${t}">Join</button>` : ''}</div>`;
+      const fill = L.bots !== false, gap = 5 - ps.length;
+      let h = `<div class="mpteam t${t}"><div class="mpth"><b>${t === 0 ? 'Team A' : 'Team B'}</b><span>${ps.length}/5 players${gap ? fill ? ` · ${gap} bot${gap === 1 ? '' : 's'}` : ` · ${gap} empty` : ''}</span>${me && me.team !== t && ps.length < 5 && !L.inGame ? `<button class="mpbtn sm" data-act="team" data-t="${t}">Join</button>` : ''}</div>`;
       for (let i = 0; i < 5; i++) {
         const p = ps[i];
         if (p) { const A = AGENTS[p.agent] || AGENTS.vanta; h += `<div class="mpslot${p.id === this.myId ? ' me' : ''}" style="--c:${A.cssAccent}"><img src="${Portraits.get(A.id)}" alt=""><div><b>${NetU.esc(p.name)}${p.id === 'H' ? ' <i>HOST</i>' : ''}</b><small>${A.name} · ${A.role}</small></div>${host && p.id !== 'H' && !L.inGame ? `<button class="mpbtn sm ghost" data-act="move" data-id="${NetU.esc(p.id)}" title="Move to the other team">⇄</button><button class="mpbtn sm ghost" data-act="kick" data-id="${NetU.esc(p.id)}" title="Remove">✕</button>` : host && p.id === 'H' && !L.inGame ? `<button class="mpbtn sm ghost" data-act="move" data-id="H" title="Move to the other team">⇄</button>` : ''}</div>`; }
-        else h += `<div class="mpslot bot"><span class="bi">BOT</span><div><b>Bot</b><small>Fills this slot</small></div></div>`;
+        else h += fill ? `<div class="mpslot bot"><span class="bi">BOT</span><div><b>Bot</b><small>Fills this slot</small></div></div>` : `<div class="mpslot bot empty"><span class="bi">—</span><div><b>Empty</b><small>No bot · open slot</small></div></div>`;
       }
       return h + '</div>';
     };
@@ -14766,9 +14773,10 @@ const Net = {
     const set = host && !L.inGame ? `
       <label>Map<select id="mp-map"><option value="random"${L.map === 'random' ? ' selected' : ''}>Random</option>${maps.map(id => `<option value="${id}"${L.map === id ? ' selected' : ''}>${NetU.esc(MAPS[id].name || id)}</option>`).join('')}</select></label>
       <label>Mode<select id="mp-mode"><option value="quick"${L.mode === 'quick' ? ' selected' : ''}>Quick · first to 5</option><option value="standard"${L.mode === 'standard' ? ' selected' : ''}>Standard · first to 13</option><option value="c5"${L.mode === 'custom' && L.cwin === 5 ? ' selected' : ''}>Custom · first to 5</option><option value="c9"${L.mode === 'custom' && L.cwin === 9 ? ' selected' : ''}>Custom · first to 9</option><option value="c13"${L.mode === 'custom' && L.cwin === 13 ? ' selected' : ''}>Custom · first to 13</option></select></label>
-      <label>Bot skill<select id="mp-diff">${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>
+      <label>Bots<select id="mp-bots"><option value="1"${L.bots !== false ? ' selected' : ''}>Fill empty slots</option><option value="0"${L.bots === false ? ' selected' : ''}>No bots · players only</option></select></label>
+      <label${L.bots === false ? ' class="dim"' : ''}>Bot skill<select id="mp-diff"${L.bots === false ? ' disabled' : ''}>${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>
       <button class="cta big" data-act="start">Start match</button>`
-      : `<div class="mpinfo"><div><span>Map</span><b>${L.map === 'random' ? 'Random' : NetU.esc((MAPS[L.map] || {}).name || L.map)}</b></div><div><span>Mode</span><b>${modeName}</b></div><div><span>Bots</span><b>${diffs[+L.diff] || 'Medium'}</b></div></div>
+      : `<div class="mpinfo"><div><span>Map</span><b>${L.map === 'random' ? 'Random' : NetU.esc((MAPS[L.map] || {}).name || L.map)}</b></div><div><span>Mode</span><b>${modeName}</b></div><div><span>Bots</span><b>${L.bots === false ? 'Off · players only' : diffs[+L.diff] || 'Medium'}</b></div></div>
          <p class="mpnote">${L.inGame ? 'Match in progress…' : 'Waiting for the host to start'}</p>`;
     const hostNote = host ? `<p class="mpnote">You’re the host: the match runs in this tab, so keep it in front while you play (browsers pause background tabs).</p>` : '';
     $('mp-room').innerHTML = `
@@ -14796,26 +14804,29 @@ const Net = {
     if (t.id === 'mp-map') L.map = t.value;
     else if (t.id === 'mp-mode') { if (t.value[0] === 'c') { L.mode = 'custom'; L.cwin = +t.value.slice(1); } else L.mode = t.value; }
     else if (t.id === 'mp-diff') L.diff = +t.value;
+    else if (t.id === 'mp-bots') L.bots = t.value === '1';
     else return;
     this.pushLobby();
   },
 
   // ------------------------------------------------------------ match lifecycle
   hostStart() {
-    const L = this.lobby, maps = MAP_IDS.filter(id => id !== 'range');
+    const L = this.lobby, maps = MAP_IDS.filter(id => id !== 'range'), fill = L.bots !== false;
+    if (!fill && (this.teamCount(0) < 1 || this.teamCount(1) < 1)) { this._lastErr = 'With bots off, each team needs at least one player'; this.render(); return; }
+    this._lastErr = '';
     const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map;
     const humanNames = new Set(L.players.map(p => p.name)), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n)));
     const roster = [], teams = [0, 1].map(t => {
       const hs = L.players.filter(p => p.team === t).slice(0, 5), ids = [];
       for (const p of hs) { const id = !ids.includes(p.agent) ? p.agent : AGENT_IDS.find(x => !ids.includes(x)); p.agent = id; ids.push(id); }
-      const used = new Set(ids); while (ids.length < 5) { const pool = AGENT_IDS.filter(x => !used.has(x)); const id = pool.length ? pick(pool) : pick(AGENT_IDS); ids.push(id); used.add(id); }
-      try { Comp.repair(ids, hs.map((_, i) => i)); } catch (e) { }
+      const used = new Set(ids); while (fill && ids.length < 5) { const pool = AGENT_IDS.filter(x => !used.has(x)); const id = pool.length ? pick(pool) : pick(AGENT_IDS); ids.push(id); used.add(id); }
+      if (fill) try { Comp.repair(ids, hs.map((_, i) => i)); } catch (e) { }
       hs.forEach((p, i) => { ids[i] = p.agent; });   // players' picks always stand; only bot slots get rebalanced
-      for (let i = hs.length; i < 5; i++) if (ids.indexOf(ids[i]) !== i || hs.some(p => p.agent === ids[i])) ids[i] = AGENT_IDS.find(x => !ids.includes(x)) || ids[i];   // bots never duplicate a teammate either
+      for (let i = hs.length; i < ids.length; i++) if (ids.indexOf(ids[i]) !== i || hs.some(p => p.agent === ids[i])) ids[i] = AGENT_IDS.find(x => !ids.includes(x)) || ids[i];   // bots never duplicate a teammate either
       return ids.map((agentId, i) => hs[i] ? { name: hs[i].name, agentId, team: t, pid: hs[i].id, sk: hs[i].id === 'H' ? this.mySkins() : (hs[i].sk || {}) } : { name: names.pop() || 'Bot ' + (i + 1), agentId, team: t, pid: null });
     });
-    for (let i = 0; i < 5; i++) roster.push(teams[0][i], teams[1][i]);
-    this.info = { roster, map, mode: L.mode, cwin: L.cwin, diff: L.diff, sides: Math.random() < 0.5 ? ['atk', 'def'] : ['def', 'atk'] };
+    for (let i = 0; i < 5; i++) for (const t of [0, 1]) if (teams[t][i]) roster.push(teams[t][i]);
+    this.info = { roster, map, mode: L.mode, cwin: L.cwin, diff: L.diff, bots: fill, sides: Math.random() < 0.5 ? ['atk', 'def'] : ['def', 'atk'] };
     L.inGame = true; this.pushLobby();
     this.bcast({ e: 'start', i: this.info });
     this.beginMatch(true);
@@ -14826,8 +14837,22 @@ const Net = {
     Settings.mode = I.mode; Settings.customWin = I.cwin; Settings.diff = I.diff; Settings.map = I.map;
     const mine = I.roster.find(e => e.pid === this.myId); if (mine) Settings.agent = mine.agentId;
     Lobby.flowMap = null; this.active = true; this.myFix = 0; this.peerIn = {}; this.fastAcc = this.slowAcc = this.sendAcc = 0; this.dropId = 0; this.ownHold = 0;
-    this.close();
+    this.close(); this.bgClock(); if (document.hidden && this._bg) this._bg.postMessage(33);
     startGame(fromClick);
+  },
+  bgClock() {
+    if (this._bg) return;
+    try {
+      const src = 'let t=null;onmessage=e=>{clearInterval(t);if(e.data>0)t=setInterval(()=>postMessage(0),e.data)}';
+      this._bg = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      let last = performance.now();
+      this._bg.onmessage = () => {
+        const now = performance.now(), dt = Math.min(0.05, (now - last) / 1000); last = now;
+        if (!document.hidden || !this.active || !G.running || !G.mode || G.mode.over) return;
+        try { step(dt); } catch (e) { console.error('bg step', e); }
+      };
+      document.addEventListener('visibilitychange', () => { if (this._bg) this._bg.postMessage(document.hidden && this.active ? 33 : 0); last = performance.now(); });
+    } catch (e) { this._bg = null; }
   },
   restoreSettings() { if (this.saved) { Object.assign(Settings, this.saved); this.saved = null; Settings.save(); } },
   endMatch() { this.active = false; this.info = null; this.pending = null; this.restoreSettings(); if (this.role === 'host' && this.lobby) { this.lobby.inGame = false; this.pushLobby(); } },
@@ -14945,12 +14970,13 @@ const Net = {
       if (!N.active) return o.startRound.call(this);
       if (N.role === 'client') { if (!N._allow) return; return o.startRound.call(this); }
       const sb = this.sides.slice(), otb = this.ot; o.startRound.call(this);
-      N.bcast({ e: 'r', rd: this.round, sb, otb, sd: this.sides, sc: this.score, ls: this.loss, ot: this.ot, ca: this.charge.carrier ? this.charge.carrier.nid : -1, sp: G.agents.map(a => [NetU.r2(a.pos.x), NetU.r2(a.pos.y), NetU.r2(a.pos.z), NetU.r3(a.yaw)]) });
+      for (const a of G.agents) if (a.gone) N.hideGone(a);
+      N.bcast({ e: 'r', rd: this.round, sb, otb, sd: this.sides, sc: this.score, ls: this.loss, ot: this.ot, ca: this.charge.carrier ? this.charge.carrier.nid : -1, go: G.agents.filter(a => a.gone).map(a => a.nid), sp: G.agents.map(a => [NetU.r2(a.pos.x), NetU.r2(a.pos.y), NetU.r2(a.pos.z), NetU.r3(a.yaw)]) });
       for (const a of G.agents) a._h = null;
     };
     P.endRound = function (w, r, h) { if (N.isHost() && this.phase !== 'end') N.bcast({ e: 'e', w, r, h }); if (N.isClient() && !N._allow) return; return o.endRound.call(this, w, r, h); };
     P.plant = function (ag) { if (N.isHost()) N.bcast({ e: 'pl', n: ag.nid, p: [NetU.r2(ag.pos.x), NetU.r2(ag.pos.y), NetU.r2(ag.pos.z)] }); if (N.isClient() && !N._allow) return; return o.plant.call(this, ag); };
-    P.finish = function () { if (N.isHost()) N.bcast({ e: 'fin' }); if (N.isClient() && !N._allow) return; return o.finish.call(this); };
+    P.finish = function () { if (N.isHost()) N.bcast({ e: 'fin', sc: this.score.slice() }); if (N.isClient() && !N._allow) return; return o.finish.call(this); };
     P.update = function (dt) { if (N.isClient()) return N.clientModeUpdate(this, dt); return o.update.call(this, dt); };
     P.onKill = function (v, a, i) { if (N.isClient()) return; return o.onKill.call(this, v, a, i); };
     P.purchase = function (ag, id) { if (N.isClient() && ag === G.player && !N._allow) { if (!this.canBuy(ag)) return false; N.up({ e: 'buy', id }); N.ownHold = G.time + 0.8; } return o.purchase.call(this, ag, id); };
@@ -14982,7 +15008,7 @@ const Net = {
         if (!s) { a.input.f = a.input.r = 0; continue; }
         a.yaw = s.y; a.pitch = s.pi;
         if (a.alive) {
-          if ((s.ack | 0) >= (a._fix | 0)) { a.pos.set(s.p[0], s.p[1], s.p[2]); a.vel.set(s.v[0], s.v[1], s.v[2]); }
+          if ((s.ack | 0) >= (a._fix | 0)) { a.pos.set(s.p[0], s.p[1], s.p[2]); a.vel.set(s.v[0], s.v[1], s.v[2]); this.sanePos(a, dt); }
           a.crouchT = s.c; a.eyeH = lerp(1.6, 1.12, a.crouchT); a.grounded = !!s.g;
           const inp = a.input; inp.f = s.f; inp.r = s.r; inp.walk = !!s.w; inp.crouch = !!s.cr; inp.alt = !!s.al; inp.fire = false; inp.fireP = false; inp.altP = false;
           const sl = NetU.SLOTS[s.sl]; if (sl && sl !== a.slot && a.weapons[sl]) a.equip(sl, true);
@@ -14996,6 +15022,19 @@ const Net = {
       const target = this.hostT + (performance.now() - this.hostRecv) / 1000;
       if (Math.abs(target - G.time) > 0.6) G.time = target; else G.time += (target - G.time) * 0.08;
     }
+  },
+  // a guest's own movement is trusted, but never into the void, outside the map, or buried inside a wall at floor level
+  // (where no shot could reach them): after a short grace the host puts them back on the nearest open floor and they snap there
+  sanePos(a, dt) {
+    const p = a.pos, cx = Math.floor(p.x / CELL), cz = Math.floor(p.z / CELL);
+    const out = !isFinite(p.x + p.y + p.z) || p.y < -3 || p.y > 40 || cx < -1 || cz < -1 || cx > GW || cz > GH;
+    const buried = !out && p.y < 0.4 && !World.isWalkCell(cx, cz) && !a.zip;
+    a._badT = out || buried ? (a._badT || 0) + dt : 0;
+    if (out || a._badT > 1.2) {
+      const c = World.nearestWalk(clamp(cx, 0, GW - 1), clamp(cz, 0, GH - 1)) || World.nearestWalk(GW >> 1, GH >> 1) || [GW >> 1, GH >> 1];
+      const back = a._lastGood && World.isWalkCell(Math.floor(a._lastGood.x / CELL), Math.floor(a._lastGood.z / CELL)) ? a._lastGood : World.center(c[0], c[1], new V3());
+      p.copy(back); a.vel.set(0, 0, 0); a._badT = 0; a._fix = (a._fix | 0) + 1;   // tell their client to snap here
+    } else if (!buried) (a._lastGood || (a._lastGood = new V3())).copy(p);
   },
   // host only: remote players skip updateMove, so their footsteps (heard by everyone, and by the bots) are made here
   steps(a, dt, walk) {
@@ -15060,6 +15099,18 @@ const Net = {
     }
   },
   // lag compensation: put everyone else back where the shooter saw them (render time on their screen), then trace
+  // host: a player who left a no-bots match: out of the round for good (dead, hidden, never respawned)
+  makeGone(a) {
+    if (a.gone) return; a.gone = true; a.isBot = false; a.ai = null;
+    this.bcast({ e: 'gone', n: a.nid });
+    if (a.alive) killAgent(a, null, { left: true });
+    this.hideGone(a);
+    const M = G.mode; if (!M || M.over || !M.teamBased) return;
+    for (const t of [0, 1]) if (!G.agents.some(x => x.team === t && !x.gone)) {   // a whole team left: the other team wins
+      M.score[1 - t] = Math.max(M.score[1 - t], M.winTarget || M.score[1 - t] + 1); M.finish(); return;
+    }
+  },
+  hideGone(a) { a.alive = false; if (a.model) a.model.visible = false; if (a.corpse) a.corpse = null; const c = G.mode && G.mode.charge; if (c && c.carrier === a) { a.weapons.charge = null; c.carrier = null; const mate = G.agents.find(x => x.alive && x.team === a.team && !x.gone); if (mate && this.role === 'host') G.mode.giveCharge(mate); } },
   rewind(shooter, rt, fn) {
     rt = Math.min(G.time, Math.max(G.time - 0.4, +rt || G.time)); const saved = [];
     for (const a of G.agents) {
@@ -15092,7 +15143,8 @@ const Net = {
         return; }
       case 'e': this._allow = true; try { M.endRound(m.w, m.r, m.h); if (m.h === 'boom') this.boom(M); } finally { this._allow = false; } return;
       case 'pl': { const a = A[m.n]; if (!a) return; const keep = a.pos.clone(); a.pos.set(m.p[0], m.p[1], m.p[2]); this._allow = true; try { M.plant(a); } finally { this._allow = false; } if (a !== G.player) a.pos.copy(keep); return; }
-      case 'fin': this._allow = true; try { M.finish(); } finally { this._allow = false; } return;
+      case 'fin': if (m.sc) M.score = m.sc.slice(); this._allow = true; try { M.finish(); } finally { this._allow = false; } return;
+      case 'gone': { const a = A[m.n]; if (a) { a.gone = true; setTimeout(() => { if (a.gone) this.hideGone(a); }, 50); UI.toast(a.name + ' left the match', 'info'); } return; }
       case 'y': { const b = A[m.n]; if (b && G.player && m.t === G.player.team && b !== G.player) UI.comms(`<span class="a">${NetU.esc(b.name)}</span> ${NetU.esc(m.x)}`); return; }
       case 'p': { const o = A[m.n]; if (!o || o === G.player) return; this._allow = true; try { Ping.place(o, m.ty, this.deser(m.p), this.deser(m.tg)); } catch (e) { } finally { this._allow = false; } return; }
     }
@@ -15128,7 +15180,7 @@ const Net = {
         return;
       }
       a._buf.push([m.t, s[0], s[1], s[2], s[3], s[4], s[5], s[6], s[7], s[8], s[9]]); if (a._buf.length > 30) a._buf.shift();
-      if (alive && !a.alive) { a.spawn(new V3(s[0], s[1], s[2]), s[3]); a._buf = [a._buf[a._buf.length - 1]]; }
+      if (alive && !a.alive && !a.gone) { a.spawn(new V3(s[0], s[1], s[2]), s[3]); a._buf = [a._buf[a._buf.length - 1]]; }
       else if (!alive && a.alive) { a._deadSeen = a._deadSeen || G.time; if (G.time - a._deadSeen > 0.8) { this._kill = true; try { killAgent(a, null, {}); } finally { this._kill = false; } } }
       else a._deadSeen = 0;
       a.ads = !!(s[9] & 4); a.input.walk = !!(s[9] & 64);
@@ -15183,6 +15235,7 @@ const Net = {
     this._allow = true; try { M.startRound(); } catch (e) { console.warn('round replay', e); } finally { this._allow = false; M.giveCharge = gc; }
     M.sides = m.sd; M.loss = m.ls; M.ot = m.ot; M.score = m.sc;
     G.agents.forEach((a, i) => { const s = m.sp[i]; if (!s) return; a.pos.set(s[0], s[1], s[2]); a.yaw = s[3]; a.vel.set(0, 0, 0); if (a._buf) a._buf = []; a.weapons.charge = null; });
+    for (const n of m.go || []) { const a = G.agents[n]; if (a) { a.gone = true; this.hideGone(a); } }
     const ca = G.agents[m.ca]; if (ca) M.giveCharge(ca); else { M.charge.carrier = null; M.charge.state = 'none'; }
     if (G.player.slot === 'charge' && !G.player.weapons.charge) G.player.slot = G.player.bestSlot();
     UI.rebuildRoster(); UI.cache = {};
