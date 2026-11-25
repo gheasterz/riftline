@@ -914,14 +914,15 @@ img{max-width:100%}
 .saverow>div{display:flex;flex-direction:column;align-items:flex-start}
 .savebtns{display:flex;flex-wrap:wrap;gap:8px}
 /* v36 kill banners: emblem in a ring, five kill segments, circuit linework, line-coloured glow */
-#killbanner .kb2{display:flex;flex-direction:column;align-items:center;gap:2px;--k1:#eaf6ff;animation:kb2In .34s cubic-bezier(.2,1.35,.4,1) both;transform-origin:50% 70%;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--k1) 55%,transparent))}
+#killbanner:has(.kb2){bottom:var(--kb-bottom,104px)}
+#killbanner .kb2{display:flex;flex-direction:column;align-items:center;gap:2px;--k1:#eaf6ff;animation:kb2In .34s cubic-bezier(.2,1.35,.4,1) both;transform-origin:50% 70%;filter:drop-shadow(0 0 9px color-mix(in srgb,var(--k1) 50%,transparent))}
 #killbanner .kb2.spec{transform:scale(.82);opacity:.94}
-#killbanner .kb2.t3{scale:1.06}#killbanner .kb2.t4{scale:1.12}#killbanner .kb2.t5,#killbanner .kb2.ace{scale:1.18}
+#killbanner .kb2.t3{scale:1.03}#killbanner .kb2.t4{scale:1.06}#killbanner .kb2.t5,#killbanner .kb2.ace{scale:1.09}
 #killbanner .kb2.ace{--k1:#ffd23a;--k2:#fff1b0}
 #killbanner .kb2.out{animation:kb2Out .32s ease-in forwards}
 @keyframes kb2In{from{opacity:0;transform:scale(.55) translateY(18px)}to{opacity:1;transform:none}}
 @keyframes kb2Out{to{opacity:0;transform:scale(.86) translateY(14px);filter:blur(2px)}}
-.kb2-art{position:relative;width:330px;height:210px;max-width:92vw}
+.kb2-art{position:relative;width:200px;height:128px;max-width:70vw}
 .kb2-frame{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
 .kb2-frame .ln{fill:none;stroke:color-mix(in srgb,var(--k1) 70%,#fff);stroke-width:1.6;stroke-dasharray:100;stroke-dashoffset:100;animation:kbDraw .55s .08s ease-out forwards}
 .kb2-frame .ln.dim{stroke-opacity:.45}.kb2-frame .nd{fill:var(--k1)}.kb2-frame .nd.dim{opacity:.5}
@@ -937,7 +938,7 @@ img{max-width:100%}
 .kb2.hs .kb2-frame .ring{stroke:#ffd23a}.kb2-frame .hsb line{stroke:#ffd23a;stroke-width:3;stroke-linecap:round;animation:kbHs .5s .15s ease-out both}
 @keyframes kbHs{from{opacity:0;transform:scale(.7)}to{opacity:1;transform:none}}
 @keyframes kbDraw{to{stroke-dashoffset:0}}
-.kb2-emb{position:absolute;left:50%;top:50%;width:76px;height:76px;margin:-38px 0 0 -38px;animation:kbEmb .46s .1s cubic-bezier(.25,1.5,.45,1) both;filter:drop-shadow(0 0 8px var(--k1))}
+.kb2-emb{position:absolute;left:50%;top:50%;width:46px;height:46px;margin:-23px 0 0 -23px;animation:kbEmb .46s .1s cubic-bezier(.25,1.5,.45,1) both;filter:drop-shadow(0 0 8px var(--k1))}
 .kb2-emb svg{width:100%;height:100%;overflow:visible}
 .kb2-emb .a{fill:var(--k1)}.kb2-emb .b{fill:var(--k2)}.kb2-emb .k{fill:var(--k4)}.kb2-emb .s{fill:none;stroke:var(--k1);stroke-width:3;stroke-linecap:round}
 .kb2:not(.kb-sk) .kb2-emb .a{fill:#eef6ff}.kb2:not(.kb-sk) .kb2-emb .k{fill:#16222c}
@@ -945,21 +946,22 @@ img{max-width:100%}
 .kb2.punch .kb2-emb{animation:kbPunch .3s ease-out}@keyframes kbPunch{40%{transform:scale(1.22)}}
 .kb2.a-spin .kb2-emb svg{animation:kbSpin 6s linear infinite}.kb2.a-vortex .kb2-emb svg{animation:kbSpin 3s linear infinite reverse}
 .kb2.a-flicker .kb2-emb,.kb2.a-glitch .kb2-emb{animation:kbEmb .46s .1s both,kbFlick 1.4s .6s steps(1) infinite}@keyframes kbFlick{0%,100%{opacity:1}47%{opacity:.35}50%{opacity:1}83%{opacity:.6}86%{opacity:1}}
-.kb2-n{position:absolute;left:50%;bottom:20px;transform:translateX(-50%);min-width:34px;height:26px;padding:0 8px;display:grid;place-items:center;font:900 20px/1 var(--f-display);color:#0b1117;background:var(--k1);clip-path:polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%);animation:kbEmb .4s .3s both;box-shadow:0 0 10px var(--k1)}
-.kb2-plate{display:flex;flex-direction:column;align-items:center;gap:3px;margin-top:-14px;animation:kbPlate .3s .18s ease-out both}
+.kb2-n{position:absolute;left:50%;bottom:11px;transform:translateX(-50%);min-width:22px;height:17px;padding:0 6px;display:grid;place-items:center;font:900 13px/1 var(--f-display);color:#0b1117;background:var(--k1);clip-path:polygon(12% 0,88% 0,100% 50%,88% 100%,12% 100%,0 50%);animation:kbEmb .4s .3s both;box-shadow:0 0 10px var(--k1)}
+.kb2-plate{display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:-8px;animation:kbPlate .3s .18s ease-out both}
 @keyframes kbPlate{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
-.kb2-plate small{white-space:nowrap;font:700 11px var(--f-body);letter-spacing:3px;text-transform:uppercase;color:color-mix(in srgb,var(--k1) 60%,#fff)}
+.kb2-plate small{white-space:nowrap;font:700 9px var(--f-body);letter-spacing:2px;text-transform:uppercase;color:color-mix(in srgb,var(--k1) 60%,#fff)}
 .kb2-plate small .who{color:var(--ally);letter-spacing:1.5px}.kb2-plate small .ln-name{color:var(--k2)}
-.kb2-v{display:flex;align-items:center;gap:9px;padding:4px 14px 4px 4px;background:linear-gradient(90deg,color-mix(in srgb,var(--k1) 26%,rgba(10,16,22,.9)),rgba(10,16,22,.82));border-left:3px solid var(--k1);clip-path:polygon(0 0,100% 0,96% 100%,0 100%)}
-.kb2-v b{font:900 24px/1 var(--f-display);letter-spacing:1px;text-transform:uppercase;color:#fff}
-.kb2-p{width:34px;height:34px;object-fit:cover;background:rgba(0,0,0,.35)}
-.kb2-g{height:18px;margin-left:6px;filter:drop-shadow(0 0 3px rgba(255,255,255,.4))}.kb2-w{font:700 12px var(--f-body);font-style:normal;color:var(--dim);margin-left:6px}
-.kb2-tags{display:flex;gap:5px}.kb2-tags .kt{font:800 10px var(--f-body);font-style:normal;letter-spacing:1.5px;text-transform:uppercase;padding:2px 7px;background:rgba(255,255,255,.14);color:#fff}
+.kb2-v{display:flex;align-items:center;gap:7px;padding:3px 10px 3px 3px;background:linear-gradient(90deg,color-mix(in srgb,var(--k1) 26%,rgba(10,16,22,.9)),rgba(10,16,22,.82));border-left:3px solid var(--k1);clip-path:polygon(0 0,100% 0,96% 100%,0 100%)}
+.kb2-v b{font:900 17px/1 var(--f-display);letter-spacing:1px;text-transform:uppercase;color:#fff}
+.kb2-p{width:24px;height:24px;object-fit:cover;background:rgba(0,0,0,.35)}
+.kb2-g{height:13px;margin-left:6px;filter:drop-shadow(0 0 3px rgba(255,255,255,.4))}.kb2-w{font:700 12px var(--f-body);font-style:normal;color:var(--dim);margin-left:6px}
+.kb2-tags{display:flex;gap:5px}.kb2-tags .kt{font:800 8px var(--f-body);font-style:normal;letter-spacing:1.2px;text-transform:uppercase;padding:1px 5px;background:rgba(255,255,255,.14);color:#fff}
 .kb2-tags .kt.hs{background:#ffd23a;color:#1a1205}.kb2-tags .kt.fin{background:var(--k1);color:#0b1117;box-shadow:0 0 12px var(--k1);animation:kbFinTag .6s .25s ease-out both}
 @keyframes kbFinTag{from{opacity:0;letter-spacing:8px}to{opacity:1}}
-.kb2.fin .kb2-art::before{content:'';position:absolute;left:50%;top:50%;width:240px;height:240px;margin:-120px 0 0 -120px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--k1) 45%,transparent),transparent 65%);animation:kbFinGlow 1.2s ease-in-out infinite alternate;pointer-events:none}
+.kb2.fin .kb2-art::before{content:'';position:absolute;left:50%;top:50%;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--k1) 45%,transparent),transparent 65%);animation:kbFinGlow 1.2s ease-in-out infinite alternate;pointer-events:none}
 @keyframes kbFinGlow{from{opacity:.4;transform:scale(.9)}to{opacity:1;transform:scale(1.08)}}
-@media (max-width:640px),(max-height:560px){.kb2-art{width:240px;height:152px}.kb2-emb{width:56px;height:56px;margin:-28px 0 0 -28px}.kb2-v b{font-size:19px}#killbanner{bottom:128px}}
+@media (max-height:760px){.kb2-art{width:150px;height:94px}.kb2-emb{width:34px;height:34px;margin:-17px 0 0 -17px}.kb2-v b{font-size:14px}.kb2-p{width:20px;height:20px}.kb2-n{bottom:7px;height:15px;font-size:11px}.kb2-plate small{font-size:8px}}
+@media (max-width:640px),(max-height:560px){.kb2-art{width:160px;height:102px}.kb2-emb{width:36px;height:36px;margin:-18px 0 0 -18px}.kb2-v b{font-size:14px}.kb2-p{width:22px;height:22px}}
 @media (prefers-reduced-motion:reduce){#killbanner .kb2,#killbanner .kb2 *{animation-duration:.01s!important;animation-iteration-count:1!important}}
 /* v35 combat report: right-edge side panel between the kill feed and the credits readout */
 #combatrep{position:absolute;right:12px;top:204px;width:min(336px,46vw);max-height:calc(100vh - 340px);overflow:hidden;display:flex;flex-direction:column;gap:6px;pointer-events:none;z-index:3;
