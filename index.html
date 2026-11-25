@@ -1406,6 +1406,71 @@ img{max-width:100%}
 .mpslot.masked b{color:#c9d3da}.mpslot .bi.lock{color:#8aa0ad}
 .mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
+/* lobby browser */
+.mpbrowse{margin-top:22px;background:linear-gradient(160deg,rgba(28,45,57,.75),rgba(16,27,35,.75));border:1px solid rgba(255,255,255,.08);padding:16px 18px 12px}
+.mpbr-h{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
+.mpbr-h h3{margin:0;font:900 24px var(--f-display);letter-spacing:2px;text-transform:uppercase}
+.mpbr-h small{flex:1;color:#7f95a3;font-size:13px}
+.mpbr-h .mpbtn.hidden{display:none}
+.mpbr-list{display:flex;flex-direction:column;gap:6px;max-height:320px;overflow-y:auto}
+.mpbr{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1.2fr) 80px 170px 150px;gap:12px;align-items:center;padding:8px 12px;background:rgba(10,18,24,.6);border-left:3px solid var(--teal)}
+.mpbr.on{background:rgba(63,208,200,.1)}
+.mpbr b{display:block;font-size:16px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mpbr small{color:#7f95a3;font-size:12px;letter-spacing:.5px}
+.mpbr-m b{font:800 15px var(--f-display);letter-spacing:.5px;text-transform:uppercase}
+.mpbr-n b{font:800 17px var(--f-display)}
+.mpbr-st{font:700 12px var(--f-body);letter-spacing:1px;text-transform:uppercase;color:#5fe0b5;display:flex;align-items:center;gap:8px}
+.mpbr-st.live{color:var(--gold)}.mpbr-st.full{color:#8aa0ad}.mpbr-st.wait{color:var(--teal)}
+.mpbr .mpbtn{justify-self:end;white-space:nowrap}
+.mpspin.sm{width:14px;height:14px;border-width:2px;margin:0;display:inline-block}
+.mpbr-empty{margin:4px 0 6px;color:#8aa0ad;font-size:15px}
+@media(max-width:760px){.mpbr{grid-template-columns:1fr 1fr;row-gap:6px}.mpbr .mpbtn{justify-self:start}}
+.mpttl{display:flex;flex-direction:column;min-width:0;max-width:min(460px,100%);margin-right:10px}
+.mpttl small{font:800 12px var(--f-display);letter-spacing:3px;text-transform:uppercase;color:#9aa8b3}
+.mpcode .mpttl b{font:900 34px/1.05 var(--f-display);letter-spacing:1px;color:var(--off);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* join requests (host) */
+.mpreqs{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 0}
+.mpreq{flex:1 1 340px;max-width:100%;box-sizing:border-box;min-height:52px;display:flex;align-items:center;gap:12px;padding:6px 12px;background:rgba(63,208,200,.08);border:1px solid rgba(63,208,200,.35)}
+.mpreq.new{animation:mpreqin .25s ease-out}
+.mpreq.none{background:rgba(10,18,24,.45);border:1px dashed rgba(255,255,255,.1);gap:14px}.mpreq.none b{display:inline;font:800 12px var(--f-display);letter-spacing:2px;text-transform:uppercase;color:#8aa0ad}
+.mpreq div{flex:1;min-width:0}.mpreq b{display:block;font-size:16px}.mpreq small{color:#9aa8b3;font-size:13px}
+.mpreq-i{display:grid;place-items:center}.mpreq-i svg{width:26px;height:26px}
+@keyframes mpreqin{from{opacity:0;transform:translateY(-4px)}}
+.mpside label.mpchk{flex-direction:row;align-items:flex-start;gap:10px;text-transform:none;letter-spacing:0;font:600 14px var(--f-body);color:var(--off);cursor:pointer}
+.mpside label.mpchk small{display:block;color:#7f95a3;font-size:12px;margin-top:2px;font-weight:500}
+#mp .mpchk input{width:18px;height:18px;margin:1px 0 0;padding:0;flex:none;accent-color:var(--teal)}
+.mpside label.mpchk.dim{opacity:.55;cursor:default}
+/* lobby chat */
+.mpchat{margin-top:18px;background:rgba(10,18,24,.6);border:1px solid rgba(255,255,255,.07);padding:10px 12px 12px}
+.mpchat.hidden{display:none}
+.mpch-h{display:flex;align-items:center;gap:12px;margin-bottom:8px;flex-wrap:wrap}
+.mpch-h>b{font:800 13px var(--f-display);letter-spacing:3px;text-transform:uppercase;color:#9aa8b3}
+.mpch-h small{margin-left:auto;color:#6f8593;font-size:12px}
+.mpch-tabs{display:flex;gap:2px}
+.mpch-tabs button{background:none;border:1px solid rgba(255,255,255,.12);color:#9aa8b3;font:800 12px var(--f-display);letter-spacing:1.5px;text-transform:uppercase;padding:4px 12px;cursor:pointer}
+.mpch-tabs button.on{color:var(--off);border-color:var(--teal);background:rgba(63,208,200,.14)}
+.mpch-tabs button[data-cht="team"].on{border-color:var(--teal)}.mpch-tabs button[data-cht="all"].on{border-color:var(--gold);background:rgba(245,197,66,.12)}
+.mpch-tabs button:disabled{opacity:.35;cursor:default}
+.mpch-log{height:132px;overflow-y:auto;padding:6px 10px;background:#0b141b;border:1px solid rgba(255,255,255,.06);font-size:14px;line-height:1.45}
+.mpcl{overflow-wrap:anywhere}.mpcl i,.mpgl i{font-style:normal;font:800 10px var(--f-display);letter-spacing:1.2px;text-transform:uppercase;margin-right:6px;color:var(--teal)}
+.mpcl i.all,.mpgl i.all{color:var(--gold)}
+.mpcl b{margin-right:2px}.mpcl.a b{color:var(--teal)}.mpcl.e b{color:var(--red)}.mpcl.me b{color:var(--off)}
+.mpcl.sys,.mpgl.sys{color:#7f95a3;font-style:italic}
+.mpch-in{display:flex;gap:8px;margin-top:8px;align-items:center}
+.mpch-in input{flex:1;min-width:0;font-size:15px!important;padding:8px 10px!important}
+#mp-chch,#mpgc-ch{font:800 12px var(--f-display);letter-spacing:1.5px;text-transform:uppercase;color:var(--teal);min-width:40px}
+#mp-chch.all,#mpgc-ch.all{color:var(--gold)}
+/* in-game chat: bottom-left, under every panel, never takes clicks */
+#mpgc{position:absolute;left:14px;bottom:110px;width:min(380px,calc(100vw - 28px));pointer-events:none;font:600 14px/1.35 var(--f-body);color:#ece6dc;text-shadow:0 1px 2px #000,0 0 6px rgba(0,0,0,.7)}
+#mpgc.hidden{display:none}
+.mpgc-log{display:flex;flex-direction:column;justify-content:flex-end;gap:2px;padding:0 8px;overflow:hidden;box-sizing:border-box}
+#mpgc.open .mpgc-log{background:rgba(10,16,22,.62);-webkit-mask-image:linear-gradient(to bottom,transparent 0,#000 22px);mask-image:linear-gradient(to bottom,transparent 0,#000 22px)}
+#mpgc .mpgl:nth-last-child(n+7){display:none}#mpgc.open .mpgl:nth-last-child(n+7){display:block}
+.mpgl{transition:opacity .9s;overflow-wrap:anywhere}.mpgl.old{opacity:0}
+.mpgl b{margin-right:2px}.mpgl.a b{color:var(--ally,#3fd0c8)}.mpgl.e b{color:var(--enemy,#ff4655)}.mpgl.me b{color:#fff}
+.mpgc-in{display:none;align-items:center;gap:8px;margin-top:4px;padding:6px 10px;background:rgba(10,16,22,.88);border:1px solid rgba(255,255,255,.16);text-shadow:none}
+#mpgc.open .mpgc-in{display:flex}
+#mpgc-in{flex:1;min-width:0;background:none;border:0;outline:0;color:#fff;font:600 14px var(--f-body);padding:0}
+.mpgc-in small{color:#6f8593;font-size:11px;white-space:nowrap}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
   <div class="mpwrap">
@@ -1416,6 +1481,10 @@ img{max-width:100%}
         <div class="mpcard"><h3>Host a game</h3><p>Get a 5-letter code to share. Play Custom 5v5s with your own bot mix, or queue any mode as a party of up to 5.</p><button class="cta" id="mp-host">Host</button></div>
         <div class="mpcard j"><h3>Join a game</h3><p>Enter the code your host shared, or open their invite link.</p><div class="row"><input id="mp-code" maxlength="5" placeholder="CODE" autocomplete="off" spellcheck="false"><button class="cta" id="mp-join">Join</button></div></div>
       </div>
+      <div class="mpbrowse" id="mp-browse">
+        <div class="mpbr-h"><h3>Open lobbies</h3><small id="mp-brst"></small><button class="mpbtn sm ghost" id="mp-brref">Refresh</button></div>
+        <div id="mp-brlist" class="mpbr-list"></div>
+      </div>
       <p class="mpnote" id="mp-net"></p>
       <details class="mpturn" id="mp-turnbox"><summary>Connection settings (TURN relay)</summary>
         <p>If joining times out between different networks, a TURN relay fixes it. Get a free key at <b>metered.ca/tools/openrelay</b> (20 GB/month), create a credential, then paste its <b>credentials URL</b> (looks like <code>https://yourapp.metered.live/api/v1/turn/credentials?apiKey=…</code>). The host and each player paste it once; it’s saved in this browser.</p>
@@ -1424,7 +1493,13 @@ img{max-width:100%}
       </details>
       <p class="mperr" id="mp-err"></p>
     </section>
-    <section id="mp-room" class="hidden"></section>
+    <section id="mp-room" class="hidden"><div id="mp-rtop"></div>
+      <div id="mp-chat" class="mpchat hidden">
+        <div class="mpch-h"><b>Lobby chat</b><div class="mpch-tabs"><button data-cht="all" class="on">All</button><button data-cht="team">Team</button></div><small id="mp-chhint"></small></div>
+        <div class="mpch-log" id="mp-chlog" aria-live="polite"></div>
+        <div class="mpch-in"><span id="mp-chch" class="all">All</span><input id="mp-chin" maxlength="120" placeholder="Message everyone in the lobby…" autocomplete="off" spellcheck="false" aria-label="Chat message"><button class="mpbtn sm" data-cht="send">Send</button></div>
+      </div>
+      <div id="mp-rbot"></div></section>
   </div>
 </div>
 
@@ -1465,12 +1540,14 @@ const DEFAULT_BINDS = {
   primary: 'Digit1', secondary: 'Digit2', melee: 'Digit3', charge: 'Digit4', reload: 'KeyR', use: 'KeyF', drop: 'KeyG', inspect: 'KeyY',
   abilC: 'KeyC', abilQ: 'KeyQ', abilE: 'KeyE', ult: 'KeyX', ping: 'KeyV', wheel: 'KeyT', map: 'KeyM', buy: 'KeyB', score: 'Tab',
   lookL: 'ArrowLeft', lookR: 'ArrowRight', lookU: 'ArrowUp', lookD: 'ArrowDown', ads: '', agentSwap: 'F2',
+  chatTeam: 'Enter', chatAll: 'KeyU',
 };
 const BIND_GROUPS = [
   ['Movement', [['fwd', 'Forward'], ['back', 'Back'], ['left', 'Strafe left'], ['right', 'Strafe right'], ['walk', 'Walk'], ['crouch', 'Crouch'], ['jump', 'Jump']]],
   ['Weapons', [['primary', 'Primary'], ['secondary', 'Sidearm'], ['melee', 'Blade'], ['charge', 'Charge / plant'], ['reload', 'Reload'], ['inspect', 'Inspect weapon'], ['use', 'Use / disarm'], ['drop', 'Drop'], ['ads', 'Aim / scope / alt fire']]],
   ['Abilities', [['abilC', 'Ability C slot'], ['abilQ', 'Ability Q slot'], ['abilE', 'Ability E slot'], ['ult', 'Ultimate']]],
   ['Interface', [['wheel', 'Callout wheel'], ['ping', 'Ping'], ['map', 'Full map'], ['buy', 'Armory'], ['score', 'Scoreboard'], ['agentSwap', 'Range: swap agent']]],
+  ['Multiplayer chat', [['chatTeam', 'Team chat'], ['chatAll', 'All chat']]],
   ['Arrow-key look', [['lookL', 'Look left'], ['lookR', 'Look right'], ['lookU', 'Look up'], ['lookD', 'Look down']]],
 ];
 function keyName(c) {
@@ -15886,6 +15963,7 @@ class NetRelay {
         let m; try { m = JSON.parse(e.data); } catch (x) { return; }
         if (!done) { done = true; if (m.t === 'ok') res(m); else rej(new Error(m.msg || 'Refused')); return; }
         if (m.t === 'msg') this.fire('msg', m.cid || 'H', m.d); else if (m.t === 'peer') this.fire('peer', m.cid); else if (m.t === 'leave') this.fire('leave', m.cid);
+        else if (m.t === 'req') this.fire('req', m.cid, m); else if (m.t === 'reqx') this.fire('reqx', m.cid);
       };
       ws.onerror = () => { if (!done) { done = true; rej(new Error('Could not reach the game server')); } };
       ws.onclose = () => { if (!done) { done = true; rej(new Error('Connection closed')); } else this.fire('close'); };
@@ -15893,6 +15971,10 @@ class NetRelay {
   }
   async host() { const m = await this.open({ t: 'host' }); this.id = 'H'; return m.code; }
   async join(code) { const m = await this.open({ t: 'join', code }); this.id = m.cid; return m.cid; }
+  // ask to join a listed lobby by its public id (the code is never sent to us); resolves when the host accepts
+  async request(rid, info) { const m = await this.open(Object.assign({ t: 'req', rid }, info)); this.id = m.cid; return m.cid; }
+  meta(d) { this.raw({ t: 'meta', d }); }
+  answer(cid, ok, msg) { this.raw({ t: ok ? 'acc' : 'dec', cid, msg: msg || '' }); }
   raw(o) { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify(o)); }
   send(cid, d) { this.raw({ t: 'to', cid, d }); }
   bcast(d, ex) { this.raw({ t: 'all', ex: ex || null, d }); }
@@ -15973,6 +16055,7 @@ class NetPeer {
   send(cid, d) { const c = this.conns.get(cid); if (c && c.open) c.send(d); }
   bcast(d, ex) { for (const [id, c] of this.conns) if (id !== ex && c.open) c.send(d); }
   up(d) { if (this.conn && this.conn.open) this.conn.send(d); }
+  meta() { } answer() { }
   close() { this.h = {}; try { this.peer && this.peer.destroy(); } catch (e) { } }
 }
 
@@ -15987,11 +16070,13 @@ const MP_MODES = {
 const MP_DENY = {
   LOBBY_FULL: 'That lobby is full (10 players).', PARTY_FULL: 'That party is full (5 players).', MATCH_IN_PROGRESS: 'That lobby is in a match right now. Try again when it ends.',
   KICKED: 'The host removed you from the lobby.', JOIN_TIMEOUT: 'The host didn’t answer. Check the code and try again.', ROOM_FULL: 'That room is full.',
+  DECLINED: 'The host declined your request.', PRIVATE: 'That lobby is no longer listed.',
 };
 const Net = {
   tx: null, role: null, myId: null, code: '', active: false, info: null, lobby: null, relay: false,
   INTERP: 0.1, sendAcc: 0, fastAcc: 0, slowAcc: 0, peerIn: {}, dropId: 0, myFix: 0, hostT: 0, hostRecv: 0, ownHold: 0, pending: null, saved: null,
   _dirs: null, _rec: null, _allow: false, _kill: false, _lastErr: '',
+  chat: [], lchCh: 'all', gc: false, gcCh: 'team', reqs: [], rooms: null, hostName: '',
   isHost() { return this.active && this.role === 'host'; },
   isClient() { return this.active && this.role === 'client'; },
   // the player name from Settings (Profile.name) is the account name everywhere
@@ -16030,14 +16115,15 @@ const Net = {
     if (NetTurn.url()) NetTurn.ice().then(() => this.renderHome());
     $('mp-room').addEventListener('click', e => this.roomClick(e));
     $('mp-room').addEventListener('change', e => this.roomChange(e));
-    $('mp-room').addEventListener('keydown', e => { if (e.target.id === 'mp-rname' && e.key === 'Enter') { e.preventDefault(); this.rename(e.target.value); e.target.blur(); } });
+    $('mp-room').addEventListener('keydown', e => { if (e.target.id === 'mp-ltitle' && e.key === 'Enter') { e.preventDefault(); e.target.blur(); return; } if (e.target.id === 'mp-rname' && e.key === 'Enter') { e.preventDefault(); this.rename(e.target.value); e.target.blur(); } });
     // hovering a tile previews that agent's kit; leaving the grid shows your own again
     $('mp-room').addEventListener('mouseover', e => { const t = e.target.closest('.mpag'); if (!t || t.dataset.a === this._hov) return; this._hov = t.dataset.a; const me = this.me(); $('mp-agcard').innerHTML = this.agentCard(t.dataset.a, me && me.agent === t.dataset.a); });
     $('mp-room').addEventListener('mouseout', e => { if (!e.target.closest('.mpags') || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.mpags'))) return; this._hov = null; const me = this.me(), c = $('mp-agcard'); if (c && me) c.innerHTML = this.agentCard(me.agent, true); });
+    this.chatInit(); this.browseInit();
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
-  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); },
+  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); if (!this.role) this.browse(); },
   // re-send what may have changed outside the lobby (locker skins, imported save, DM loadout, Settings name)
   syncCard() {
     if (!this.role || !this.lobby) return; const c = this.myCard();
@@ -16086,9 +16172,11 @@ const Net = {
       const tx = this.newTx(); const code = await tx.host();
       this.tx = tx; this.role = 'host'; this.myId = 'H'; this.code = code;
       const c = this.myCard(); this._askName = c.name;
-      this.lobby = { players: [{ id: 'H', name: c.name, team: 0, agent: c.agent, sk: c.sk, acct: c.acct, dl: c.dl }], map: 'random', mode: 'custom', cwin: 9, diff: Settings.diff, bots: [4, 5], fill: true, inGame: false, starting: false };
+      this.lobby = { players: [{ id: 'H', name: c.name, team: 0, agent: c.agent, sk: c.sk, acct: c.acct, dl: c.dl }], map: 'random', mode: 'custom', cwin: 9, diff: Settings.diff, bots: [4, 5], fill: true, inGame: false, starting: false, listed: true };
       tx.on('msg', (cid, m) => this.hostMsg(cid, m)); tx.on('leave', cid => this.peerLeft(cid)); tx.on('close', () => this.lostLink('Lost connection to the relay server'));
-      this.render();
+      tx.on('req', (cid, m) => this.onReq(cid, m)); tx.on('reqx', cid => { this.reqs = this.reqs.filter(r => r.cid !== cid); this.render(); });
+      this.chat = []; this.reqs = []; this._metaS = ''; this._chatRate = {}; this.hostName = c.name;
+      this.addChat({ sys: 1, x: 'Lobby open · Enter sends · Team or All' }); this.pushLobby();
     } catch (e) { this.err(e.message); }
     $('mp-host').disabled = false; $('mp-host').textContent = 'Host';
   },
@@ -16096,36 +16184,38 @@ const Net = {
     if (this.role || this._joining) return; this.err(''); Sfx.init(); Sfx.ui();
     code = String(code || '').toUpperCase().replace(/[^A-Z0-9]/g, ''); if (code.length !== 5) { this.err('Codes are 5 characters'); return; }
     this._joining = true; $('mp-join').disabled = true; $('mp-join').textContent = 'Joining…';
-    try {
-      const tx = this.newTx(); const id = await tx.join(code);
-      this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.lobby = null; this._named = false;
-      const c = this.myCard(); this._wantName = c.name; this._askName = c.name;
-      tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink(this.lobby ? 'Disconnected from the host' : MP_DENY.JOIN_TIMEOUT));
-      this.up(Object.assign({ e: 'hello' }, c));
-      // never wait forever: if the host doesn't admit or refuse us, give up cleanly
-      clearTimeout(this._joinT); this._joinT = setTimeout(() => { if (this.role === 'client' && !this.lobby) this.refused('JOIN_TIMEOUT'); }, 9000);
-      this.render();
-    } catch (e) { this.err(/full/i.test(e.message) ? MP_DENY.ROOM_FULL : e.message); }
+    try { const tx = this.newTx(); const id = await tx.join(code); this.connected(tx, id, code, ''); }
+    catch (e) { this.err(/full/i.test(e.message) ? MP_DENY.ROOM_FULL : e.message); }
     this._joining = false; $('mp-join').disabled = false; $('mp-join').textContent = 'Join';
+  },
+  // a guest link is up (by code, or by an accepted request — then we never learn the code): say hello and wait for the gate
+  connected(tx, id, code, hostName) {
+    this.tx = tx; this.role = 'client'; this.myId = id; this.code = code; this.hostName = hostName || ''; this.lobby = null; this._named = false; this.chat = [];
+    const c = this.myCard(); this._wantName = c.name; this._askName = c.name;
+    tx.on('msg', (cid, m) => this.clientMsg(m)); tx.on('close', () => this.lostLink(this.lobby ? 'Disconnected from the host' : MP_DENY.JOIN_TIMEOUT));
+    this.up(Object.assign({ e: 'hello' }, c));
+    // never wait forever: if the host doesn't admit or refuse us, give up cleanly
+    clearTimeout(this._joinT); this._joinT = setTimeout(() => { if (this.role === 'client' && !this.lobby) this.refused('JOIN_TIMEOUT'); }, 9000);
+    this.render();
   },
   // a join that was refused (or timed out): drop the connection, back to the Multiplayer home with the reason
   refused(code, msg) {
     clearTimeout(this._joinT);
     const text = msg || MP_DENY[code] || 'Could not join that lobby.';
     if (this.tx) { this.tx.h = {}; this.tx.close(); }
-    this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.pending = null;
+    this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.pending = null; this.chat = []; this.reqs = [];
     this.err(text + (code ? ' (' + code + ')' : '')); this.render(); this.open();
     try { UI.toast(text, 'enemy'); } catch (e) { }
   },
   leaveRoom() {
     if (this.tx) { if (this.role === 'host') this.tx.bcast({ e: 'bye' }); this.tx.close(); }
-    this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.peerIn = {};
+    this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.peerIn = {}; this.chat = []; this.reqs = []; this.gcClose();
     if (this.active) this.endMatch();
-    this.render();
+    this.render(); this.browse();
   },
   lostLink(msg) {
     if (!this.role) return;
-    const wasActive = this.active; this.tx = null; this.role = null; this.lobby = null; this.peerIn = {};
+    const wasActive = this.active; this.tx = null; this.role = null; this.lobby = null; this.peerIn = {}; this.chat = []; this.reqs = []; this.gcClose();
     if (wasActive) { this.active = false; this.restoreSettings(); if (G.running) quitToMenu(); }
     this.err(msg); this.open(); UI.toast && UI.toast(msg, 'enemy');
   },
@@ -16138,7 +16228,7 @@ const Net = {
     const seen = [new Set(), new Set()];   // never two of one agent on a team: later arrivals move to a free agent
     for (const p of this.lobby.players) { if (seen[p.team].has(p.agent)) p.agent = AGENT_IDS.find(id => !seen[p.team].has(id)) || p.agent; seen[p.team].add(p.agent); }
     if (this.tx) for (const p of this.lobby.players) if (p.id !== 'H') this.tx.send(p.id, { e: 'lobby', l: this.lobbyFor(p.id) });
-    this.render();
+    this.sendMeta(); this.render();
   },
   note(msg) { this._note = msg; clearTimeout(this._noteT); this._noteT = setTimeout(() => { this._note = ""; this.render(); }, 4000); this.render(); },
   // equipped skins travel with each player so everyone sees them (validated against this build's skin list)
@@ -16185,8 +16275,11 @@ const Net = {
     if (m.e === 'hello') {
       const no = this.admit(cid, m);
       if (no) { this.tx.send(cid, { e: 'deny', code: no, msg: MP_DENY[no] }); return; }   // refused without touching the roster
-      this.pushLobby(); return;
+      this.pushLobby();
+      const np = L.players.find(p => p.id === cid); if (np) this.hostSys(r => r.id === cid ? null : (this.sameSide(r, np) ? np.name : 'A player') + ' joined the lobby');
+      return;
     }
+    if (m.e === 'chat') { this.hostChat(cid, m.ch, m.x); return; }
     if (m.e === 'lset') {
       const p = L.players.find(x => x.id === cid); if (!p) return;
       if (m.name != null) { const n = this.cleanName(m.name); if (n !== p.name) { if (L.inGame) this.tx.send(cid, { e: 'note', msg: 'Names can be changed between matches' }); else if (this.nameTaken(n, cid)) this.tx.send(cid, { e: 'note', msg: '“' + n + '” is already taken in this lobby' }); else p.name = n; } }
@@ -16202,7 +16295,8 @@ const Net = {
   peerLeft(cid) {
     if (this.role !== 'host' || !this.lobby) return;
     const p = this.lobby.players.find(x => x.id === cid);
-    this.lobby.players = this.lobby.players.filter(x => x.id !== cid); delete this.peerIn[cid]; this.clampBots();
+    this.lobby.players = this.lobby.players.filter(x => x.id !== cid); delete this.peerIn[cid]; this.clampBots(); if (this._chatRate) delete this._chatRate[cid];
+    if (p) this.hostSys(r => (this.sameSide(r, p) || this.active ? p.name : 'A player') + ' left' + (this.active ? ' the match' : ' the lobby'));
     if (this.active) for (const a of G.agents) if (a.remote === cid) {
       a.remote = null; a.input.fire = false;
       if (this.info && this.info.leaveBot === false) { this.makeGone(a); UI.toast((p ? p.name : 'A player') + ' left the match', 'info'); }
@@ -16221,6 +16315,7 @@ const Net = {
         if (me && AGENTS[wanted] && AGENTS[me.agent] && me.agent !== wanted) this.note(AGENTS[wanted].name + ' was taken on your team · you’re now ' + AGENTS[me.agent].name);
         this.render(); return; }
       case 'note': this.note(m.msg); return;
+      case 'chat': this.addChat(m); return;
       case 'deny': if (this.active) { this.endMatch(); quitToMenu(); } this.refused(m.code, m.msg); return;
       case 'bye': this.lostLink('The host closed the room'); return;
       case 'start': if (this.active) this.active = false; this.pending = m.i; return;   // the match begins with the first round event
@@ -16237,8 +16332,8 @@ const Net = {
     $('nav-mp').classList.toggle('live', inRoom);
     if (!inRoom) { this.renderHome(); return; }
     const L = this.lobby, host = this.role === 'host';
-    if (!L) { $('mp-room').innerHTML = `<div class="mpwait"><div class="mpspin"></div>Joining room <b>${NetU.esc(this.code)}</b>…</div>`; return; }
-    const fi = $('mp-rname'), focus = fi && document.activeElement === fi ? { v: fi.value, s: fi.selectionStart, e: fi.selectionEnd } : null;
+    if (!L) { $('mp-rtop').innerHTML = `<div class="mpwait"><div class="mpspin"></div>${this.code ? `Joining room <b>${NetU.esc(this.code)}</b>…` : `Joining <b>${NetU.esc(this.hostName || 'the host')}</b>’s lobby…`}</div>`; $('mp-rbot').innerHTML = ''; $('mp-chat').classList.add('hidden'); return; }
+    const fa = document.activeElement, focus = fa && (fa.id === 'mp-rname' || fa.id === 'mp-ltitle') ? { id: fa.id, v: fa.value, s: fa.selectionStart, e: fa.selectionEnd } : null;
     const me = this.me(), url = location.origin + location.pathname + '?join=' + this.code, MD = MP_MODES[L.mode] || MP_MODES.custom, party = MD.party, ranked = !!MD.ranked;
     const lock = L.inGame || L.starting, key = this.rankKey(L), diffs = ['Easy', 'Medium', 'Hard', 'Radiant'];
     const pslot = p => {
@@ -16285,19 +16380,31 @@ const Net = {
     const skillSel = ranked ? `<div class="mpinfo"><div><span>AI skill</span><b>Per opponent · by rank</b></div></div>` : host && !lock ? `<label>Bot skill<select id="mp-diff">${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Bot skill</span><b>${diffs[+L.diff] || 'Medium'}</b></div></div>`;
     const botTools = !party && host && !lock ? `<div class="mprow wrap"><button class="mpbtn sm${L.fill ? ' on' : ' ghost'}" data-act="botsall" title="Bots take every open slot, also when players move or leave">Fill with bots</button><button class="mpbtn sm${!L.fill && !(L.bots[0] | 0) && !(L.bots[1] | 0) ? ' on' : ' ghost'}" data-act="botsnone">No bots</button><button class="mpbtn sm ghost" data-act="balance" title="Split players evenly across both teams">Balance teams</button></div>` : '';
     const startLbl = party ? (ranked ? 'Queue' : 'Find match') : 'Start';
+    const listed = host ? `<label class="mpchk${this.relay ? '' : ' dim'}"><input type="checkbox" id="mp-listed"${L.listed !== false && this.relay ? ' checked' : ''}${this.relay ? '' : ' disabled'}><span>Show in Open lobbies<small>${this.relay ? 'Players can ask to join · you accept or decline' : 'Needs the game server (server.js)'}</small></span></label>` : '';
+    // a fixed-height strip (reserved while the lobby is listed) so a request never shoves the buttons below it around
+    const seen = this._reqSeen || (this._reqSeen = new Set());
+    const reqs = host && this.relay && L.listed !== false ? `<div class="mpreqs">${!this.reqs.length ? `<div class="mpreq none"><b>Join requests</b><small>Your lobby is listed in Open lobbies · requests appear here</small></div>` : this.reqs.map(r => `<div class="mpreq${seen.has(r.cid) ? '' : ' new'}"><span class="mpreq-i">${this.badge(r.rk, 26)}</span><div><b>${NetU.esc(r.name)}</b><small>Level ${r.lv} · ${NetU.esc(Rank.name(r.rk))} · wants to join</small></div><button class="mpbtn sm on" data-act="racc" data-id="${NetU.esc(r.cid)}">Accept</button><button class="mpbtn sm ghost" data-act="rdec" data-id="${NetU.esc(r.cid)}">Decline</button></div>`).join('')}</div>` : '';
+    for (const r of this.reqs) seen.add(r.cid);
+    const title = this.titleOf(L);
+    const head = `<div class="mpttl"><small>Lobby</small><b title="${NetU.esc(title)}">${NetU.esc(title)}</b></div>` + (this.code ? `<span>Code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button>` : '');
+    const titleSel = host ? `<label>Lobby name<input id="mp-ltitle" maxlength="${this.TITLE_MAX}" value="${NetU.esc(L.title || '')}" placeholder="${NetU.esc(this.titleOf(Object.assign({}, L, { title: '' })))}" autocomplete="off" spellcheck="false"${lock ? ' disabled' : ''}></label>` : '';
     const action = host ? `<button class="cta big" data-act="start"${lock ? ' disabled' : ''}>${lock ? 'Match in progress…' : startLbl}</button>` : `<p class="mpnote">${lock ? 'Match in progress…' : 'Waiting for the host to start'}</p>`;
-    $('mp-room').innerHTML = `
-      <div class="mpcode"><span>Room code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button><button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button><span class="mpcap">${L.players.length}/${party ? 5 : 10} players</span></div>
+    $('mp-rtop').innerHTML = `
+      <div class="mpcode">${head}<button class="mpbtn ghost" data-act="leave">${host ? 'Close room' : 'Leave'}</button><span class="mpcap">${L.players.length}/${party ? 5 : 10} players</span></div>
+      ${reqs}
       <div class="mpmodes">${modeTabs}</div>
       ${this._note ? `<p class="mpwarn">${NetU.esc(this._note)}</p>` : ''}
       <div class="mpgrid"><div class="mpteams">${cols}</div>
         <div class="mpside"><div class="sect">You</div>
           <label>Name<div class="mprow"><input id="mp-rname" maxlength="16" value="${NetU.esc(me ? me.name : '')}" autocomplete="off" spellcheck="false"${lock ? ' disabled' : ''}><button class="mpbtn sm" data-act="rename"${lock ? ' disabled' : ''}>Save</button></div></label>
-          <div class="sect">${MD.label}</div>${mapSel}${winSel}${skillSel}${botTools}${action}
-          ${host ? `<p class="mpnote sm">The match runs in your tab. Keep it in front for the smoothest game.</p>` : ''}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>
+          <div class="sect">${MD.label}</div>${titleSel}${mapSel}${winSel}${skillSel}${botTools}${listed}${action}
+          ${host ? `<p class="mpnote sm">The match runs in your tab. Keep it in front for the smoothest game.</p>` : ''}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>`;
+    $('mp-rbot').innerHTML = `
       <div class="sect">Your agent <span class="mpsub">· ${L.mode === 'dm' ? 'any agent' : 'one of each per team'} · hover to preview</span></div>
       <div class="mpsel"><div class="mpags">${agents}</div><aside class="mpcardag" id="mp-agcard">${this.agentCard(me ? me.agent : 'vanta', true)}</aside></div>`;
-    if (focus) { const i = $('mp-rname'); if (i) { i.value = focus.v; i.focus(); try { i.setSelectionRange(focus.s, focus.e); } catch (e) { } } }
+    if (focus) { const i = $(focus.id); if (i && !i.disabled) { i.value = focus.v; i.focus(); try { i.setSelectionRange(focus.s, focus.e); } catch (e) { } } }
+    $('mp-chat').classList.remove('hidden'); this.chatBar(); if ($('mp-chlog').dataset.k !== this.chatKey()) this.renderChat();
+    if (this._chStick !== false) { const cl = $('mp-chlog'); cl.scrollTop = cl.scrollHeight; }   // it was hidden during the match: land on the newest line
     if (me && AGENTS[me.agent] && Settings.agent !== me.agent) { Settings.agent = me.agent; Settings.save(); }
   },
   // ---- modes: Custom (two teams, bots by count) or a party mode (≤ 5 players together vs an AI team)
@@ -16372,14 +16479,17 @@ const Net = {
     if (act === 'botsnone') { L.fill = false; L.bots = [0, 0]; this.pushLobby(); return; }
     if (act === 'balance') { const ps = L.players.slice(); ps.forEach((p, i) => { p.team = i % 2; this.fixAgent(p); }); this.clampBots(); this.pushLobby(); return; }
     if (act === 'mode') { this.setMode(b.dataset.m); return; }
+    if (act === 'racc' || act === 'rdec') { this.answerReq(b.dataset.id, act === 'racc'); return; }
     if (act === 'start') this.hostStart();
   },
   roomChange(e) {
-    if (e.target.id === 'mp-rname') return;
+    if (e.target.id === 'mp-rname' || e.target.id === 'mp-chin') return;
     if (this.role !== 'host' || !this.lobby || this.lobby.inGame) return; const L = this.lobby, t = e.target;
     if (t.id === 'mp-map') L.map = t.value;
     else if (t.id === 'mp-cwin') L.cwin = +t.value;
     else if (t.id === 'mp-diff') L.diff = +t.value;
+    else if (t.id === 'mp-ltitle') { L.title = this.cleanTitle(t.value); t.value = L.title; }
+    else if (t.id === 'mp-listed') { L.listed = t.checked; if (!L.listed) { for (const r of this.reqs) this.tx.answer(r.cid, false, MP_DENY.PRIVATE); this.reqs = []; } }
     else return;
     this.pushLobby();
   },
@@ -16391,6 +16501,7 @@ const Net = {
     if (!party && (this.teamCount(0) + (L.bots[0] | 0) < 1 || this.teamCount(1) + (L.bots[1] | 0) < 1)) { this._lastErr = 'Each team needs at least one player or bot'; this.render(); return; }
     if (party && L.players.length > 5) { this._lastErr = 'Party modes are for up to 5 players'; this.render(); return; }
     L.starting = true; this._lastErr = '';   // lock the lobby first: joins from here on get MATCH_IN_PROGRESS
+    for (const r of this.reqs) this.tx.answer(r.cid, false, MP_DENY.MATCH_IN_PROGRESS); this.reqs = [];
     const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map, key = this.rankKey(L);
     const humanNames = new Set(L.players.map(p => p.name.toLowerCase())), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n.toLowerCase())));
     const human = (p, agentId, team) => ({ name: p.name, agentId, team, pid: p.id, sk: p.id === 'H' ? this.mySkins() : (p.sk || {}), dl: p.id === 'H' ? this.myLoadout() : p.dl, rk: this.rankOf(p, key).i });
@@ -16960,6 +17071,244 @@ const Net = {
     }
   },
 };
+
+// ------------------------------------------------------------ TEXT CHAT (All / Team) and the OPEN LOBBIES browser
+// Chat goes through the host like everything else: a guest sends {e:'chat', ch, x}; the host checks it (length, rate),
+// stamps the sender's name and side, and forwards it only to the players allowed to read it (Team = same team).
+// Before a match, an opposing player in a Custom lobby shows as "Opponent", the same as on their hidden lobby card.
+Object.assign(Net, {
+  CHAT_MAX: 120, TITLE_MAX: 28,
+  cleanTitle(x) { return this.chatClean(String(x == null ? '' : x).replace(/[<>]/g, '')).slice(0, this.TITLE_MAX).trim(); },
+  // the lobby name the host picked, or "<host>'s lobby"
+  titleOf(L) { const t = L && this.cleanTitle(L.title); if (t) return t; const h = L && L.players.find(p => p.id === 'H'); return ((h && h.name) || this.hostName || 'Host') + '’s lobby'; },
+  sameSide(a, b) { return a.team === b.team || this.partyMode(); },
+  dmChat() { const L = this.lobby; return !!(L && L.mode === 'dm' && (this.active || L.inGame)); },
+  chatClean(x) { return String(x == null ? '' : x).replace(/[\u0000-\u001f\u007f\u200b-\u200f\u2028-\u202e\u2060-\u206f\ufeff]/g, ' ').replace(/\s+/g, ' ').trim().slice(0, this.CHAT_MAX); },
+  sendChat(ch, x) {
+    x = this.chatClean(x); if (!x || !this.role || !this.lobby) return false;
+    ch = ch === 'all' ? 'all' : 'team';
+    if (this.role === 'host') this.hostChat('H', ch, x); else this.up({ e: 'chat', ch, x });
+    return true;
+  },
+  hostChat(from, ch, x) {
+    const L = this.lobby, p = L && L.players.find(q => q.id === from); if (!p) return;
+    x = this.chatClean(x); if (!x) return;
+    ch = ch === 'all' || L.mode === 'dm' ? 'all' : 'team';
+    const now = performance.now(), R = this._chatRate || (this._chatRate = {}), hist = (R[from] || []).filter(t => now - t < 5000);
+    if (hist.length >= 5) { const m = { e: 'chat', sys: 1, x: 'Slow down · up to 5 messages every 5 seconds' }; if (from === 'H') this.addChat(m); else this.tx.send(from, m); return; }
+    hist.push(now); R[from] = hist;
+    const live = !!(L.inGame || this.active), party = this.partyMode();
+    for (const r of L.players) {
+      if (ch === 'team' && !this.sameSide(r, p)) continue;
+      const own = r.id === from, ally = this.sameSide(r, p) && !(L.mode === 'dm' && live);
+      const m = { e: 'chat', ch, n: !ally && !party && !live && !own ? 'Opponent' : p.name, s: own ? 'me' : ally ? 'a' : 'e', x };
+      if (r.id === 'H') this.addChat(m); else this.tx.send(r.id, m);
+    }
+  },
+  // a system line, worded per reader (fn returns null to skip someone)
+  hostSys(fn) { if (this.role !== 'host' || !this.lobby) return; for (const r of this.lobby.players) { const x = fn(r); if (!x) continue; const m = { e: 'chat', sys: 1, x }; if (r.id === 'H') this.addChat(m); else this.tx.send(r.id, m); } },
+  chatKey() { const c = this.chat[this.chat.length - 1]; return this.chat.length + ':' + (c ? c.t : 0) + ':' + (this.myId || ''); },
+  addChat(m) {
+    if (!m) return;
+    const c = { ch: m.ch === 'all' ? 'all' : 'team', n: this.chatClean(m.n).slice(0, 16), s: m.s === 'me' || m.s === 'e' ? m.s : 'a', x: this.chatClean(m.x), sys: !!m.sys, t: performance.now() };
+    if (!c.x) return;
+    this.chat.push(c); if (this.chat.length > 80) this.chat.shift();
+    this.renderChat();
+  },
+  chatLine(c, tag) {
+    if (c.sys) return `<div class="${tag} sys" data-t="${c.t}">${NetU.esc(c.x)}</div>`;
+    return `<div class="${tag} ${c.s}" data-t="${c.t}"><i class="${c.ch}">${c.ch === 'all' ? 'All' : 'Team'}</i><b>${NetU.esc(c.n)}${c.s === 'me' ? ' (you)' : ''}:</b> <span>${NetU.esc(c.x)}</span></div>`;
+  },
+  renderChat() {
+    const log = $('mp-chlog');
+    if (log) { log.dataset.k = this.chatKey(); const stick = this._chStick !== false; log.innerHTML = this.chat.length ? this.chat.map(c => this.chatLine(c, 'mpcl')).join('') : '<div class="mpcl sys">No messages yet</div>'; if (stick) log.scrollTop = log.scrollHeight; }
+    this.renderGameChat();
+  },
+  // ---- lobby chat panel (lives outside the re-rendered room markup, so typing is never interrupted)
+  chatBar() {
+    const L = this.lobby, dm = L && L.mode === 'dm', party = this.partyMode();
+    if (dm || party && this.lchCh === 'team') this.lchCh = 'all';
+    for (const b of document.querySelectorAll('#mp-chat [data-cht="all"],#mp-chat [data-cht="team"]')) { b.classList.toggle('on', b.dataset.cht === this.lchCh); b.disabled = b.dataset.cht === 'team' && (dm || party); b.title = b.disabled ? 'Everyone here is on your side' : ''; }
+    const lab = $('mp-chch'), inp = $('mp-chin');
+    lab.textContent = this.lchCh === 'all' ? 'All' : 'Team'; lab.className = this.lchCh;
+    inp.placeholder = this.lchCh === 'all' ? (party ? 'Message your party…' : 'Message everyone in the lobby…') : 'Message your team…';
+    this.chatHint();
+  },
+  lobbySend() { const i = $('mp-chin'); if (this.sendChat(this.lchCh, i.value)) i.value = ''; i.focus(); },
+
+  // ---- in-game chat: Enter = team, Shift+Enter = all. Sits bottom-left, clear of the minimap, callouts, killfeed and HUD bar.
+  canGameChat() {
+    if (!this.active || !this.role || !G.running || G.paused || Input.capture) return false;
+    if (!$('pause').classList.contains('hidden') || !$('mp').classList.contains('hidden')) return false;
+    if (Placement.mode || UI.buyOpen || (typeof Wheel !== 'undefined' && Wheel.open)) return false;
+    const a = document.activeElement; return !(a && /INPUT|TEXTAREA|SELECT/.test(a.tagName));
+  },
+  gcOpen(ch) {
+    this.gc = true; this.gcCh = this.dmChat() ? 'all' : ch;
+    Input.keys = {};   // nothing stays held while typing (W, crouch, walk…)
+    $('mpgc').classList.add('open'); this.gcBar(); this.renderGameChat();
+    const i = $('mpgc-in'); i.focus(); this.placeChat();
+  },
+  gcClose() {
+    if (!this.gc) return; this.gc = false;
+    const g = $('mpgc'); if (g) g.classList.remove('open');
+    const i = $('mpgc-in'); if (i && document.activeElement === i) i.blur();
+    this.renderGameChat(); this.placeChat();
+  },
+  // the box sits in the free strip on the left: below the minimap / callout / bot callouts, above the HUD bar and any
+  // bottom-centre panel that reaches the column. Re-measured whenever callouts change, the window resizes, or it opens.
+  placeChat() {
+    const g = $('mpgc'), log = $('mpgc-log'); if (!g || g.classList.contains('hidden')) return;
+    const H = innerHeight, W = Math.round(clamp(innerWidth * 0.3, 240, 380)), L = 14, R = L + W;
+    const rectOf = id => { const e = $(id); if (!e || e.classList.contains('hidden')) return null; const cs = getComputedStyle(e); if (cs.display === 'none' || cs.visibility === 'hidden') return null; const r = e.getBoundingClientRect(); return r.width < 1 || r.height < 1 || r.left > R + 8 || r.right < L ? null : r; };
+    let top = 0, bot = H - 96;
+    for (const id of ['minimap', 'callout', 'comms', 'combatrep', 'topbar']) { const r = rectOf(id); if (r && r.top < H * 0.6) top = Math.max(top, r.bottom); }
+    for (const id of ['bottom', 'status', 'specbar', 'spectate', 'killbanner', 'creds', 'progress', 'interact']) { const r = rectOf(id); if (r && r.top > H * 0.4) bot = Math.min(bot, r.top); }
+    top += 8; bot -= 10;
+    g.style.width = W + 'px'; g.style.bottom = Math.round(H - bot) + 'px';
+    const inH = this.gc ? 44 : 0; log.style.maxHeight = Math.max(0, Math.round(bot - top - inH)) + 'px';
+  },
+  gcBar() { const l = $('mpgc-ch'); if (!l) return; l.textContent = this.gcCh === 'all' ? 'All' : 'Team'; l.className = this.gcCh; },
+  // the chat keys from Settings → Controls (defaults: Enter = team, U = all; Shift + the team key also opens All)
+  chatKeys() { const k = a => { try { return Input.key(a) || ''; } catch (e) { return ''; } }; return { team: k('chatTeam'), all: k('chatAll') }; },
+  // a save from before chat existed may already use Enter/U for something else: move chat to a free key rather than share one
+  fixChatKeys() {
+    try {
+      const B = Settings.binds, used = a => Object.keys(B).some(x => x !== a && B[x] === B[a]) || (Input.crouchCode === B[a]);
+      const pickFree = (a, list) => { if (B[a] && B[a] !== 'Escape' && !used(a)) return false; B[a] = list.find(c => !Object.values(B).includes(c) && c !== Input.crouchCode) || ''; return true; };
+      const ch = pickFree('chatTeam', ['Enter', 'NumpadEnter', 'Backslash']) | pickFree('chatAll', ['KeyU', 'KeyJ', 'KeyK', 'KeyL', 'KeyO', 'KeyP', 'KeyI', 'KeyH', 'KeyN']);
+      if (ch) Settings.save();
+    } catch (e) { }
+  },
+  gcKey(e) {
+    if (this.gc) {   // typing: the game sees no keys at all (Escape still goes through and pauses, as it always does)
+      const c = e.code;
+      if (c === 'Escape') { this.gcClose(); return; }   // draft kept; the pause menu opens as normal
+      if (e.type === 'keydown') {
+        if (c === 'Enter' || c === 'NumpadEnter') { e.preventDefault(); const i = $('mpgc-in'); if (this.sendChat(this.gcCh, i.value)) i.value = ''; this.gcClose(); }
+        else if (c === 'Tab') { e.preventDefault(); if (!this.dmChat()) { this.gcCh = this.gcCh === 'team' ? 'all' : 'team'; this.gcBar(); } }
+      }
+      e.stopImmediatePropagation(); return;
+    }
+    if (e.type !== 'keydown' || e.repeat || e.code === 'Escape') return;
+    const K = this.chatKeys(), team = !!K.team && e.code === K.team, all = !!K.all && e.code === K.all;
+    if ((!team && !all) || e.ctrlKey || e.altKey || e.metaKey || !this.canGameChat()) return;
+    e.preventDefault(); e.stopImmediatePropagation(); this.gcOpen(all || e.shiftKey ? 'all' : 'team');
+  },
+  keyLabel(c) { try { return c ? keyName(c) : 'unbound'; } catch (e) { return c || 'unbound'; } },
+  chatHint() {   // shown in the lobby chat header, always matching the current binds
+    const K = this.chatKeys(), h = $('mp-chhint'); if (!h) return;
+    h.textContent = `In a match: ${this.keyLabel(K.team)} team chat · ${this.keyLabel(K.all)} all chat · rebind in Settings → Controls`;
+  },
+  renderGameChat() {
+    const log = $('mpgc-log'); if (!log) return;
+    const now = performance.now(), list = this.chat.slice(this.gc ? -10 : -6);
+    log.innerHTML = list.map(c => this.chatLine(c, 'mpgl')).join('');
+    for (const n of log.children) n.classList.toggle('old', !this.gc && now - +n.dataset.t > 10000);
+    this.placeChat();
+  },
+  chatInit() {
+    // lobby panel
+    const box = $('mp-chat');
+    box.addEventListener('click', e => { const b = e.target.closest('[data-cht]'); if (!b || b.disabled) return; if (b.dataset.cht === 'send') this.lobbySend(); else { this.lchCh = b.dataset.cht; this.chatBar(); $('mp-chin').focus(); } });
+    $('mp-chin').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); this.lobbySend(); } });
+    const cl = $('mp-chlog'); cl.addEventListener('scroll', () => { if (cl.clientHeight) this._chStick = cl.scrollHeight - cl.scrollTop - cl.clientHeight < 30; });
+    this.fixChatKeys(); this.chatHint();
+    const bl = $('binds'); if (bl) bl.addEventListener('click', () => setTimeout(() => this.chatHint(), 0));
+    window.addEventListener('keydown', () => { if (Input.capture) setTimeout(() => this.chatHint(), 0); }, true);
+    // in-game overlay: first child of the HUD so every panel (scoreboard, buy menu, map) draws over it
+    const g = document.createElement('div'); g.id = 'mpgc'; g.className = 'hidden';
+    g.innerHTML = `<div class="mpgc-log" id="mpgc-log"></div><div class="mpgc-in"><span id="mpgc-ch" class="team">Team</span><input id="mpgc-in" maxlength="${this.CHAT_MAX}" autocomplete="off" spellcheck="false" aria-label="Chat message"><small>Enter send · Tab All/Team · Enter on empty closes</small></div>`;
+    const hud = $('hud'); if (hud) hud.prepend(g); else document.body.appendChild(g);
+    $('mpgc-in').addEventListener('blur', () => { if (this.gc) this.gcClose(); });
+    addEventListener('resize', () => this.placeChat());
+    const cm = $('comms'); if (cm && window.MutationObserver) new MutationObserver(() => this.placeChat()).observe(cm, { childList: true, subtree: true, characterData: true });
+    window.addEventListener('keydown', e => this.gcKey(e), true);
+    window.addEventListener('keyup', e => { if (this.gc) e.stopImmediatePropagation(); }, true);
+    document.addEventListener('pointerlockchange', () => { if (!document.pointerLockElement && this.gc && G.paused) this.gcClose(); });
+    setInterval(() => {
+      const on = !!(this.active && this.role && G.running); g.classList.toggle('hidden', !on);
+      if (!on) { this.gcClose(); return; }
+      const now = performance.now(); for (const n of $('mpgc-log').children) n.classList.toggle('old', !this.gc && now - +n.dataset.t > 10000);
+      this.placeChat();
+    }, 400);
+  },
+
+  // ---- join requests (host side)
+  sendMeta() {
+    if (this.role !== 'host' || !this.tx || !this.tx.meta || !this.lobby) return;
+    const L = this.lobby, me = this.me(), MD = MP_MODES[L.mode] || MP_MODES.custom;
+    const d = { h: me ? me.name : 'Player', ln: this.titleOf(L), m: MD.label, mp: L.map === 'random' ? 'Random map' : (MAPS[L.map] || {}).name || L.map, n: L.players.length, cap: MD.party ? 5 : 10, g: !!(L.inGame || L.starting), open: L.listed !== false };
+    const k = JSON.stringify(d); if (k === this._metaS) return; this._metaS = k; this.tx.meta(d);
+  },
+  onReq(cid, m) {
+    const L = this.lobby, full = L && (this.partyMode() ? L.players.length >= 5 : L.players.length >= 10);
+    const no = !L ? 'That lobby closed.' : L.listed === false ? MP_DENY.PRIVATE : L.inGame || L.starting ? MP_DENY.MATCH_IN_PROGRESS : full ? (this.partyMode() ? MP_DENY.PARTY_FULL : MP_DENY.LOBBY_FULL) : '';
+    if (no) { this.tx.answer(cid, false, no); return; }
+    const num = (v, lo, hi, d) => { v = Math.round(+v); return isFinite(v) ? clamp(v, lo, hi) : d; };
+    const r = { cid, name: this.cleanName(m.name), lv: num(m.lv, 1, 1000, 1), rk: num(m[this.rankKey()], -1, RANK_TOP, -1) };
+    this.reqs = this.reqs.filter(x => x.cid !== cid).concat(r); this.render();
+    try { Sfx.ui(); } catch (e) { }
+    if ($('mp').classList.contains('hidden')) try { UI.toast(r.name + ' wants to join your lobby · open Multiplayer to answer', 'info'); } catch (e) { }
+  },
+  answerReq(cid, ok) {
+    const L = this.lobby, r = this.reqs.find(x => x.cid === cid); if (!r || !L) return;
+    this.reqs = this.reqs.filter(x => x.cid !== cid);
+    const full = this.partyMode() ? L.players.length >= 5 : L.players.length >= 10;
+    if (ok && (full || L.inGame || L.starting)) { this.tx.answer(cid, false, full ? MP_DENY.LOBBY_FULL : MP_DENY.MATCH_IN_PROGRESS); this.note('The lobby is full · ' + r.name + ' couldn’t be let in'); return; }
+    this.tx.answer(cid, ok, ok ? '' : MP_DENY.DECLINED); this.render();
+  },
+
+  // ---- the Open lobbies list (guest side). Shows host name, mode, map and players; the code never leaves the server.
+  browseInit() {
+    $('mp-brref').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.browse(true); });
+    $('mp-brlist').addEventListener('click', e => {
+      const b = e.target.closest('[data-br]'); if (!b || b.disabled) return; Sfx.init(); Sfx.ui();
+      if (b.dataset.br === 'req') this.requestJoin(b.dataset.rid, b.dataset.h); else if (b.dataset.br === 'cancel') this.cancelReq();
+    });
+    setInterval(() => this.browse(), 4000);
+  },
+  browse(force) {
+    if (this.role || $('mp').classList.contains('hidden')) return;
+    if (!this.relay) { this.rooms = null; this.renderBrowse(); return; }
+    if (this._brBusy && !force) return; this._brBusy = true;
+    fetch('rooms', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(new Error('old'))).then(j => { this.rooms = Array.isArray(j.rooms) ? j.rooms : []; this._brErr = ''; })
+      .catch(e => { this.rooms = []; this._brErr = e.message === 'old' ? 'This game server is out of date: upload the new server.js to list lobbies' : 'Couldn’t load the lobby list'; })
+      .finally(() => { this._brBusy = false; this._brAt = Date.now(); this.renderBrowse(); });
+  },
+  renderBrowse() {
+    const el = $('mp-brlist'), st = $('mp-brst'); if (!el) return;
+    $('mp-brref').classList.toggle('hidden', !this.relay);
+    if (!this.relay) { st.textContent = ''; el.innerHTML = `<p class="mpbr-empty">The lobby list needs the game server (server.js, e.g. on Render). On this page, join with a code.</p>`; return; }
+    if (this.rooms == null) { st.textContent = 'Loading…'; el.innerHTML = ''; return; }
+    const list = this.rooms, wait = this._reqRid;
+    st.textContent = this._brErr || (list.length ? list.length + ' open · updates every few seconds' : '');
+    if (!list.length) { el.innerHTML = `<p class="mpbr-empty">${this._brErr ? '' : 'No open lobbies right now. Host one, or join with a code.'}</p>`; return; }
+    el.innerHTML = list.map(r => {
+      const full = r.n >= r.cap, mine = wait === r.rid, busy = !!wait && !mine;
+      const btn = mine ? `<button class="mpbtn sm ghost" data-br="cancel">Cancel</button>` : `<button class="mpbtn sm" data-br="req" data-rid="${NetU.esc(r.rid)}" data-h="${NetU.esc(r.host)}"${r.inGame || full || busy ? ' disabled' : ''}>Request to join</button>`;
+      const status = mine ? `<span class="mpbr-st wait"><i class="mpspin sm"></i>Waiting for the host…</span>` : `<span class="mpbr-st${r.inGame ? ' live' : full ? ' full' : ''}">${r.inGame ? 'In a match' : full ? 'Full' : 'In lobby'}</span>`;
+      return `<div class="mpbr${mine ? ' on' : ''}"><div class="mpbr-host"><b title="${NetU.esc(r.name || '')}">${NetU.esc(r.name || r.host + '’s lobby')}</b><small>Hosted by ${NetU.esc(r.host)}</small></div><div class="mpbr-m"><b>${NetU.esc(r.mode)}</b><small>${NetU.esc(r.map)}</small></div><div class="mpbr-n"><b>${r.n | 0}/${r.cap | 0}</b><small>players</small></div>${status}${btn}</div>`;
+    }).join('');
+  },
+  async requestJoin(rid, hostName) {
+    if (this.role || this._joining || !this.relay) return; this.err('');
+    const tx = this.newTx(); this._joining = true; this._reqTx = tx; this._reqRid = rid; this.renderBrowse();
+    try {
+      const c = this.myCard(), id = await tx.request(rid, { name: c.name, lv: c.acct.lv, rq: c.acct.rq.i, rs: c.acct.rs.i });
+      if (this._reqTx !== tx) { tx.close(); return; }
+      this._reqTx = null; this._reqRid = null; this._joining = false;
+      this.connected(tx, id, '', hostName);
+    } catch (e) {
+      if (this._reqTx !== tx) return;   // we cancelled it ourselves
+      this._reqTx = null; this._reqRid = null; this._joining = false;
+      this.err(e.message); try { UI.toast(e.message, 'enemy'); } catch (x) { }
+      this.browse(true);
+    }
+  },
+  cancelReq() { const tx = this._reqTx; this._reqTx = null; this._reqRid = null; this._joining = false; if (tx) tx.close(); this.err(''); this.renderBrowse(); },
+});
+
 // F (use) and G (drop) for any agent: the local player's keys, and remote players on the host
 function playerUse(P) { if (Orbs.near(P)) return; /* hold F on an orb: harvesting is handled per frame */ if (Mech.use(P)) return; const ch = G.mode.charge; const nearCharge = ch && ch.state === 'planted' && Math.hypot(P.pos.x - ch.pos.x, P.pos.z - ch.pos.z) < 1.7; if (!nearCharge) { const d = Drops.nearest(P, 1.6); if (d) Drops.pickup(P, d); } }
 function playerDrop(P) { if (P.slot === 'charge' && G.mode.dropCharge) G.mode.dropCharge(P); else if (P.slot === 'primary' && G.mode.teamBased) { const rec = P.boughtThisRound && P.boughtThisRound.find(b => b.slot === 'primary'); if (rec) P.boughtThisRound.splice(P.boughtThisRound.indexOf(rec), 1); /* a dropped purchase is no longer refundable */ Drops.spawn(P.weapons.primary, P.pos.clone().addScaledVector(P.dir(tmpA).setY(0).normalize(), 1.4)); P.weapons.primary = null; P.slot = 'knife'; P.equip('secondary'); } }
