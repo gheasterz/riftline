@@ -1406,6 +1406,7 @@ img{max-width:100%}
 .mpslot.masked b{color:#c9d3da}.mpslot .bi.lock{color:#8aa0ad}
 .mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
+#mp .mpprac{border-left:3px solid var(--gold);padding:6px 10px;background:rgba(245,197,66,.07);color:#d8cfb8}#mp .mpprac b{color:var(--gold)}
 /* lobby browser */
 .mpbrowse{margin-top:22px;background:linear-gradient(160deg,rgba(28,45,57,.75),rgba(16,27,35,.75));border:1px solid rgba(255,255,255,.08);padding:16px 18px 12px}
 .mpbr-h{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
@@ -3361,7 +3362,7 @@ const Progress = {
     const placing = R.placed < PLACEMENTS, mg = clamp(margin, 1, 13) / 13;
     // hidden MMR moves less per game the higher it is (same log damping), so it converges slowly at the top
     const md = placing ? 1 : 0.4 + 0.6 * this.mmrDamp(R.mmr) / this.mmrDamp(0);
-    R.mmr = clamp(R.mmr + md * ((won ? 1 : -1) * (placing ? 1.1 : 0.3) * (0.7 + mg * 0.6) + (perf.norm - 0.5) * (placing ? 1.2 : 0.4) + (perf.matchMVP ? 0.12 : 0)), 0, RANK_TOP);
+    R.mmr = clamp(R.mmr + md * ((won ? 1 : -1) * (placing ? 1.1 : 0.3) * (0.7 + mg * 0.6) * (typeof RRLobby !== 'undefined' && RRLobby.active() ? RRLobby.mmrMult(R.mmr, won) : 1) + (perf.norm - 0.5) * (placing ? 1.2 : 0.4) + (perf.matchMVP ? 0.12 : 0)), 0, RANK_TOP);
     out.mmrTo = R.mmr;
     if (placing) {
       R.placed++; out.placement = R.placed;
@@ -3370,7 +3371,8 @@ const Progress = {
     }
     const parts = this.rrParts(won, perf, margin, R);
     let delta = parts.base + parts.perf + parts.mmr;
-    delta = won ? clamp(delta, 8, parts.cap) : -clamp(-delta, 3, parts.cap);   // never RR from a loss
+    if (typeof RRLobby !== 'undefined' && RRLobby.active()) RRLobby.apply(parts, R.idx, won, delta, perf), delta = parts.lobbyRaw;
+    delta = won ? clamp(delta, parts.minWin || 8, parts.cap) : -clamp(-delta, parts.minLoss || 3, parts.cap);   // never RR from a loss
     delta = Math.round(delta); out.rrDelta = delta; out.rrParts = parts;
     if (Ladder.isLB(R.idx)) Ladder.apply(R, delta, out, key);
     else {
@@ -12208,9 +12210,9 @@ class PlantMode {
   alive(side) { return G.agents.filter(a => a.alive && this.sides[a.team] === side); }
   onKill() { if (this.phase === 'live' || this.phase === 'planted') this.checkWin(); }
   checkWin() {
-    const atk = this.alive('atk').length, def = this.alive('def').length;
-    if (this.phase === 'live') { if (atk === 0) this.endRound('def', 'Attackers eliminated', 'elim'); else if (def === 0) this.endRound('atk', 'Defenders eliminated', 'elim'); }
-    else if (this.phase === 'planted') { if (def === 0) this.endRound('atk', 'Defenders eliminated', 'elim'); }
+    const atk = this.alive('atk').length, def = this.alive('def').length, has = s => G.agents.some(a => this.sides[a.team] === s && !a.gone);
+    if (this.phase === 'live') { if (atk === 0 && has('atk')) this.endRound('def', 'Attackers eliminated', 'elim'); else if (def === 0 && has('def')) this.endRound('atk', 'Defenders eliminated', 'elim'); }
+    else if (this.phase === 'planted') { if (def === 0 && has('def')) this.endRound('atk', 'Defenders eliminated', 'elim'); }
   }
   endRound(winSide, reason, how) {
     if (this.phase === 'end') return;
@@ -15085,7 +15087,9 @@ const Lobby = {
     const sum = p.perfItems.reduce((a, i) => a + i.v, 0); if (p.perfItems.length && p.perf !== sum) rows.push(['Performance cap (' + (p.perf >= 0 ? '+' : '') + p.perf + ' max)', p.perf - sum]);
     if (p.mmr) rows.push([p.mmr > 0 ? 'Hidden MMR above rank' : 'Hidden MMR below rank', p.mmr]);
     if (p.lb) rows.push(['Eternal / Zenith: outcome and round differential only', null]);
-    const raw = p.base + p.perf + p.mmr; if (res.rrDelta !== raw && !p.lb) rows.push([res.rrDelta > 0 ? (raw > res.rrDelta ? 'Rank compression cap (' + p.cap + ')' : 'Minimum gain') : (-raw > -res.rrDelta ? 'Maximum loss cap' : 'Minimum loss'), res.rrDelta - raw]);
+    if (p.perfMP) rows.push(['Combat performance · ' + p.perfLabel, p.perfMP]);
+    if (p.lobby != null) rows.push(['Lobby strength · avg ' + Rank.name(Math.round(p.lobbyAvg)) + ' vs your ' + Rank.name(p.lobbyMe) + ' (×' + p.lobbyM.toFixed(2) + ')', p.lobby]);
+    const raw = p.base + p.perf + p.mmr + (p.lobby || 0) + (p.perfMP || 0); if (res.rrDelta !== raw && (!p.lb || p.lobby != null)) rows.push([res.rrDelta > 0 ? (raw > res.rrDelta ? 'Rank compression cap (' + p.cap + ')' : 'Minimum gain') : (-raw > -res.rrDelta ? 'Maximum loss cap' : 'Minimum loss'), res.rrDelta - raw]);
     return `<div class="rrbk">${rows.map(([l, v]) => `<div><span>${l}</span>${v == null ? '<b></b>' : `<b class="${v >= 0 ? 'up' : 'down'}">${sg(v)}</b>`}</div>`).join('')}<div class="tot"><span>Total</span><b class="${res.rrDelta >= 0 ? 'up' : 'down'}">${sg(res.rrDelta)} RR</b></div></div>`;
   },
   // double rank up: skipped division shown struck through between the two chevrons
@@ -16378,6 +16382,8 @@ const Net = {
     const mapSel = host && !lock ? `<label>Map<select id="mp-map"><option value="random"${L.map === 'random' ? ' selected' : ''}>Random</option>${maps.map(id => `<option value="${id}"${L.map === id ? ' selected' : ''}>${NetU.esc(MAPS[id].name || id)}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Map</span><b>${L.map === 'random' ? 'Random' : NetU.esc((MAPS[L.map] || {}).name || L.map)}</b></div></div>`;
     const winSel = L.mode === 'custom' ? (host && !lock ? `<label>Rounds to win<select id="mp-cwin">${[5, 9, 13].map(n => `<option value="${n}"${L.cwin === n ? ' selected' : ''}>First to ${n}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Rounds</span><b>First to ${L.cwin}</b></div></div>`) : '';
     const skillSel = ranked ? `<div class="mpinfo"><div><span>AI skill</span><b>Per opponent · by rank</b></div></div>` : host && !lock ? `<label>Bot skill<select id="mp-diff">${diffs.map((d, i) => `<option value="${i}"${+L.diff === i ? ' selected' : ''}>${d}</option>`).join('')}</select></label>` : `<div class="mpinfo"><div><span>Bot skill</span><b>${diffs[+L.diff] || 'Medium'}</b></div></div>`;
+    const emptyT = !party ? [0, 1].filter(t => this.teamCount(t) + (L.bots[t] | 0) === 0) : [];
+    const practice = emptyT.length ? `<p class="mpnote sm mpprac"><b>Practice</b> · ${emptyT.length === 2 ? 'nobody is playing' : 'Team ' + 'AB'[emptyT[0]] + ' is empty'}: no enemies, so rounds end on the timer. Explore the map, try lineups, or plant the Charge.</p>` : '';
     const botTools = !party && host && !lock ? `<div class="mprow wrap"><button class="mpbtn sm${L.fill ? ' on' : ' ghost'}" data-act="botsall" title="Bots take every open slot, also when players move or leave">Fill with bots</button><button class="mpbtn sm${!L.fill && !(L.bots[0] | 0) && !(L.bots[1] | 0) ? ' on' : ' ghost'}" data-act="botsnone">No bots</button><button class="mpbtn sm ghost" data-act="balance" title="Split players evenly across both teams">Balance teams</button></div>` : '';
     const startLbl = party ? (ranked ? 'Queue' : 'Find match') : 'Start';
     const listed = host ? `<label class="mpchk${this.relay ? '' : ' dim'}"><input type="checkbox" id="mp-listed"${L.listed !== false && this.relay ? ' checked' : ''}${this.relay ? '' : ' disabled'}><span>Show in Open lobbies<small>${this.relay ? 'Players can ask to join · you accept or decline' : 'Needs the game server (server.js)'}</small></span></label>` : '';
@@ -16397,7 +16403,7 @@ const Net = {
       <div class="mpgrid"><div class="mpteams">${cols}</div>
         <div class="mpside"><div class="sect">You</div>
           <label>Name<div class="mprow"><input id="mp-rname" maxlength="16" value="${NetU.esc(me ? me.name : '')}" autocomplete="off" spellcheck="false"${lock ? ' disabled' : ''}><button class="mpbtn sm" data-act="rename"${lock ? ' disabled' : ''}>Save</button></div></label>
-          <div class="sect">${MD.label}</div>${titleSel}${mapSel}${winSel}${skillSel}${botTools}${listed}${action}
+          <div class="sect">${MD.label}</div>${titleSel}${mapSel}${winSel}${skillSel}${botTools}${practice}${listed}${action}
           ${host ? `<p class="mpnote sm">The match runs in your tab. Keep it in front for the smoothest game.</p>` : ''}<p class="mperr">${NetU.esc(this._lastErr)}</p></div></div>`;
     $('mp-rbot').innerHTML = `
       <div class="sect">Your agent <span class="mpsub">· ${L.mode === 'dm' ? 'any agent' : 'one of each per team'} · hover to preview</span></div>
@@ -16498,13 +16504,12 @@ const Net = {
   hostStart() {
     const L = this.lobby; if (L.inGame || L.starting) return;
     const maps = MAP_IDS.filter(id => id !== 'range'), MD = MP_MODES[L.mode] || MP_MODES.custom, party = MD.party;
-    if (!party && (this.teamCount(0) + (L.bots[0] | 0) < 1 || this.teamCount(1) + (L.bots[1] | 0) < 1)) { this._lastErr = 'Each team needs at least one player or bot'; this.render(); return; }
     if (party && L.players.length > 5) { this._lastErr = 'Party modes are for up to 5 players'; this.render(); return; }
     L.starting = true; this._lastErr = '';   // lock the lobby first: joins from here on get MATCH_IN_PROGRESS
     for (const r of this.reqs) this.tx.answer(r.cid, false, MP_DENY.MATCH_IN_PROGRESS); this.reqs = [];
     const map = L.map === 'random' || !MAPS[L.map] ? pick(maps) : L.map, key = this.rankKey(L);
     const humanNames = new Set(L.players.map(p => p.name.toLowerCase())), names = shuffle(BOT_NAMES.filter(n => !humanNames.has(n.toLowerCase())));
-    const human = (p, agentId, team) => ({ name: p.name, agentId, team, pid: p.id, sk: p.id === 'H' ? this.mySkins() : (p.sk || {}), dl: p.id === 'H' ? this.myLoadout() : p.dl, rk: this.rankOf(p, key).i });
+    const human = (p, agentId, team) => ({ name: p.name, agentId, team, pid: p.id, sk: p.id === 'H' ? this.mySkins() : (p.sk || {}), dl: p.id === 'H' ? this.myLoadout() : p.dl, rk: this.rankOf(p, key).i, ms: +(+this.skillIdx(this.rankOf(p, key)) || 0).toFixed(1) });
     const bot = (agentId, team, r) => Object.assign({ name: names.pop() || 'Bot', agentId, team, pid: null }, r ? { rk: r.i, sk2: Rank.skill(this.skillIdx(r)) } : {});
     const teamIds = (hs, n) => {   // players' picks stand; bots fill unique agents and the comp gets repaired around the players
       const ids = []; for (const p of hs) { const id = !ids.includes(p.agent) ? p.agent : AGENT_IDS.find(x => !ids.includes(x)); p.agent = id; ids.push(id); }
@@ -16578,6 +16583,7 @@ const Net = {
       a.nid = i; G.agents.push(a);
       if (e.rk !== undefined && e.rk !== null) a.netRank = e.rk;          // shown on the loading card, scoreboard and end screen
       if (typeof e.sk2 === 'number') a.netSkill = e.sk2;               // this bot plays at its own (mirrored) rank
+      if (typeof e.ms === 'number') a.netMs = clamp(e.ms, 0, RANK_TOP);  // strength used for the lobby-average RR scaling
       if (e.dl) a.loadout = this.cleanLoadout(e.dl);
       if (e.pid && !me) a.netSkins = this.cleanSkins(e.sk);
       if (me) G.player = a;
@@ -16889,7 +16895,7 @@ const Net = {
     if (a.alive) killAgent(a, null, { left: true });
     this.hideGone(a);
     const M = G.mode; if (!M || M.over || !M.teamBased) return;
-    for (const t of [0, 1]) if (!G.agents.some(x => x.team === t && !x.gone)) {   // a whole team left: the other team wins
+    for (const t of [0, 1]) if (G.agents.some(x => x.team === t) && !G.agents.some(x => x.team === t && !x.gone)) {   // a whole team left: the other team wins (a team that was empty from the start doesn't count)
       M.score[1 - t] = Math.max(M.score[1 - t], M.winTarget || M.score[1 - t] + 1); M.finish(); return;
     }
   },
@@ -17324,6 +17330,49 @@ function guestAct(P, a) {
 
 
 // scoreboard / loading card: rank badge for a multiplayer ranked match (empty otherwise)
+
+// ------------------------------------------------------------ RANKED: RR scales with lobby strength (multiplayer only)
+// Elo-style expected result from your visible rank against the average of everyone else in the match (humans use their
+// rank, or their hidden-MMR estimate while placing; bots use their mirrored rank). Beating a stronger lobby pays more and
+// costs less; a lobby far below you pays very little and costs more. Applied on top of the usual parts (round
+// differential, performance, hidden MMR). Even lobbies change nothing. Never active outside a multiplayer ranked match.
+const RRLobby = {
+  D: 10,                                   // rank gap (in divisions) for 10:1 odds. Gold 2 vs a Diamond 2 lobby (6) → 20% to win
+  WIN: [0.2, 1.75], LOSS: [0.4, 1.75],     // clamps for the win / loss multipliers
+  MMR: [0.5, 1.5],                         // the hidden-MMR outcome step is scaled more gently
+  test: null,                              // set by the RR test sheet to a lobby average
+  active() { return this.test != null || (Net.active && G.mode && G.mode.ranked && this.lobby() != null); },
+  lobby() {
+    if (this.test != null) return this.test;
+    const vs = []; for (const a of G.agents) { if (a === G.player || a.gone) continue; const v = a.netMs != null ? a.netMs : a.netRank; if (v != null && v >= 0) vs.push(v); }
+    return vs.length ? vs.reduce((x, y) => x + y, 0) / vs.length : null;
+  },
+  expect(me, lob) { return 1 / (1 + Math.pow(10, (lob - me) / this.D)); },
+  mult(me, lob, won) { const E = this.expect(me, lob); return won ? clamp(2 * (1 - E), this.WIN[0], this.WIN[1]) : clamp(2 * E, this.LOSS[0], this.LOSS[1]); },
+  mmrMult(mmr, won) { const lob = this.lobby(); return lob == null ? 1 : clamp(this.mult(mmr, lob, won), this.MMR[0], this.MMR[1]); },
+  // combat performance, Valorant-style: top frags and high combat scores earn more RR on a win and lose less on a loss;
+  // bottom frags the reverse. An average game (middle of the board, ACS ~200, K/D 1) adds nothing. Half weight at Eternal+.
+  PERF: { win: [4, 6], loss: [4, 5] },      // [most taken off for the worst game, most added for the best]
+  perfScore(perf) {
+    if (!perf) return 0;
+    const of = perf.of || 5, team = of > 1 ? 1 - 2 * ((perf.pos || 3) - 1) / (of - 1) : 0;
+    const lob = perf.lobbyPos ? 1 - 2 * (perf.lobbyPos - 1) / 9 : team;
+    const acs = perf.acs != null ? clamp((perf.acs - 200) / 100, -1, 1) : 0;
+    const kd = perf.kd ? clamp(Math.log2(Math.max(0.05, perf.kd)) / 1.5, -1, 1) : 0;
+    return clamp(0.35 * team + 0.25 * lob + 0.25 * acs + 0.15 * kd, -1, 1);
+  },
+  apply(parts, me, won, raw, perf) {
+    const lob = this.lobby(), m = this.mult(me, lob, won), z = this.perfScore(perf), w = Ladder.isLB(me) ? 0.5 : 1, P = won ? this.PERF.win : this.PERF.loss;
+    const pb = Math.round((z >= 0 ? P[1] * z : P[0] * z) * w);
+    parts.perfMP = pb; parts.perfZ = z; parts.perfLabel = perf && perf.lobbyPos ? '#' + perf.lobbyPos + ' of ' + (perf.lobbyN || 10) + ' in the lobby' + (perf.acs != null ? ' · ACS ' + Math.round(perf.acs) : '') : 'score ' + z.toFixed(2);
+    const v = raw * m + pb;
+    parts.lobbyAvg = lob; parts.lobbyMe = me; parts.lobbyM = m; parts.lobbyRaw = v;
+    parts.lobby = Math.round(raw * m) - Math.round(raw);
+    parts.cap = Math.round(parts.cap * Math.max(1, m));                     // a big upset can pass the usual cap
+    parts.minWin = m < 1 ? Math.max(1, Math.round(8 * m)) : 8;             // and a stomp of a weak lobby can pay under the usual 8
+    parts.minLoss = m > 1 ? Math.round(3 * m) : 3;
+  },
+};
 function mpRankChip(a, size) { if (!Net.active || !G.mode || !G.mode.ranked || a.netRank == null) return ''; return `<span class="mpsbrk" style="--rc:${Rank.col(a.netRank)}" title="${Rank.name(a.netRank)}">${Rank.emblem(a.netRank, size || 16)}</span>`; }
 
 // One-time cleanup: earlier multiplayer builds unlocked every skin, fully upgraded, in this browser. That exact
