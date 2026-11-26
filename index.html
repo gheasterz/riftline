@@ -1407,6 +1407,32 @@ img{max-width:100%}
 .mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 #mp .mpprac{border-left:3px solid var(--gold);padding:6px 10px;background:rgba(245,197,66,.07);color:#d8cfb8}#mp .mpprac b{color:var(--gold)}
+/* header tabs + leaderboard */
+.mptabs{display:flex;gap:2px;margin-left:22px;align-self:stretch;align-items:flex-end;margin-bottom:-15px}
+.mptabs.hidden{display:none}
+.mptabs button{background:none;border:0;border-bottom:2px solid transparent;color:#8aa0ad;font:800 17px var(--f-display);letter-spacing:2.5px;text-transform:uppercase;padding:8px 16px 11px;cursor:pointer;transition:color .15s,border-color .15s}
+.mptabs button:hover{color:var(--off)}.mptabs button.on{color:var(--off);border-bottom-color:var(--teal)}
+.mplb-h{display:flex;align-items:center;gap:16px;margin-bottom:14px;flex-wrap:wrap}
+.mplb-h small{flex:1;color:#7f95a3;font-size:13px}
+.mpseg{display:flex;background:rgba(10,18,24,.7);border:1px solid rgba(255,255,255,.08);padding:3px}
+.mpseg button{background:none;border:0;color:#8aa0ad;font:800 15px var(--f-display);letter-spacing:2px;text-transform:uppercase;padding:9px 18px;cursor:pointer}
+.mpseg button.on{background:rgba(63,208,200,.16);color:var(--off);box-shadow:inset 0 -2px 0 var(--teal)}
+#mp-lbme{margin-bottom:12px}
+.mplbme{display:flex;align-items:center;gap:16px;padding:12px 18px;background:linear-gradient(90deg,rgba(63,208,200,.13),rgba(16,27,35,.6));border-left:3px solid var(--teal)}
+.mplbme .pos{font:900 34px var(--f-display);color:var(--teal);min-width:70px}
+.mplbme b{font:800 20px var(--f-display);letter-spacing:1px;text-transform:uppercase}.mplbme small{display:block;color:#9aa8b3;font-size:13px}
+.mplbme.dim{background:rgba(10,18,24,.5);border-left-color:rgba(255,255,255,.15);color:#9aa8b3;font-size:15px}
+.mplb{background:rgba(10,18,24,.55);border:1px solid rgba(255,255,255,.07);max-height:min(62vh,640px);overflow-y:auto}
+.mplbr{display:grid;grid-template-columns:64px 40px minmax(0,1fr) minmax(120px,190px) 90px minmax(110px,170px);gap:12px;align-items:center;padding:7px 16px;border-bottom:1px solid rgba(255,255,255,.045);font-size:15px}
+.mplbr.hd{position:sticky;top:0;z-index:1;background:#121d25;color:#7f95a3;font:800 12px var(--f-display);letter-spacing:2px;text-transform:uppercase;padding:9px 16px}
+.mplbr .pos{font:900 19px var(--f-display);color:#8aa0ad}.mplbr .pos.p1{color:#f5c542}.mplbr .pos.p2{color:#d5dde3}.mplbr .pos.p3{color:#d9925b}
+.mplbr .bd{display:grid;place-items:center}.mplbr .bd svg{width:30px;height:30px}
+.mplbr .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mplbr .nm b{font-weight:700}.mplbr .nm small{color:#6f8593;margin-left:8px;font-size:12px}
+.mplbr .rk{font:800 15px var(--f-display);letter-spacing:.5px;text-transform:uppercase}
+.mplbr .rr{font:800 16px var(--f-display);text-align:right}.mplbr .pk{color:#8aa0ad;font-size:13px}
+.mplbr.me{background:rgba(63,208,200,.1);box-shadow:inset 3px 0 0 var(--teal)}
+.mplb-empty{padding:26px 18px;color:#8aa0ad;font-size:15px}
+@media(max-width:760px){.mplbr{grid-template-columns:44px 32px minmax(0,1fr) 70px}.mplbr .rk,.mplbr .pk{display:none}.mptabs{margin-left:8px}.mptabs button{padding:8px 10px 11px;font-size:14px}}
 /* lobby browser */
 .mpbrowse{margin-top:22px;background:linear-gradient(160deg,rgba(28,45,57,.75),rgba(16,27,35,.75));border:1px solid rgba(255,255,255,.08);padding:16px 18px 12px}
 .mpbr-h{display:flex;align-items:baseline;gap:14px;margin-bottom:10px}
@@ -1475,7 +1501,7 @@ img{max-width:100%}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
   <div class="mpwrap">
-    <div class="mphead"><div class="brand">Rift<span>line</span><em>Multiplayer</em></div><div class="sp"></div><button class="mpbtn ghost" id="mp-close">← Back to menu</button></div>
+    <div class="mphead"><div class="brand">Rift<span>line</span><em>Multiplayer</em></div><nav class="mptabs" id="mp-tabs"><button data-tab="play" class="on">Play</button><button data-tab="lb">Leaderboard</button></nav><div class="sp"></div><button class="mpbtn ghost" id="mp-close">← Back to menu</button></div>
     <section id="mp-home">
       <div class="mpacc" id="mp-acct"></div>
       <div class="mpcards">
@@ -1493,6 +1519,11 @@ img{max-width:100%}
         <p class="mpnote" id="mp-turnmsg"></p>
       </details>
       <p class="mperr" id="mp-err"></p>
+    </section>
+    <section id="mp-lb" class="hidden">
+      <div class="mplb-h"><div class="mpseg" id="mp-lbseg"><button data-lbm="rq" class="on">Quick Ranked</button><button data-lbm="rs">Standard Ranked</button></div><small id="mp-lbst"></small><button class="mpbtn sm ghost" id="mp-lbref">Refresh</button></div>
+      <div id="mp-lbme"></div>
+      <div class="mplb" id="mp-lblist"></div>
     </section>
     <section id="mp-room" class="hidden"><div id="mp-rtop"></div>
       <div id="mp-chat" class="mpchat hidden">
@@ -16123,11 +16154,11 @@ const Net = {
     // hovering a tile previews that agent's kit; leaving the grid shows your own again
     $('mp-room').addEventListener('mouseover', e => { const t = e.target.closest('.mpag'); if (!t || t.dataset.a === this._hov) return; this._hov = t.dataset.a; const me = this.me(); $('mp-agcard').innerHTML = this.agentCard(t.dataset.a, me && me.agent === t.dataset.a); });
     $('mp-room').addEventListener('mouseout', e => { if (!e.target.closest('.mpags') || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.mpags'))) return; this._hov = null; const me = this.me(), c = $('mp-agcard'); if (c && me) c.innerHTML = this.agentCard(me.agent, true); });
-    this.chatInit(); this.browseInit();
+    this.chatInit(); this.browseInit(); this.lbInit();
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
-  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); if (!this.role) this.browse(); },
+  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); if (!this.role) this.browse(); this.lbSubmit(); if (this.tab === 'lb') this.lbLoad(); },
   // re-send what may have changed outside the lobby (locker skins, imported save, DM loadout, Settings name)
   syncCard() {
     if (!this.role || !this.lobby) return; const c = this.myCard();
@@ -16215,6 +16246,7 @@ const Net = {
     if (this.tx) { if (this.role === 'host') this.tx.bcast({ e: 'bye' }); this.tx.close(); }
     this.tx = null; this.role = null; this.lobby = null; this.code = ''; this.peerIn = {}; this.chat = []; this.reqs = []; this.gcClose();
     if (this.active) this.endMatch();
+    this.lbSubmit();
     this.render(); this.browse();
   },
   lostLink(msg) {
@@ -16332,7 +16364,8 @@ const Net = {
   // ------------------------------------------------------------ lobby UI
   render() {
     const inRoom = !!this.role;
-    $('mp-home').classList.toggle('hidden', inRoom); $('mp-room').classList.toggle('hidden', !inRoom);
+    $('mp-home').classList.toggle('hidden', inRoom || this.tab === 'lb'); $('mp-room').classList.toggle('hidden', !inRoom);
+    $('mp-lb').classList.toggle('hidden', inRoom || this.tab !== 'lb'); $('mp-tabs').classList.toggle('hidden', inRoom);
     $('nav-mp').classList.toggle('live', inRoom);
     if (!inRoom) { this.renderHome(); return; }
     const L = this.lobby, host = this.role === 'host';
@@ -16564,7 +16597,7 @@ const Net = {
     } catch (e) { this._bg = null; }
   },
   restoreSettings() { if (this.saved) { Object.assign(Settings, this.saved); this.saved = null; Settings.save(); } },
-  endMatch() { this.active = false; this.info = null; this.pending = null; this.restoreSettings(); if (this.role === 'host' && this.lobby) { this.lobby.inGame = false; this.pushLobby(); } },
+  endMatch() { setTimeout(() => this.lbSubmit(), 1500); this.active = false; this.info = null; this.pending = null; this.restoreSettings(); if (this.role === 'host' && this.lobby) { this.lobby.inGame = false; this.pushLobby(); } },
   // quitToMenu: host mid-match ends it for everyone; a guest mid-match leaves the room (a bot takes their agent)
   onQuit() {
     if (!this.active) return;
@@ -17330,6 +17363,78 @@ function guestAct(P, a) {
 
 
 // scoreboard / loading card: rank badge for a multiplayer ranked match (empty otherwise)
+
+// ------------------------------------------------------------ GLOBAL LEADERBOARD (header tab: Play | Leaderboard)
+// Your current Quick Ranked and Standard Ranked ranks (imported saves included) are posted to the game server whenever the
+// Multiplayer screen opens or a match ends. A private random key in this browser proves the entry is yours; the board
+// shows only name, rank, RR, peak and level. Unranked modes (placements not finished) are left off.
+Object.assign(Net, {
+  tab: 'play', lbMode: 'rq',
+  lbKey() {
+    try {
+      let k = localStorage.getItem('rlmp.lbkey');
+      if (!k || !/^[A-Za-z0-9]{24,64}$/.test(k)) { const a = new Uint8Array(32), A = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789'; crypto.getRandomValues(a); k = [...a].map(b => A[b % A.length]).join(''); localStorage.setItem('rlmp.lbkey', k); }
+      return k;
+    } catch (e) { return null; }
+  },
+  lbPid() { try { return localStorage.getItem('rlmp.lbpid') || ''; } catch (e) { return ''; } },
+  lbPayload() {
+    const a = this.account(), pk = { rq: 0, rs: 0 };
+    try { const d = Profile.get(); for (const q of ['rq', 'rs']) if (d.ranks && d.ranks[q]) pk[q] = d.ranks[q].peak | 0; } catch (e) { }
+    return { name: this.cleanName(this.name()), lv: a.lv, rq: { i: a.rq.i, r: a.rq.r, k: Math.max(pk.rq, a.rq.i) }, rs: { i: a.rs.i, r: a.rs.r, k: Math.max(pk.rs, a.rs.i) } };
+  },
+  lbSubmit(force) {
+    if (!this.relay) return Promise.resolve();
+    const key = this.lbKey(); if (!key) return Promise.resolve();
+    const p = this.lbPayload(), sig = JSON.stringify(p);
+    if (!force && sig === this._lbSent && this.lbPid()) return Promise.resolve();
+    this._lbSent = sig;
+    return fetch('lb/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ key }, p)) })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? 'old' : 'http')))
+      .then(j => { if (j && j.pid) try { localStorage.setItem('rlmp.lbpid', j.pid); } catch (e) { } })
+      .catch(e => { this._lbSent = ''; if (e.message === 'old') this._lbOld = true; });
+  },
+  lbInit() {
+    $('mp-tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; Sfx.init(); Sfx.ui(); this.setTab(b.dataset.tab); });
+    $('mp-lbseg').addEventListener('click', e => { const b = e.target.closest('[data-lbm]'); if (!b || b.dataset.lbm === this.lbMode) return; Sfx.init(); Sfx.ui(); this.lbMode = b.dataset.lbm; this.lbLoad(); });
+    $('mp-lbref').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.lbSubmit(true).then(() => this.lbLoad()); });
+    setInterval(() => { if (this.tab === 'lb' && !this.role && !$('mp').classList.contains('hidden')) this.lbLoad(true); }, 30000);
+  },
+  setTab(t) {
+    this.tab = t === 'lb' ? 'lb' : 'play';
+    for (const b of document.querySelectorAll('#mp-tabs [data-tab]')) b.classList.toggle('on', b.dataset.tab === this.tab);
+    this.render();
+    if (this.tab === 'lb') this.lbSubmit().then(() => this.lbLoad()); else this.browse(true);
+  },
+  lbLoad(quiet) {
+    for (const b of document.querySelectorAll('#mp-lbseg [data-lbm]')) b.classList.toggle('on', b.dataset.lbm === this.lbMode);
+    if (!this.relay) { this.lbData = null; this.renderLb('p2p'); return; }
+    const mode = this.lbMode, seq = this._lbSeq = (this._lbSeq || 0) + 1;
+    if (!quiet) { $('mp-lbst').textContent = 'Loading…'; }
+    fetch('lb?mode=' + mode + '&me=' + encodeURIComponent(this.lbPid()), { cache: 'no-store' })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? 'old' : 'http')))
+      .then(j => { if (seq !== this._lbSeq) return; this.lbData = j; this.renderLb(); })
+      .catch(e => { if (seq !== this._lbSeq) return; this.lbData = null; this.renderLb(e.message === 'old' ? 'old' : 'err'); });
+  },
+  renderLb(state) {
+    const list = $('mp-lblist'), me = $('mp-lbme'), st = $('mp-lbst'), label = this.lbMode === 'rq' ? 'Quick Ranked' : 'Standard Ranked';
+    if (state) {
+      st.textContent = '';
+      me.innerHTML = '';
+      list.innerHTML = `<p class="mplb-empty">${state === 'p2p' ? 'The leaderboard needs the game server (server.js, e.g. on Render). Open the game from your server’s address to see it.'
+        : state === 'old' ? 'This game server is out of date: upload the new server.js and package.json to show the leaderboard.' : 'Couldn’t load the leaderboard. Try Refresh in a moment.'}</p>`;
+      return;
+    }
+    const j = this.lbData, mine = this.account()[this.lbMode];
+    st.textContent = `${label} · top ${Math.min(j.rows.length, 100)} of ${j.total} ranked player${j.total === 1 ? '' : 's'}` + (j.persistent ? '' : ' · temporary board (no database connected)');
+    const rr = e => `${e.r | 0} RR`;
+    if (j.me) me.innerHTML = `<div class="mplbme"><span class="pos">#${j.me.pos}</span>${this.badge(j.me.i, 40)}<div><b>${NetU.esc(j.me.n)}</b><small>${NetU.esc(Rank.name(j.me.i))} · ${rr(j.me)} · peak ${NetU.esc(Rank.name(j.me.k))}</small></div></div>`;
+    else me.innerHTML = `<div class="mplbme dim">${mine.i < 0 ? `You’re unranked in ${label}. Finish your placement matches and you’ll show up here.` : 'You’ll show up here in a moment. Press Refresh if you don’t.'}</div>`;
+    if (!j.rows.length) { list.innerHTML = `<p class="mplb-empty">Nobody is ranked in ${label} yet. Be the first.</p>`; return; }
+    list.innerHTML = `<div class="mplbr hd"><span>#</span><span></span><span>Player</span><span>Rank</span><span style="text-align:right">RR</span><span>Peak</span></div>` +
+      j.rows.map(e => `<div class="mplbr${e.me ? ' me' : ''}"><span class="pos${e.pos <= 3 ? ' p' + e.pos : ''}">${e.pos}</span><span class="bd">${this.badge(e.i, 30)}</span><span class="nm"><b>${NetU.esc(e.n)}</b><small>Lv ${e.lv | 0}</small></span><span class="rk" style="color:${Rank.col(e.i)}">${NetU.esc(Rank.name(e.i))}</span><span class="rr">${rr(e)}</span><span class="pk">${NetU.esc(Rank.name(e.k))}</span></div>`).join('');
+  },
+});
 
 // ------------------------------------------------------------ RANKED: RR scales with lobby strength (multiplayer only)
 // Elo-style expected result from your visible rank against the average of everyone else in the match (humans use their
