@@ -1,5 +1,5 @@
 <!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<title>English Flashcards</title>
+<title>Riftline · Multiplayer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;800;900&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap">
@@ -1407,6 +1407,31 @@ img{max-width:100%}
 .mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 #mp .mpprac{border-left:3px solid var(--gold);padding:6px 10px;background:rgba(245,197,66,.07);color:#d8cfb8}#mp .mpprac b{color:var(--gold)}
+/* account: cloud strip + dialogs */
+.mpcloud{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.mpcloud-u{display:flex;align-items:center;gap:8px;font:800 16px var(--f-display);letter-spacing:1px;margin-right:auto}
+.mpcloud-u i{width:9px;height:9px;border-radius:50%;background:#5fe0b5;box-shadow:0 0 8px #5fe0b5}
+.mpacc-sv .mpsvb{margin-top:10px}.mpacc-sv small .bad{color:var(--red)}
+#mp-modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;background:rgba(4,8,12,.72);backdrop-filter:blur(3px)}
+#mp-modal.on{display:grid}
+.mpm{position:relative;width:min(440px,calc(100vw - 32px));max-height:calc(100vh - 40px);overflow-y:auto;background:linear-gradient(160deg,#1c2d39,#111c24);border:1px solid rgba(255,255,255,.1);border-top:3px solid var(--teal);padding:24px 26px 20px;box-shadow:0 20px 60px rgba(0,0,0,.6)}
+.mpm h3{margin:0 0 6px;font:900 28px var(--f-display);letter-spacing:1.5px;text-transform:uppercase}
+.mpm p{color:#a9b6c0;font-size:14px;line-height:1.45;margin:0 0 14px}
+.mpm label{display:flex;flex-direction:column;gap:5px;margin-bottom:12px;font:700 12px var(--f-body);letter-spacing:1.2px;text-transform:uppercase;color:#9aa8b3}
+.mpm input{font:600 16px var(--f-body)!important;padding:9px 11px!important}
+.mpm .wide{width:100%;margin-top:4px}
+.mpm-x{position:absolute;top:8px;right:10px;background:none;border:0;color:#8aa0ad;font-size:26px;cursor:pointer;line-height:1}
+.mpm-links{display:flex;justify-content:space-between;margin-top:12px}.mpm-links button{background:none;border:0;color:var(--teal);font:600 13px var(--f-body);cursor:pointer;padding:0}
+.mpm-err{color:var(--red);font-size:14px;margin:10px 0 0!important;min-height:1em}
+.mpm-sec{border-top:1px solid rgba(255,255,255,.08);padding-top:12px;margin-top:12px}.mpm-sec>b{display:block;font:800 13px var(--f-display);letter-spacing:2px;text-transform:uppercase;color:#9aa8b3;margin-bottom:8px}.mpm-sec small{display:block;color:#8aa0ad;font-size:13px;margin-bottom:8px}
+.mpm-row{display:flex;justify-content:space-between;gap:10px;margin-top:16px}
+.mprec{display:flex;align-items:center;gap:10px;background:#0b141b;border:1px dashed rgba(63,208,200,.5);padding:12px 14px;margin-bottom:14px}.mprec code{flex:1;font:800 22px ui-monospace,monospace;letter-spacing:3px;color:var(--teal)}
+.mpcs{display:grid;grid-template-columns:1fr 1fr;gap:10px}.mpcs-c{background:rgba(10,18,24,.6);border:1px solid rgba(255,255,255,.08);padding:12px;display:flex;flex-direction:column;gap:4px}
+.mpcs-c em{font:800 15px var(--f-display);font-style:normal;letter-spacing:1.5px;text-transform:uppercase}.mpcs-c>small{color:#7f95a3;font-size:12px;margin-bottom:6px}
+.mpcl-row{display:flex;justify-content:space-between;gap:8px;font-size:13px;color:#a9b6c0}.mpcl-row b{color:var(--off);text-align:right}
+.mpcs-c .mpbtn{margin-top:auto;width:100%}.mpcs-c .mpbtn:first-of-type{margin-top:10px}
+.mplbme.dim{display:flex;align-items:center;justify-content:space-between;gap:12px}
+@media(max-width:520px){.mpcs{grid-template-columns:1fr}}
 /* header tabs + leaderboard */
 .mptabs{display:flex;gap:2px;margin-left:22px;align-self:stretch;align-items:flex-end;margin-bottom:-15px}
 .mptabs.hidden{display:none}
@@ -16137,7 +16162,7 @@ const Net = {
   init() {
     if (mpUndoFreeSkins()) setTimeout(() => { try { UI.toast('Skins reset to your earned ones · import a save to bring your progress', 'info'); } catch (e) { } }, 1500);
     this.installHooks();
-    fetch('rl-relay.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { this.relay = !!(j && j.relay); this.renderHome(); }).catch(() => { this.relay = false; this.renderHome(); });
+    fetch('rl-relay.json', { cache: 'no-store' }).then(r => r.ok ? r.json() : null).then(j => { this.relay = !!(j && j.relay); this.renderHome(); this.renderAccount(); Cloud.start(); }).catch(() => { this.relay = false; this.renderHome(); this.renderAccount(); });
     $('nav-mp').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.open(); });
     $('mp-close').addEventListener('click', () => { Sfx.ui(); this.close(); });
     this.renderAccount();
@@ -16154,11 +16179,11 @@ const Net = {
     // hovering a tile previews that agent's kit; leaving the grid shows your own again
     $('mp-room').addEventListener('mouseover', e => { const t = e.target.closest('.mpag'); if (!t || t.dataset.a === this._hov) return; this._hov = t.dataset.a; const me = this.me(); $('mp-agcard').innerHTML = this.agentCard(t.dataset.a, me && me.agent === t.dataset.a); });
     $('mp-room').addEventListener('mouseout', e => { if (!e.target.closest('.mpags') || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.mpags'))) return; this._hov = null; const me = this.me(), c = $('mp-agcard'); if (c && me) c.innerHTML = this.agentCard(me.agent, true); });
-    this.chatInit(); this.browseInit(); this.lbInit();
+    Cloud.init(); this.chatInit(); this.browseInit(); this.lbInit();
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
-  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); if (!this.role) this.browse(); this.lbSubmit(); if (this.tab === 'lb') this.lbLoad(); },
+  open() { $('mp').classList.remove('hidden'); this.syncCard(); this.render(); if (!this.role) this.browse(); if (Cloud._started) Cloud.reconcile(); else Cloud.start(); this.lbSubmit(); if (this.tab === 'lb') this.lbLoad(); },
   // re-send what may have changed outside the lobby (locker skins, imported save, DM loadout, Settings name)
   syncCard() {
     if (!this.role || !this.lobby) return; const c = this.myCard();
@@ -16176,7 +16201,9 @@ const Net = {
     el.innerHTML = `<div class="mpacc-id"><div class="mpacc-card" style="background:${card.bg || '#1c2d39'}"><img src="${Portraits.get(d.avatar) || Portraits.get(Settings.agent) || ''}" alt=""></div>
         <div class="mpacc-nm"><label>Player name<input id="mp-name" maxlength="16" value="${NetU.esc(this.cleanName(d.name || 'Player'))}" autocomplete="off" spellcheck="false"></label><small>Level ${d.level | 0} · ${st.matches | 0} matches · ${st.wins | 0} wins · same name as Settings</small></div></div>
       <div class="mpacc-rks">${rk('rq')}${rk('rs')}</div>
-      <div class="mpacc-sv"><div class="mprow wrap"><button class="mpbtn sm" id="mp-imp">Import save</button><button class="mpbtn sm ghost" id="mp-exp">Export save</button></div><small id="mp-savest">Bring your rank, stats and skins from another copy of Riftline: export there, import here.</small></div>`;
+      <div class="mpacc-sv">${this.cloudStrip()}<div class="mprow wrap mpsvb"><button class="mpbtn sm ghost" id="mp-imp">Import save</button><button class="mpbtn sm ghost" id="mp-exp">Export save</button></div><small id="mp-savest">${Cloud.on() ? 'An imported save becomes your cloud save.' : 'Bring your rank, stats and skins from another copy of Riftline: export there, import here.'}</small></div>`;
+    const sb = id => $(id) && ($(id).onclick = () => { Sfx.init(); Sfx.ui(); id === 'mp-acctb' ? this.acctDialog() : this.authDialog(id === 'mp-signup' ? 'signup' : 'login'); });
+    sb('mp-signin'); sb('mp-signup'); sb('mp-acctb');
     $('mp-imp').onclick = () => { Sfx.init(); Sfx.ui(); try { SaveImport.run($('mp-savest')); } catch (e) { $('mp-savest').textContent = 'Import is not available in this version'; } };
     $('mp-exp').onclick = () => { Sfx.init(); Sfx.ui(); try { SaveExport.run($('mp-savest')); } catch (e) { $('mp-savest').textContent = 'Export is not available in this version'; } };
     const ni = $('mp-name'); ni.addEventListener('change', () => { const n = this.cleanName(ni.value); ni.value = n; this.setName(n); if (this.role && this.lobby) this.rename(n); });
@@ -16597,7 +16624,7 @@ const Net = {
     } catch (e) { this._bg = null; }
   },
   restoreSettings() { if (this.saved) { Object.assign(Settings, this.saved); this.saved = null; Settings.save(); } },
-  endMatch() { setTimeout(() => this.lbSubmit(), 1500); this.active = false; this.info = null; this.pending = null; this.restoreSettings(); if (this.role === 'host' && this.lobby) { this.lobby.inGame = false; this.pushLobby(); } },
+  endMatch() { setTimeout(() => { this.lbSubmit(); if (Cloud.pendingFix) Cloud.reconcile(); else Cloud.tick(); }, 1500); this.active = false; this.info = null; this.pending = null; this.restoreSettings(); if (this.role === 'host' && this.lobby) { this.lobby.inGame = false; this.pushLobby(); } },
   // quitToMenu: host mid-match ends it for everyone; a guest mid-match leaves the room (a bot takes their agent)
   onQuit() {
     if (!this.active) return;
@@ -17364,6 +17391,181 @@ function guestAct(P, a) {
 
 // scoreboard / loading card: rank badge for a multiplayer ranked match (empty otherwise)
 
+// ------------------------------------------------------------ ACCOUNTS + CLOUD SAVE (multiplayer build, needs the game server)
+// Sign in with a username + password; your whole save (the same checksummed file Export save makes) lives in the account,
+// so any device you sign in on has your progress. Rules that keep old saves safe:
+//  • First sign-in (the account has no cloud save yet): this browser's save goes into the account.
+//  • Any other device: you get the account's save from the last time you were signed in, automatically.
+//  • Whatever that replaces on the device is kept as a backup you can restore from Account.
+//  • Import save keeps working: an imported save becomes the new cloud save.
+const Cloud = {
+  auth: null, meta: null, busy: false, pendingFix: false, lastAt: 0, err: '',
+  get(k) { try { return JSON.parse(localStorage.getItem(k) || 'null'); } catch (e) { return null; } },
+  set(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } },
+  on() { return !!(Net.relay && this.auth && this.auth.tok); },
+  hdr() { return this.auth ? { Authorization: 'Bearer ' + this.auth.tok } : {}; },
+  async api(path, method, body) {
+    const r = await fetch(path, { method: method || 'GET', cache: 'no-store', headers: Object.assign({ 'Content-Type': 'application/json' }, this.hdr()), body: body ? JSON.stringify(body) : undefined });
+    let j = null; try { j = await r.json(); } catch (e) { }
+    if (r.status === 401 && this.auth && !/^acct\/(login|signup|recover)$/.test(path)) { this.signedOut('You were signed out. Sign in again to keep syncing.'); }
+    if (!r.ok) { const e = new Error((j && j.err) || (r.status === 404 ? 'This game server is out of date: upload the new server.js' : 'Something went wrong')); e.status = r.status; e.body = j; throw e; }
+    return j || {};
+  },
+  init() {
+    this.auth = this.get('rlmp.auth');
+    setInterval(() => this.tick(), 20000);
+    window.addEventListener('beforeunload', () => { if (this.on() && !this.busy) this.tick(true); });
+  },
+  // called once the relay check is done, and whenever the Multiplayer screen opens
+  start() { if (this.on() && !this._started) { this._started = true; this.reconcile(); } },
+  // the cloud file: the same format and checksum as Export save, minus caches the game rebuilds on its own
+  CACHE: ['riftline.vistas'],
+  async local() {
+    const snap = SaveExport.snapshot(); for (const k of this.CACHE) delete snap.keys[k];
+    const prof = snap.keys['riftline.profile'] || {}, data = JSON.stringify(snap.keys);
+    const file = { format: SaveExport.FORMAT, version: SaveExport.VERSION, exportedAt: new Date().toISOString(), note: 'Riftline cloud save', summary: SaveExport.summary(prof), keys: Object.keys(snap.keys).length, sha256: await SaveExport.digest(data), data: snap.keys };
+    return { text: JSON.stringify(file), sha: file.sha256, sum: file.summary, prof };
+  },
+  fresh(prof) { return (prof.level | 0) <= 1 && !(prof.history || []).length && !Object.values(prof.ranks || {}).some(r => r && (r.placed | 0) > 0); },
+  inMatch() { return typeof G !== 'undefined' && G.running && G.mode && !G.mode.over; },
+  syncPt() { const s = this.get('rlmp.sync'); return s && this.auth && s.u === this.auth.name.toLowerCase() ? s : null; },
+  mark(at, sha) { this.set('rlmp.sync', { u: this.auth.name.toLowerCase(), at, sha }); this.lastAt = at; this.err = ''; Net.renderAccount(); },
+  backup(text, why) { try { localStorage.setItem('rlmp.backup', JSON.stringify({ at: Date.now(), why, text })); } catch (e) { } },
+  // the full decision: who is newer, did either side change since the last sync?
+  async reconcile() {
+    if (!this.on() || this.busy || SaveImport._locked) return;
+    if (this.inMatch()) { this.pendingFix = true; return; }
+    this.busy = true; this.pendingFix = false;
+    try {
+      const me = await this.api('acct/me'); this.meta = me; this.auth.pid = me.pid; this.set('rlmp.auth', this.auth);
+      const srv = me.save, loc = await this.local(), sp = this.syncPt();
+      if (!srv) await this.upload(loc, 0, true);                                   // first sign-in: this browser's save goes into the account
+      else if (srv.sha === loc.sha) this.mark(srv.at, srv.sha);                   // already the same
+      else if (sp && sp.at === srv.at) await this.upload(loc, srv.at);            // only this device changed since it last synced (played, imported)
+      else await this.pull(loc);                                                  // otherwise the account's last save wins (device copy kept as a backup)
+    } catch (e) { this.err = e.message; Net.renderAccount(); }
+    this.busy = false;
+  },
+  async upload(loc, base, force) {
+    try { const r = await this.api('acct/save', 'PUT', { data: loc.text, base, force: !!force }); this.mark(r.at, r.sha); }
+    catch (e) { if (e.status === 409) { this.busy = false; this.pendingFix = true; return this.reconcile(); } throw e; }
+  },
+  async pull(loc) {
+    const s = await this.api('acct/save'); if (!s.data) return;
+    const chk = await SaveImport.check(s.data); if (!chk.ok) throw new Error('The cloud save couldn’t be loaded: ' + chk.reason);
+    if (loc && !this.fresh(loc.prof)) this.backup(loc.text, 'device');            // keep what this device had
+    this.mark(s.at, s.sha);
+    const r = SaveImport.apply(chk.file); if (!r.ok) throw new Error(r.reason);
+    try { UI.toast('Loaded your cloud save', 'info'); } catch (e) { }
+    setTimeout(() => location.reload(), 600);
+  },
+  // light background sync: push this device's changes; a conflict waits until you're out of a match
+  async tick(unloading) {
+    if (!this.on() || this.busy || SaveImport._locked) return;
+    if (this.pendingFix) { if (!this.inMatch() && !unloading) this.reconcile(); return; }
+    const sp = this.syncPt(); if (!sp) return;
+    this.busy = true;
+    try { const loc = await this.local(); if (loc.sha !== sp.sha) await this.upload(loc, sp.at); }
+    catch (e) { this.err = e.message; }
+    this.busy = false;
+  },
+  signedOut(msg) { this.auth = null; this.meta = null; this._started = false; this.set('rlmp.auth', null); Net.renderAccount(); if (msg) try { UI.toast(msg, 'enemy'); } catch (e) { } if (Net.tab === 'lb') Net.lbLoad(); },
+  async signIn(kind, f) {
+    const r = await this.api('acct/' + kind, 'POST', f);
+    this.auth = { tok: r.token, name: r.user.name, pid: r.pid }; this.set('rlmp.auth', this.auth);
+    // a different account than this device last synced with: start fresh, never treat its sync point as ours
+    const sp = this.get('rlmp.sync'); if (sp && sp.u !== r.user.name.toLowerCase()) this.set('rlmp.sync', null);
+    this._started = true; Net.renderAccount();
+    return r;
+  },
+  async signOutNow() { try { await this.tick(); await this.api('acct/logout', 'POST'); } catch (e) { } this.signedOut(); try { UI.toast('Signed out. Your progress stays on this device.', 'info'); } catch (e) { } },
+  async restoreBackup() {
+    const b = this.get('rlmp.backup'); if (!b || !b.text) return;
+    const chk = await SaveImport.check(b.text); if (!chk.ok) { Net.modalMsg('That backup can’t be restored: ' + chk.reason); return; }
+    const cur = await this.local(); this.backup(cur.text, 'device');
+    const r = SaveImport.apply(chk.file); if (!r.ok) { Net.modalMsg(r.reason); return; }
+    try { UI.toast('Backup restored · it becomes your cloud save', 'info'); } catch (e) { }
+    setTimeout(() => location.reload(), 600);
+  },
+  ago(t) { if (!t) return ''; const s = Math.max(0, (Date.now() - t) / 1000); return s < 50 ? 'just now' : s < 3600 ? Math.round(s / 60) + ' min ago' : s < 86400 ? Math.round(s / 3600) + ' h ago' : Math.round(s / 86400) + ' d ago'; },
+  // both sides changed: show what each holds and let the player pick
+  async choose(loc) {
+    let cloud = null; try { const s = await this.api('acct/save'); cloud = s.data ? JSON.parse(s.data) : null; } catch (e) { }
+    if (!cloud) return this.upload(loc, 0, true);
+    const S = (sum, prof) => { const rows = [['Level', sum.level], ['Matches', sum.matches], ['Quick Ranked', sum.rank_rq], ['Standard Ranked', sum.rank_rs], ['Skins owned', sum.skinsOwned]]; return rows.filter(r => r[1] != null).map(r => `<div class="mpcl-row"><span>${r[0]}</span><b>${NetU.esc(r[1])}</b></div>`).join(''); };
+    Net.modal(`<h3>Which save do you want?</h3><p>Your account’s cloud save and this device’s save are different. The one you don’t pick is kept as a backup (Account → Restore backup).</p>
+      <div class="mpcs"><div class="mpcs-c"><em>Cloud save</em><small>Saved ${NetU.esc(this.ago(this.meta && this.meta.save && this.meta.save.at))}</small>${S(cloud.summary || {})}<button class="mpbtn on" data-cl="cloud">Use cloud save</button></div>
+      <div class="mpcs-c"><em>This device</em><small>Now</small>${S(loc.sum)}<button class="mpbtn" data-cl="device">Keep this device’s save</button></div></div>`, async b => {
+      if (b === 'cloud') { Net.modalClose(); this.busy = true; try { await this.pull(loc); } catch (e) { this.err = e.message; } this.busy = false; }
+      if (b === 'device') { Net.modalClose(); this.busy = true; try { this.backup(JSON.stringify(cloud), 'cloud'); await this.upload(loc, 0, true); try { UI.toast('This device’s save is now your cloud save', 'info'); } catch (e) { } } catch (e) { this.err = e.message; } this.busy = false; }
+    }, true);
+  },
+};
+
+// ---- the sign-in / account dialogs
+Object.assign(Net, {
+  modal(html, onBtn, locked) {
+    let M = $('mp-modal');
+    if (!M) { M = document.createElement('div'); M.id = 'mp-modal'; $('mp').appendChild(M); M.addEventListener('click', e => { if (e.target === M && !this._modalLocked) this.modalClose(); const b = e.target.closest('[data-cl]'); if (b && this._modalCb) this._modalCb(b.dataset.cl, b); }); M.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.tagName === 'INPUT') { const b = M.querySelector('[data-cl].on'); if (b) { e.preventDefault(); b.click(); } } }); }
+    this._modalCb = onBtn; this._modalLocked = !!locked;
+    M.innerHTML = `<div class="mpm">${locked ? '' : '<button class="mpm-x" data-cl="x" aria-label="Close">×</button>'}${html}<p class="mpm-err" id="mpm-err"></p></div>`; M.classList.add('on');
+    const i = M.querySelector('input'); if (i) setTimeout(() => { if (!M.contains(document.activeElement)) i.focus(); }, 30);
+  },
+  modalClose() { const M = $('mp-modal'); if (M) { M.classList.remove('on'); M.innerHTML = ''; } this._modalCb = null; },
+  modalMsg(t) { const e = $('mpm-err'); if (e) e.textContent = t; },
+  val(id) { const e = $(id); return e ? e.value : ''; },
+  async modalDo(btn, fn) { if (btn) { btn.disabled = true; btn.dataset.t = btn.textContent; btn.textContent = 'Working…'; } this.modalMsg(''); try { await fn(); } catch (e) { this.modalMsg(e.message); } if (btn && btn.isConnected) { btn.disabled = false; btn.textContent = btn.dataset.t; } },
+  authDialog(kind) {
+    kind = kind || 'login';
+    const f = (id, label, type, ac) => `<label>${label}<input id="${id}" type="${type || 'text'}" maxlength="${type === 'password' ? 128 : 16}" autocomplete="${ac || 'off'}" spellcheck="false"></label>`;
+    const T = {
+      login: `<h3>Sign in</h3><p>You’ll get your account’s save from the last time you were signed in. This device’s current progress is kept as a backup.</p>${f('mpa-u', 'Username', 'text', 'username')}${f('mpa-p', 'Password', 'password', 'current-password')}<button class="mpbtn on wide" data-cl="go">Sign in</button><div class="mpm-links"><button data-cl="signup">Create an account</button><button data-cl="recover">Forgot password?</button></div>`,
+      signup: `<h3>Create an account</h3><p>This browser’s progress (level, ranks, stats, skins) goes into your new account, and you’ll show on the leaderboard under this username. Nothing is reset.</p>${f('mpa-u', 'Username (3–16 letters, numbers or _)', 'text', 'username')}${f('mpa-p', 'Password (6+ characters)', 'password', 'new-password')}${f('mpa-p2', 'Confirm password', 'password', 'new-password')}<button class="mpbtn on wide" data-cl="go">Create account</button><div class="mpm-links"><button data-cl="login">I already have an account</button></div>`,
+      recover: `<h3>Reset your password</h3><p>Use the recovery code you were shown when you made the account.</p>${f('mpa-u', 'Username', 'text', 'username')}<label>Recovery code<input id="mpa-c" maxlength="20" autocomplete="off" spellcheck="false" placeholder="XXXX-XXXX-XXXX"></label>${f('mpa-p', 'New password (6+ characters)', 'password', 'new-password')}<button class="mpbtn on wide" data-cl="go">Reset password</button><div class="mpm-links"><button data-cl="login">Back to sign in</button></div>`,
+    };
+    this.modal(T[kind], (b, el) => {
+      if (b === 'x') return this.modalClose();
+      if (b === 'login' || b === 'signup' || b === 'recover') return this.authDialog(b);
+      if (b !== 'go') return;
+      this.modalDo(el, async () => {
+        const user = this.val('mpa-u').trim(), pass = this.val('mpa-p');
+        if (kind === 'signup' && pass !== this.val('mpa-p2')) throw new Error('The passwords don’t match');
+        const r = await Cloud.signIn(kind, kind === 'recover' ? { user, pass, code: this.val('mpa-c') } : { user, pass });
+        if (r.recovery) this.showRecovery(r.recovery, kind === 'recover');
+        else { this.modalClose(); try { UI.toast('Signed in as ' + r.user.name, 'info'); } catch (e) { } Cloud.reconcile(); }
+        if (r.recovery && kind === 'signup') Cloud.reconcile();
+        this.lbSubmit(true); if (this.tab === 'lb') this.lbLoad();
+      });
+    });
+  },
+  showRecovery(code, reset) {
+    this.modal(`<h3>${reset ? 'Password reset' : 'Account created'}</h3><p>Save this <b>recovery code</b> somewhere safe. It’s the only way back in if you forget your password, and it won’t be shown again.</p>
+      <div class="mprec"><code>${NetU.esc(code)}</code><button class="mpbtn sm" data-cl="copy">Copy</button></div><button class="mpbtn on wide" data-cl="done">I’ve saved it</button>`, (b, el) => {
+      if (b === 'copy') { try { navigator.clipboard.writeText(code); el.textContent = 'Copied'; } catch (e) { } }
+      if (b === 'done') { this.modalClose(); try { UI.toast('Signed in · your progress is saved to the cloud', 'info'); } catch (e) { } Cloud.reconcile(); }
+    }, true);
+  },
+  acctDialog() {
+    const bk = Cloud.get('rlmp.backup'), m = Cloud.meta && Cloud.meta.save;
+    this.modal(`<h3>${NetU.esc(Cloud.auth.name)}</h3><p>Cloud save: ${m ? 'saved ' + NetU.esc(Cloud.ago(m.at)) + ' · ' + Math.max(1, Math.round(m.size / 1024)) + ' KB' : 'not uploaded yet'}. It syncs on its own while you play.</p>
+      <div class="mpm-sec"><b>Change password</b>${'<label>Current password<input id="mpa-o" type="password" maxlength="128" autocomplete="current-password"></label><label>New password<input id="mpa-n" type="password" maxlength="128" autocomplete="new-password"></label>'}<button class="mpbtn sm" data-cl="pw">Change password</button></div>
+      ${bk && bk.text ? `<div class="mpm-sec"><b>Backup</b><small>${bk.why === 'cloud' ? 'The cloud save you replaced' : 'This device’s save before the cloud one loaded'}, from ${NetU.esc(Cloud.ago(bk.at))}.</small><button class="mpbtn sm ghost" data-cl="restore">Restore backup</button></div>` : ''}
+      <div class="mpm-row"><button class="mpbtn ghost" data-cl="out">Sign out</button><button class="mpbtn on" data-cl="x">Done</button></div>`, (b, el) => {
+      if (b === 'x') return this.modalClose();
+      if (b === 'out') { this.modalClose(); return Cloud.signOutNow(); }
+      if (b === 'pw') return this.modalDo(el, async () => { await Cloud.api('acct/password', 'POST', { old: this.val('mpa-o'), pass: this.val('mpa-n') }); this.modalMsg(''); el.textContent = 'Password changed'; });
+      if (b === 'restore') return this.modal(`<h3>Restore the backup?</h3><p>Your current progress is swapped with the backup (so you can switch back the same way), and the backup becomes your cloud save.</p><div class="mpm-row"><button class="mpbtn ghost" data-cl="x">Cancel</button><button class="mpbtn on" data-cl="yes">Restore</button></div>`, b2 => { if (b2 === 'x') this.modalClose(); if (b2 === 'yes') { this.modalClose(); Cloud.restoreBackup(); } });
+    });
+  },
+  // the cloud strip inside the account card
+  cloudStrip() {
+    if (!this.relay) return `<small>Accounts and cloud saves need the game server. On this page, use Import / Export to move progress.</small>`;
+    if (!Cloud.on()) return `<div class="mpcloud off"><button class="mpbtn sm on" id="mp-signin">Sign in</button><button class="mpbtn sm ghost" id="mp-signup">Create account</button></div><small>Sign in to keep your progress on every device and appear on the leaderboard. Your current save carries over.</small>`;
+    const sp = Cloud.syncPt(), st = Cloud.err ? `<span class="bad">${NetU.esc(Cloud.err)}</span>` : Cloud.pendingFix ? 'Sync waits until the match ends' : sp ? 'Saved to the cloud ' + Cloud.ago(sp.at) : 'Syncing…';
+    return `<div class="mpcloud"><span class="mpcloud-u"><i></i>${NetU.esc(Cloud.auth.name)}</span><button class="mpbtn sm ghost" id="mp-acctb">Account</button></div><small>${st}</small>`;
+  },
+});
+
 // ------------------------------------------------------------ GLOBAL LEADERBOARD (header tab: Play | Leaderboard)
 // Your current Quick Ranked and Standard Ranked ranks (imported saves included) are posted to the game server whenever the
 // Multiplayer screen opens or a match ends. A private random key in this browser proves the entry is yours; the board
@@ -17377,22 +17579,19 @@ Object.assign(Net, {
       return k;
     } catch (e) { return null; }
   },
-  lbPid() { try { return localStorage.getItem('rlmp.lbpid') || ''; } catch (e) { return ''; } },
+  lbPid() { return Cloud.auth && Cloud.auth.pid || ''; },
   lbPayload() {
     const a = this.account(), pk = { rq: 0, rs: 0 };
     try { const d = Profile.get(); for (const q of ['rq', 'rs']) if (d.ranks && d.ranks[q]) pk[q] = d.ranks[q].peak | 0; } catch (e) { }
     return { name: this.cleanName(this.name()), lv: a.lv, rq: { i: a.rq.i, r: a.rq.r, k: Math.max(pk.rq, a.rq.i) }, rs: { i: a.rs.i, r: a.rs.r, k: Math.max(pk.rs, a.rs.i) } };
   },
   lbSubmit(force) {
-    if (!this.relay) return Promise.resolve();
-    const key = this.lbKey(); if (!key) return Promise.resolve();
-    const p = this.lbPayload(), sig = JSON.stringify(p);
-    if (!force && sig === this._lbSent && this.lbPid()) return Promise.resolve();
+    if (!Cloud.on()) return Promise.resolve();
+    const p = this.lbPayload(), sig = Cloud.auth.name + JSON.stringify(p);
+    if (!force && sig === this._lbSent) return Promise.resolve();
     this._lbSent = sig;
-    return fetch('lb/submit', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(Object.assign({ key }, p)) })
-      .then(r => r.ok ? r.json() : Promise.reject(new Error(r.status === 404 ? 'old' : 'http')))
-      .then(j => { if (j && j.pid) try { localStorage.setItem('rlmp.lbpid', j.pid); } catch (e) { } })
-      .catch(e => { this._lbSent = ''; if (e.message === 'old') this._lbOld = true; });
+    return fetch('lb/submit', { method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json' }, Cloud.hdr()), body: JSON.stringify(p) })
+      .then(r => r.ok ? r.json() : Promise.reject(new Error('http'))).catch(() => { this._lbSent = ''; });
   },
   lbInit() {
     $('mp-tabs').addEventListener('click', e => { const b = e.target.closest('[data-tab]'); if (!b) return; Sfx.init(); Sfx.ui(); this.setTab(b.dataset.tab); });
@@ -17429,6 +17628,7 @@ Object.assign(Net, {
     st.textContent = `${label} · top ${Math.min(j.rows.length, 100)} of ${j.total} ranked player${j.total === 1 ? '' : 's'}` + (j.persistent ? '' : ' · temporary board (no database connected)');
     const rr = e => `${e.r | 0} RR`;
     if (j.me) me.innerHTML = `<div class="mplbme"><span class="pos">#${j.me.pos}</span>${this.badge(j.me.i, 40)}<div><b>${NetU.esc(j.me.n)}</b><small>${NetU.esc(Rank.name(j.me.i))} · ${rr(j.me)} · peak ${NetU.esc(Rank.name(j.me.k))}</small></div></div>`;
+    else if (!Cloud.on()) { me.innerHTML = `<div class="mplbme dim"><span>Sign in to appear on the leaderboard. Your current ranks count.</span><button class="mpbtn sm on" id="mp-lbsign">Sign in</button></div>`; $('mp-lbsign').onclick = () => { Sfx.init(); Sfx.ui(); this.authDialog('login'); }; }
     else me.innerHTML = `<div class="mplbme dim">${mine.i < 0 ? `You’re unranked in ${label}. Finish your placement matches and you’ll show up here.` : 'You’ll show up here in a moment. Press Refresh if you don’t.'}</div>`;
     if (!j.rows.length) { list.innerHTML = `<p class="mplb-empty">Nobody is ranked in ${label} yet. Be the first.</p>`; return; }
     list.innerHTML = `<div class="mplbr hd"><span>#</span><span></span><span>Player</span><span>Rank</span><span style="text-align:right">RR</span><span>Peak</span></div>` +
