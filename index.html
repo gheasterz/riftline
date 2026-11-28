@@ -7843,13 +7843,16 @@ class Agent {
   hasCharge() { return !!this.weapons.charge; }
   has(st) { return this.st[st + 'U'] > G.time; }
   applyStatus(kind, dur, mag) {
-    const s = this.st, until = G.time + dur;
+    const s = this.st, until = G.time + dur, fresh = !((s[kind + 'U'] || 0) > G.time);
     if (s.immuneU > G.time && kind !== 'speed' && kind !== 'rof' && kind !== 'reload' && kind !== 'phase' && kind !== 'invis') return;   // Evolve
-    if (kind === 'slow') { s.slowU = Math.max(s.slowU, until); s.slowM = Math.min(mag || 0.5, s.slowU > G.time ? s.slowM : 1); }
+    // v37: an expired slow no longer leaks its magnitude into the next one (the old min() read slowU after it was refreshed)
+    if (kind === 'slow') { s.slowM = fresh ? (mag || 0.5) : Math.min(mag || 0.5, s.slowM); s.slowU = Math.max(s.slowU, until); }
     else if (kind === 'speed') { s.speedU = until; s.speedM = mag || 1.2; }
     else if (kind === 'rof') { s.rofU = until; s.rofM = mag || 1.1; }
     else s[kind + 'U'] = Math.max(s[kind + 'U'] || 0, until);
     if (kind === 'daze' || kind === 'detain') { this.ads = false; const w = this.weapon(); if (w) w.scope = 0; }
+    // v37: the hit lands with a jolt — on a fresh daze, or a fresh slow (zones re-apply slow every tick; that must not rattle the view)
+    if (kind === 'daze' || (kind === 'slow' && fresh)) { if (this === G.viewer) CamShake.kick(kind === 'daze' ? (fresh ? 1 : 0.5) : 0.35, kind === 'daze' ? 0.45 : 0.25); CONCUSS.stats[kind === 'daze' ? 'applied' : 'slowed']++; }
   }
   clearStatus() { const s = this.st; s.slowU = s.dazeU = s.vulnU = s.suppU = s.detainU = s.speedU = s.rofU = s.phaseU = s.invisU = s.nearU = s.reloadU = s.jamU = s.immuneU = s.cocoonU = 0; this.shieldHit = false; this.dtU = 0; this.regenU = 0; this.lifeU = 0; if (this.duel) { const o = this.duel.with; if (o && o.duel && o.duel.with === this) o.duel = null; this.duel = null; } s.slowM = 1; this.decay = 0; this.healPool = 0; this.flashT = 0; this.ohPool = 0; this.empressU = 0; if (this.hp > 100) this.hp = 100; }
   spawn(p, yaw) {
@@ -7873,6 +7876,7 @@ class Agent {
   speedMul() {
     const s = this.st, t = G.time; let m = 1;
     if (s.slowU > t) m *= s.slowM; if (s.speedU > t) m *= s.speedM; if (s.detainU > t) m *= 0.3;
+    if (s.dazeU > t) m *= CONCUSS.move;   // v37: concussed players are badly slowed
     return m;
   }
   // ---- per-frame movement
@@ -8098,7 +8102,11 @@ function shotDir(ag, w, extraSpread, out) {
   const r = Math.sqrt(Math.random()) * e, th = Math.random() * TAU;
   return dirFromAngles(yaw + Math.cos(th) * r, pitch + Math.sin(th) * r, out);
 }
-function fireRateMul(ag) { let m = 1; if (ag.stimT > G.time) m *= 1.15; if (ag.st.rofU > G.time) m *= ag.st.rofM; return m; }
+// v37 concuss rules (Riftline's daze), after Valorant's Concuss: badly slowed, slower fire, no ADS / scope, drifting view
+const CONCUSS = { move: 0.6, rof: 0.72, stats: { applied: 0, slowed: 0, adsBlocked: 0 } };
+// a short decaying screen jolt (concuss / slow hits, big blasts) — read by updateView, never touches game state
+const CamShake = { amp: 0, t0: 0, dur: 0.01, kick(a, d) { const now = G.time, cur = this.now(); if (a >= cur) { this.amp = a; this.t0 = now; this.dur = d; } }, now() { const u = (G.time - this.t0) / this.dur; return u >= 1 || u < 0 ? 0 : this.amp * (1 - u) * (1 - u); } };
+function fireRateMul(ag) { let m = 1; if (ag.stimT > G.time) m *= 1.15; if (ag.st.rofU > G.time) m *= ag.st.rofM; if (ag.st.dazeU > G.time) m *= CONCUSS.rof; return m; }
 
 // ---------- per-frame weapon logic (input -> actions)
 function updateWeapon(ag, dt) {
@@ -8114,8 +8122,9 @@ function updateWeapon(ag, dt) {
   }
   const blocked = ag.railstorm || (ag.drone && ag.drone.ctrl) || ag.planting > 0 || ag.defusing > 0 || ag.st.detainU > G.time || ag.st.phaseU > G.time || (ag.st.jamU > G.time && ag.slot === 'primary');
   if (blocked) { if (!(ag.drone && ag.drone.ctrl)) inp.fireP = false; inp.altP = false; ag.ads = false; return; }   // a piloted drone consumes the click itself (Possess.tick)
-  if (def.alt === 'zoom') ag.ads = inp.alt && !ag.reloading();
-  else if (def.alt === 'scope') { if (inp.altP && !ag.reloading()) { w.scope = (w.scope + 1) % (def.zooms.length + 1); if (ag.isHuman) Sfx.ui(); } ag.ads = w.scope > 0; }
+  const dazed = ag.st.dazeU > G.time; if (dazed && (inp.alt || inp.altP) && def.alt) CONCUSS.stats.adsBlocked++;
+  if (def.alt === 'zoom') ag.ads = inp.alt && !ag.reloading() && !dazed;   // v37: no ADS while concussed
+  else if (def.alt === 'scope') { if (dazed) w.scope = 0; if (inp.altP && !ag.reloading() && !dazed) { w.scope = (w.scope + 1) % (def.zooms.length + 1); if (ag.isHuman) Sfx.ui(); } ag.ads = w.scope > 0; }
   else ag.ads = false;
   if (ag.reloading() && w.scope) { w.scope = 0; ag.ads = false; }
   if (inp.reload && def.mag && w.mag < def.mag && (w.reserve > 0 || G.mode.infiniteAmmo) && !ag.reloading() && !def.ult) startReload(ag);
@@ -8387,6 +8396,64 @@ const CombatLog = {
   // serializable form (uids + names) for debugging / replication
   toJSON() { return { round: this.round, hits: this.hits.map(h => Object.assign({}, h, { att: h.att ? h.att.name : null, vic: h.vic.name })), kills: this.kills.map(k => ({ t: k.t, vic: k.vic.name, att: k.att ? k.att.name : null, src: k.src, part: k.part, assists: k.assists.map(a => a.name) })) }; },
 };
+// ============================================================ v37 BALLISTICS: one table for how far thrown utility flies
+// Every thrown ability goes through Abil.launch → Abil.proj → the projectile step in Abil.update, and the held-ability
+// preview simulates the same code. Before v37 a full overhand throw of the standard 16 m/s grenade (gravity 14) carried only
+// ~22 m on flat ground, and an 18 m/s smoke ~27 m: Valorant's throwables reach well past that. This module owns the numbers:
+//   · RANGE  the design range of a full overhand throw on flat ground from eye height (best angle), for the reference
+//            grenade (16 m/s legacy). Thrown speeds scale by one factor, so each ability keeps its relative feel
+//            (a 20 m/s smoke still out-throws a 16 m/s frag, an underhand lob is still half speed).
+//   · shot projectiles (bolts, arrows, darts: legacy speed > 22 m/s) and floaty ones (gravity < LOB_G: flashes, orbs that
+//            pop on a fuse in mid-air) are left as authored — their reach is set by the fuse, not by the arc.
+//   · aimed throws (bots, targeted casts) are solved with the gravity the projectile will really fly with, and capped at
+//            what the arm can do, so a throw past its range falls short instead of teleporting there.
+//   · flight: sub-stepped so fast bolts cannot skip a wall at low frame rates; ceilings and lintels are solid; bounces lose
+//            REST of their speed off walls and FLOOR_REST / FLOOR_FRIC off the ground.
+const Ballistics = {
+  RANGE: 34, REF: 16, H0: 1.6, UP: 1.5, MAX_SHOT: 22, LOB_G: 8,
+  WALL_REST: 0.5, FLOOR_REST: 0.42, FLOOR_FRIC: 0.68, STEP: 0.5,
+  stats: { aimed: 0, capped: 0, substeps: 0, ceilings: 0 },
+  // furthest landing point of a throw at speed s, gravity g, from height h0 with the launch's upward boost
+  maxRange(s, g, h0 = this.H0, up = this.UP) {
+    let best = 0;
+    for (let a = 5; a <= 70; a += 0.5) { const th = a * DEG, vx = s * Math.cos(th), vy = s * Math.sin(th) + up, t = (vy + Math.sqrt(vy * vy + 2 * g * h0)) / g; best = Math.max(best, vx * t); }
+    return best;
+  },
+  // speed that gives `range` metres at gravity g (bisection on maxRange)
+  speedFor(range, g) { let lo = 1, hi = 80; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; if (this.maxRange(m, g) < range) lo = m; else hi = m; } return (lo + hi) / 2; },
+  _k: {},
+  factor(g) { const key = Math.round(g * 10); if (this._k[key] == null) this._k[key] = this.speedFor(this.RANGE, g) / this.REF; return this._k[key]; },
+  // the speed a thrown ability really leaves the hand at
+  speed(legacy, g) { if (!(g >= this.LOB_G) || legacy > this.MAX_SHOT) return legacy; return legacy * this.factor(g); },
+  // velocity whose throw comes to rest on `target` with gravity g, no faster than the arm allows (s).
+  //  · it aims at the floor under the target (bodies are aimed at their feet): utility goes off where it lands
+  //  · a natural lob: flight time grows with distance (≈0.7 s at 6 m, ≈1.6 s at 20 m), never a flat line drive that sails
+  //    past the target and skids on — the pre-v37 solver flew at full speed and landed 4–9 m long at short range
+  //  · `bounces` floor hops are subtracted: the first contact is placed short so the hop finishes on the target
+  //  · past the arm's reach it takes the minimum-speed arc and caps it, so the throw falls short instead of teleporting
+  aim(o, target, s, g, bounces = 0) {
+    if (!(g >= this.LOB_G)) {   // floaty / fused (flashes): fly straight at the point itself, it pops in the air
+      const dx = target.x - o.x, dy = (target.y || 0) - o.y, dz = target.z - o.z, T = Math.max(0.05, Math.hypot(dx, dy, dz) / s), v = new V3(dx / T, (dy + 0.5 * (g || 0) * T * T) / T, dz / T);
+      this.stats.aimed++; return v;
+    }
+    const [tcx, tcz] = World.cellOf(target.x, target.z), floor = World.isWalkCell(tcx, tcz) || !(target.y > 0.3);
+    const ty = floor ? 0.05 : target.y, dx = target.x - o.x, dz = target.z - o.z, dist = Math.hypot(dx, dz) || 0.001, ux = dx / dist, uz = dz / dist, dy = ty - o.y;
+    const solve = d => {
+      let T = clamp(0.35 + d / (s * 0.75), 0.3, 2.8), vh = d / T, vy = (dy + 0.5 * g * T * T) / T;
+      if (Math.hypot(vh, vy) > s) { let best = null; for (let t = 0.3; t <= 3.2; t += 0.05) { const h = d / t, y = (dy + 0.5 * g * t * t) / t, m = Math.hypot(h, y); if (!best || m < best.m) best = { m, t, h, y }; } T = best.t; vh = best.h; vy = best.y; }
+      return { vh, vy, T };
+    };
+    let d = dist, r = solve(d);
+    for (let it = 0; it < 4 && bounces > 0; it++) {   // floor hop: vy·REST up, vh·FRIC on; ends at the next contact
+      const vyI = Math.abs(r.vy - g * r.T); if (vyI < 2) break;
+      const extra = r.vh * this.FLOOR_FRIC * 2 * vyI * this.FLOOR_REST / g; d = Math.max(Math.min(1, dist), dist - extra); r = solve(d);
+    }
+    const v = new V3(ux * r.vh, r.vy, uz * r.vh); this.stats.aimed++;
+    const lim = s * 1.12; if (v.length() > lim) { v.multiplyScalar(lim / v.length()); this.stats.capped++; }
+    return v;
+  },
+  report() { const out = {}; for (const s of [12, 15, 16, 17, 18, 20]) out[s] = { before: +this.maxRange(s, 14).toFixed(1), after: +this.maxRange(this.speed(s, 14), 14).toFixed(1) }; return out; },
+};
 // ============================================================ ABILITY ENGINE (data-driven: each agent ability = kind + params)
 const Abil = {
   projectiles: [], zones: [], walls: [], solids: [], devices: [], drones: [], seekers: [], sweeps: [],
@@ -8412,8 +8479,8 @@ const Abil = {
     if (key === 'X' && ag.rewind && ag.rewind.until > now) { const left = ag.rewind.until - now; if (!best || left > best.left) best = { left, total: Math.max(left, 10) }; }
     return best;
   },
-  canUse(ag) {
-    return ag.alive && G.mode.abilities && G.mode.abilitiesLive() && !ag.railstorm && !(ag.drone && ag.drone.ctrl) && ag.planting <= 0 && ag.defusing <= 0
+  canUse(ag, key) {   // v37: key lets buy-phase setup through (BuySetup); callers without a key get live-phase rules only
+    return ag.alive && G.mode.abilities && (G.mode.abilitiesLive() || BuySetup.ok(ag, key)) && !ag.railstorm && !(ag.drone && ag.drone.ctrl) && ag.planting <= 0 && ag.defusing <= 0
       && !(ag.st.suppU > G.time) && !(ag.st.detainU > G.time);
   },
   ready(ag, key) { return key === 'X' ? ag.ultPts >= ag.A.abilities.X.points : ag.charges[key] > 0; },
@@ -8422,7 +8489,7 @@ const Abil = {
     const K = KINDS[def.kind]; if (!K) return false;
     if (ag.abilState[key] && K.reactivate) { if (ag.alive && !(ag.st.detainU > G.time)) { K.reactivate.call(this, ag, def, key); return true; } return false; }
     const deadOk = !ag.alive && G.mode.teamBased && G.mode.phase !== 'end' && ((def.p && def.p.dead && K === KINDS.smokeSky) || K === KINDS.secondLife) && !(ag.st.suppU > G.time);
-    if (!(deadOk || this.canUse(ag)) || !this.ready(ag, key)) { if (ag.isHuman) { Sfx.ui('deny'); if (ag.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); } return false; }
+    if (!(deadOk || this.canUse(ag, key)) || !this.ready(ag, key)) { if (ag.isHuman) { Sfx.ui('deny'); if (ag.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); } return false; }
     if (target && target.x != null && !BuyGuard.pointOk(ag, target)) { if (ag.isHuman) { Sfx.ui('deny'); UI.toast('Utility stays behind your barrier until the round starts', 'enemy'); } return false; }   // v36
     this._cast = { ag, key }; this._opts = opts || null; let ok; try { ok = K.use.call(this, ag, def.p, target, def, key); } finally { this._cast = null; this._opts = null; }
     if (ok === false) { if (ag.isHuman) Sfx.ui('deny'); return false; }
@@ -8467,11 +8534,11 @@ const Abil = {
   },
   launch(ag, speed, target, gravity) {
     const o = ag.eye(new V3()), v = new V3();
-    if (target) {
-      const dx = target.x - o.x, dz = target.z - o.z, dy = (target.y || 0) - o.y, dh = Math.hypot(dx, dz), T = clamp(dh / speed, 0.25, 2.5);
-      v.set(dx / T, (dy + 0.5 * gravity * T * T) / T, dz / T);
-    } else if (this.alt && gravity > 0) { ag.dir(v); v.y = Math.min(v.y, 0.15) + 0.25; v.normalize().multiplyScalar(speed * 0.5); v.x += ag.vel.x * 0.5; v.z += ag.vel.z * 0.5; }   // alt fire: underhand lob, half speed
+    speed = Ballistics.speed(speed, gravity);   // v37: thrown utility reaches its design range (shot bolts untouched)
+    if (target) v.copy(Ballistics.aim(o, target, speed, gravity));   // solved with the gravity it really flies with
+    else if (this.alt && gravity > 0) { ag.dir(v); v.y = Math.min(v.y, 0.15) + 0.25; v.normalize().multiplyScalar(speed * 0.5); v.x += ag.vel.x * 0.5; v.z += ag.vel.z * 0.5; }   // alt fire: underhand lob, half speed
     else { ag.dir(v).multiplyScalar(speed); v.y += gravity > 0 ? 1.5 : 0; v.x += ag.vel.x * 0.5; v.z += ag.vel.z * 0.5; }
+    this._aimed = target && gravity > 0 ? { t: target.clone(), s: speed, g: gravity } : null;   // proj() re-solves for floor hops once it knows them
     o.addScaledVector(v.clone().normalize(), 0.4);
     return { o, v };
   },
@@ -8480,6 +8547,9 @@ const Abil = {
     const mesh = new THREE.Mesh(opts.geo || SharedGeo.sph, new THREE.MeshBasicMaterial({ color: col })); mesh.userData.sharedGeo = true;
     mesh.scale.setScalar(opts.size || 0.11); mesh.position.copy(o); R.scene.add(mesh);
     const p = Object.assign({ kind, owner: ag, pos: o.clone(), vel: v.clone(), g: 14, bounces: 2, life: 0, fuse: 99, mesh, alive: true, trail: col, cast: this._cast }, opts);
+    // v37: an aimed throw that hops off the floor is re-solved so the hop ends on the target (Ballistics.aim)
+    const A = this._aimed; this._aimed = null;
+    if (A && !p.stick && !p.impact && p.bounces > 0 && p.g === A.g && p.g >= Ballistics.LOB_G) p.vel.copy(Ballistics.aim(p.pos, A.t, A.s, p.g, p.bounces));
     this.projectiles.push(p); Sfx.ability('throw', o); if (typeof Aware !== 'undefined') Aware.incoming(p); return p;
   },
   reveal(a, team, dur) { a.revealBy[team] = Math.max(a.revealBy[team] || 0, G.time + dur); a.spotted[team] = Math.max(a.spotted[team] || 0, G.time + dur); Bots.reveal(a, team); },
@@ -8629,26 +8699,34 @@ const Abil = {
   update(dt) {
     const now = G.time; FXTime.value = now;
     // projectiles
+    const B = Ballistics;
     for (const p of this.projectiles) {
       p.life += dt;
       if (p.lat) p.vel.addScaledVector(p.lat, dt);
-      p.vel.y -= p.g * dt;
-      const np = p.pos.clone().addScaledVector(p.vel, dt);
-      let landed = false;
+      // v37: sub-step so a fast bolt never skips a 2 m cell between frames
+      const n = Math.max(1, Math.min(6, Math.ceil(p.vel.length() * dt / B.STEP))), h1 = dt / n; if (n > 1) B.stats.substeps++;
+      let np = p.pos, landed = false;
+      for (let si = 0; si < n && !landed; si++) {
+      p.vel.y -= p.g * h1;
+      np = p.pos.clone().addScaledVector(p.vel, h1);
       const [cx, cz] = World.cellOf(np.x, np.z), h = World.solidAt(cx, cz);   // v36: barriers stop thrown utility
-      if (np.y < h) {
+      if (h > 0.05 && np.y < h) {   // v37: dipping below the floor is the floor case below, not a wall hit (it used to reverse the throw)
         if (p.stick || p.impact) landed = true;
         else {
           const [ox, oz] = World.cellOf(p.pos.x, p.pos.z);
           if (p.pos.y >= h - 0.01 && h < 6 && h > 0) { p.vel.y = -p.vel.y * 0.4; np.y = h + 0.01; }
-          else { if (ox !== cx) p.vel.x *= -0.5; if (oz !== cz) p.vel.z *= -0.5; if (ox === cx && oz === cz) { p.vel.x *= -0.5; p.vel.z *= -0.5; } np.copy(p.pos); }
+          else { if (ox !== cx) p.vel.x *= -B.WALL_REST; if (oz !== cz) p.vel.z *= -B.WALL_REST; if (ox === cx && oz === cz) { p.vel.x *= -B.WALL_REST; p.vel.z *= -B.WALL_REST; } np.copy(p.pos); }
           if (p.bounces-- <= 0) landed = true;
         }
       }
+      // v37: lintels, tunnel roofs and window heads are solid from below
+      { const [qx, qz] = World.cellOf(np.x, np.z); if (World.inb(qx, qz)) { const cl = World.ceil[qz * GW + qx]; if (cl > 0 && np.y > cl - 0.05 && p.pos.y <= cl - 0.05) { B.stats.ceilings++; if (p.stick || p.impact) landed = true; else { np.y = cl - 0.06; p.vel.y = -Math.abs(p.vel.y) * B.WALL_REST; } } } }
       if (np.y <= 0.05) {
         np.y = 0.05;
         if (p.stick || p.impact || p.bounces <= 0 || Math.abs(p.vel.y) < 2) landed = true;
-        else { p.vel.y = -p.vel.y * 0.35; p.vel.x *= 0.6; p.vel.z *= 0.6; p.bounces--; }
+        else { p.vel.y = -p.vel.y * B.FLOOR_REST; p.vel.x *= B.FLOOR_FRIC; p.vel.z *= B.FLOOR_FRIC; p.bounces--; }
+      }
+      if (!landed && si < n - 1) p.pos.copy(np);
       }
       if (p.prox) for (const a of G.agents) if (this.isEnemy(a, p.owner) && tmpA.set(a.pos.x, a.pos.y + 1, a.pos.z).distanceTo(np) < p.prox) { landed = true; break; }
       p.pos.copy(np); p.mesh.position.copy(np);
@@ -8777,7 +8855,7 @@ const Abil = {
     if (G.time > dr.until || !dr.owner.alive) { this.endDrone(dr); return; }
     Possess.tick(dr, dt);
     if (!dr.alive) return;
-    dr.mesh.position.copy(dr.pos); dr.mesh.rotation.y = dr.yaw;
+    dr.mesh.position.copy(dr.pos); dr.mesh.rotation.y = dr.yaw + (dr.mode === 'cam' ? Math.PI : 0);   // v37: the camera's lens faces where it looks
     const cone = dr.mode === 'cam' ? 0.55 : 0.5, range = dr.mode === 'skim' ? 22 : 28;
     for (const a of G.agents) {
       if (!this.isEnemy(a, dr.owner)) continue;
@@ -9057,7 +9135,7 @@ const KINDS = {
   },
   flash: {
     use(ag, p, tgt) {
-      const L = this.launch(ag, p.speed || 15, tgt, 0); if (!tgt) L.v.y = Math.max(L.v.y, 1.2);
+      const L = this.launch(ag, p.speed || 15, tgt, 2); if (!tgt) L.v.y = Math.max(L.v.y, 1.2);   // v37: same gravity as the flight (2)
       const lat = p.curve ? new V3(Math.cos(ag.yaw), 0, -Math.sin(ag.yaw)).multiplyScalar(5 * p.curve * (this.alt ? -1 : 1)) : null;   // alt fire curves the other way
       this.proj(ag, 'flash', L.o, L.v, { g: 2, fuse: p.fuse || 0.6, bounces: 3, color: 0xffffff, size: 0.13, lat, onFuse: q => this.flash(q.pos, ag, p.dur) });
     }
@@ -9073,7 +9151,7 @@ const KINDS = {
       pr.stick = false; pr.ghost = true; pr.update = null;
     }
   },
-  concuss: { use(ag, p, tgt) { const L = this.launch(ag, p.speed || 18, tgt, 14); this.proj(ag, 'concuss', L.o, L.v, { bounces: 1, onLand: q => { Sfx.boom(q.pos, false); for (const a of G.agents) if (this.isEnemy(a, ag) && a.pos.distanceTo(q.pos) < p.r && World.los(q.pos.clone().setY(0.6), a.eye(tmpA))) this.applyFx(a, ag, { daze: p.dur }); } }); } },
+  concuss: { use(ag, p, tgt) { const L = this.launch(ag, p.speed || 18, tgt, 14); this.proj(ag, 'concuss', L.o, L.v, { bounces: 1, onLand: q => { Sfx.boom(q.pos, false); for (const a of G.agents) if (this.isEnemy(a, ag) && a.pos.distanceTo(q.pos) < p.r && World.los(q.pos.clone().setY(0.6), a.eye(tmpA))) this.applyFx(a, ag, { daze: p.daze || p.dur || 2.5 }); } }); } },   // v37: the kits author `daze` — reading `dur` meant concuss grenades never concussed
   suppress: {
     use(ag, p, tgt) {
       const L = this.launch(ag, p.speed || 18, tgt, 14);
@@ -9280,7 +9358,7 @@ const KINDS = {
   },
   frag: {
     use(ag, p, tgt) {
-      const L = this.launch(ag, p.speed || 16, tgt, 14), shock = p.style === 'shock';
+      const shock = p.style === 'shock', L = this.launch(ag, p.speed || 16, tgt, shock ? 12 : 14);   // v37: aimed with the gravity it flies with
       const boom = (pos) => {
         this.explode(pos, p.dmg, p.r, ag, { style: p.style, color: shock ? 0x9be7ff : 0xffa040, name: ag.A.abilities[Object.keys(ag.A.abilities).find(k => ag.A.abilities[k].p === p)]?.name });
         if (p.pulses > 1) for (let i = 1; i < p.pulses; i++) G.later(i * 0.5, () => this.explode(pos, p.dmg, p.r, ag, { name: 'Aftershock' }));
@@ -9349,6 +9427,40 @@ const KINDS = {
       if (best === G.player) UI.onPlayerRevive();
     }
   },
+};
+// ============================================================ v37 BUY-PHASE SETUP (which utility may go out before the barriers drop)
+// Valorant lets Sentinels build their setup while the barriers are still up: trips, turrets, alarms, cameras and traps go
+// down on site before the round starts. Riftline did not allow any ability in the buy phase, which also left the bots'
+// pre-round setup step (Brain.setupUtil) silently failing. During the buy phase:
+//   · a Sentinel may use any of its non-ultimate abilities;
+//   · any other agent may use setup-type utility only (traps, turrets, alarms, mines, sensors, walls, anchors, cameras);
+//   · flying / ground drones and every ultimate wait for the round to start.
+// The barriers themselves still stop anything thrown or placed across them (v36 BuyGuard + barrier collision), so setup
+// stays on your own side. Charges spent here can be rebought before the round starts; bots top their kit back up.
+const BuySetup = {
+  KINDS: new Set(['turret', 'trapWire', 'trapAlarm', 'mine', 'sensor', 'shearTrap', 'wallSolid', 'anchor', 'interceptor', 'regenZone', 'cocoon']),
+  stats: { allowed: 0, refused: 0, rebuys: 0 },
+  active() { const M = G.mode; return !!(M && M.teamBased && M.phase === 'buy' && M.abilities !== false); },
+  ok(ag, key) {
+    if (!this.active() || !key || key === 'X') return false;
+    const d = ag.A.abilities[key]; if (!d) return false;
+    if (d.kind === 'drone') return !!(d.p && d.p.mode === 'cam');   // a wall camera can go up now; flying drones wait
+    // charges rebought in the buy phase never stack devices past the kit's limit (one turret stays one turret)
+    const live = Abil.devices.filter(v => v.alive && v.owner === ag && v.cast && v.cast.key === key).length + Abil.drones.filter(v => v.alive && v.owner === ag && v.key === key).length;
+    if (live >= (d.max || 1)) { this.stats.refused++; return false; }
+    const ok = ag.A.role === 'Sentinel' || this.KINDS.has(d.kind);
+    this.stats[ok ? 'allowed' : 'refused']++; return ok;
+  },
+  // a bot's setup aimed past its barrier (a hold's watch point is often the entrance itself): the last point on the line
+  // back toward the bot that is still on its own side, so the trap / turret watches the entrance from inside
+  clamp(ag, tgt) {
+    if (!this.active() || !tgt || BuyGuard.pointOk(ag, tgt)) return tgt;
+    const p = tgt.clone(), d = ag.pos.clone().sub(tgt).setY(0), L = d.length(); if (L < 0.1) return null; d.multiplyScalar(0.5 / L);
+    for (let i = 0; i < L / 0.5; i++) { p.add(d); const [x, z] = World.cellOf(p.x, p.z); if (World.isWalkCell(x, z) && BuyGuard.cellOk(BuyGuard.active(ag), z * GW + x)) { this.stats.clamped = (this.stats.clamped || 0) + 1; return p; } }
+    return null;
+  },
+  // a bot that spent setup charges in the buy phase buys them back if it still can
+  rebuy(b) { if (this.active() && b.alive) { G.later(0.8, () => { if (this.active() && b.alive) { this.stats.rebuys++; Bots.buy(b); } }); } },
 };
 // ============================================================ v29 LANES: offensive lane spread (fewer mid funnels)
 // Pure navigation policy for the attacking side, kept apart from the decision code in Brain:
@@ -9612,11 +9724,12 @@ const Bots = {
   faceMove(ag, dt) { const md = ag.ai.moveDir; if (md && (Math.abs(ag.input.f) + Math.abs(ag.input.r)) > 0.1) this.turnToward(ag, Math.atan2(-md.x, -md.z), 0, 240, dt); },
   // use the first ready ability whose ai tag matches
   useTag(ag, tags, tgt, opts) {
-    if (!G.mode.abilities || !Abil.canUse(ag)) return null;
+    if (!G.mode.abilities || (!BuySetup.active() && !Abil.canUse(ag))) return null;   // v37: in the buy phase Abil.use checks each key (BuySetup)
     if (Math.random() > this.D.util && !(opts && opts.force)) return null;
     for (const k of ['C', 'Q', 'E', 'X']) {
       const ab = ag.A.abilities[k]; if (!tags.includes(ab.ai) || !Abil.ready(ag, k) || ag.abilState[k]) continue;
       if (opts && opts.keep && k !== 'X' && (ag.charges[k] || 0) <= opts.keep) continue;   // conserving the last charge
+      if (k === 'X' && !UltBrain.allow(ag, tgt, opts)) continue;   // v37: the ult is a round resource — is now the moment?
       if (ab.kind === 'dash' || ab.kind === 'blink' || ab.kind === 'blastJump') { if (tgt) ag.yaw = Abil.yawTo(ag, tgt); ag.input.f = 1; ag.input.r = 0; }
       if (Abil.use(ag, k, tgt ? tgt.clone ? tgt.clone() : tgt : null)) return k;
     }
@@ -9635,6 +9748,7 @@ const Bots = {
     if (this.escapeZone(ag, dt)) return;
     if (Aware.react(ag, dt)) return;   // flash dodge, live grenade, flashed → move, don't stand
     if (G.mode.teamBased && Tactics.stickDefuse(ag, dt)) return;   // no time to win the fight first: keep defusing
+    if (G.mode.teamBased && G.mode.abilities) { UltBrain.think(ag); if (ai.ppSmart && ai.ppSmartR === G.mode.round && G.mode.phase === 'planted' && G.mode.defuser && this.isAttacker(ag)) PostPlan.stall(ag); }   // v37: the stall goes out even mid-fight   // v37: blind late in a round → an info ult finds them (1.2 s gated)
     if (ai.target && now - ai.acquireT >= D.react * (ag.flashT > now ? 3 : 1) * (ag.st.dazeU > now ? 1.6 : 1)) { this.fight(ag, dt); return; }
     if (ai.target) { inp.f *= 0.3; inp.r *= 0.3; this.lookPoint(ag, tmpC.copy(ai.target.pos).setY(ai.target.pos.y + 1.3), dt, D.turn * 0.5); return; }
     if (SmokeAI.spam(ag, dt)) return;   // blind-fire a heard enemy / the defuse / the plant through a smoke
@@ -9752,8 +9866,8 @@ const Bots = {
     ai.utilCD = now + 0.8;
     const X = ag.A.abilities.X;
     if (Abil.ready(ag, 'X')) {
-      if ((X.ai === 'ult-weapon' || X.ai === 'ult-self') && dist < 35) { if (Abil.use(ag, 'X', t.pos.clone())) { ai.utilCD = now + 1.5; return; } }
-      if (X.ai === 'ult-area' && dist > 8 && dist < 60) { if (Abil.use(ag, 'X', t.pos.clone())) { ai.utilCD = now + 2; return; } }
+      if ((X.ai === 'ult-weapon' || X.ai === 'ult-self') && dist < 35 && UltBrain.allow(ag, t.pos)) { if (Abil.use(ag, 'X', t.pos.clone())) { ai.utilCD = now + 1.5; return; } }
+      if (X.ai === 'ult-area' && dist > 8 && dist < 60 && UltBrain.allow(ag, t.pos)) { if (Abil.use(ag, 'X', t.pos.clone())) { ai.utilCD = now + 2; return; } }
     }
     // escape when low
     if (ag.hp < 45) {
@@ -9761,6 +9875,7 @@ const Bots = {
       if (this.useTag(ag, ['mobility'], ag.pos.clone().sub(t.pos).add(ag.pos))) { ai.target = null; ai.utilCD = now + 2; return; }
     }
     if (ag.hp < 60 && dist > 10 && this.useTag(ag, ['smoke'], tmpA.copy(ag.pos).lerp(t.pos, 0.4).clone())) { ai.utilCD = now + 2; return; }
+    if (ai.ppSmart && ai.ppSmartR === G.mode.round && G.mode.phase === 'planted' && this.isAttacker(ag) && t.defusing) return;   // v37: PostPlan owns the anti-defuse utility (waits out taps, staggers throws)
     if (dist > 6 && dist < 22 && Math.random() < 0.25 && this.useTag(ag, ['frag', 'molly', 'decay', 'concuss', 'slow'], t.pos.clone())) { ai.utilCD = now + 2.5; return; }
     if (this.useTag(ag, ['speed'], null)) ai.utilCD = now + 2;
   },
@@ -10226,7 +10341,7 @@ const Brain = {
         this.whenReady(b, rand(1.5, 1.9), () => !entry0.alive || entry0 === b || entry0.pos.distanceTo(k) < 10, 3.2, () => Bots.useTag(b, ['flash'], k.clone().lerp(center, 0.35).setY(2), { force: true }));
         if (b.A.role === 'Duelist') this.later(b, 2.15, () => Bots.useTag(b, ['mobility', 'speed'], center.clone()));
         const knownIn = [...Bots.intelFor(b.team)].find(([e, kk]) => e.alive && G.time - kk.t < 4 && kk.pos.distanceTo(center) < 14);
-        if (knownIn) this.later(b, 1.2, () => { const X = b.A.abilities.X; if (X.ai === 'ult-area' && Abil.ready(b, 'X')) Abil.use(b, 'X', knownIn[1].pos.clone()); });
+        if (knownIn) this.later(b, 1.2, () => { const X = b.A.abilities.X; if (X.ai === 'ult-area' && Abil.ready(b, 'X') && UltBrain.allow(b, knownIn[1].pos)) Abil.use(b, 'X', knownIn[1].pos.clone()); });
       }
     }
     // entry first, trade 0.5s behind, the rest 1s behind; anchor keeps the flank
@@ -10237,14 +10352,15 @@ const Brain = {
   },
   // rear angle for the anchor: the stage spot, looking back along the route from another lane
   flankWatch(plan, b) {
-    const S = this.site(plan.site), stage = cpos(S.stage[0] || S.center);
-    const other = plan.lanes.find(l => l.site !== plan.site) || null; if (!other) return null;
+    const site = this.site(plan.site) ? plan.site : G.mode.charge && G.mode.charge.site, S = this.site(site); if (!S) return null;   // v37: a plant before the plan picked a site
+    const stage = cpos(S.stage[0] || S.center), other = (plan.lanes || []).find(l => l.site !== site) || null; if (!other) return null;
     const look = this.pathPoint(stage, other.pos, 7).setY(1.45);
     return (b.ai.flank = { pos: stage, look });
   },
   lurkCutoff(plan) {
     if (!plan.lurkSite || plan.lurkSite === plan.site) return null;
-    const LS = this.site(plan.lurkSite), k = LS.atkCh[0] ? cpos(LS.atkCh[0].c) : cpos(LS.center), tgt = cpos(this.site(plan.site).center);
+    const LS = this.site(plan.lurkSite), PS = this.site(plan.site) || this.site(G.mode.charge && G.mode.charge.site); if (!LS || !PS) return null;   // v37: guard a plant off-plan
+    const k = LS.atkCh[0] ? cpos(LS.atkCh[0].c) : cpos(LS.center), tgt = cpos(PS.center);
     return { pos: k, look: this.pathPoint(k, tgt, 6).setY(1.45) };
   },
   // contextual plant: open (exposed to our post-plant spots) when the site is ours, safe (hidden from defender angles) otherwise
@@ -10298,7 +10414,7 @@ const Brain = {
         }
       } else {
         // v34: defenders can reach their sites during the buy phase, so traps / cameras / turrets go down before barriers drop
-        if (!plan.setupDone && ((M.phase === 'live' && M.liveTime() > 1.5) || (M.phase === 'buy' && M.timer < 6 && bots.every(b => !b.ai.hold || b.pos.distanceTo(b.ai.hold.pos) < 4 || BuyStage.stuck(b))))) { plan.setupDone = true; this.setupUtil(plan, bots); }
+        if (!plan.setupDone && ((M.phase === 'live' && M.liveTime() > 1.5) || (M.phase === 'buy' && (M.timer < 5 || (M.timer < 14 && bots.every(b => !b.ai.hold || b.pos.distanceTo(b.ai.hold.pos) < 4 || BuyStage.stuck(b))))))) { plan.setupDone = true; this.setupUtil(plan, bots); }
         if (M.phase === 'live' && now > (plan.smT || 0)) { plan.smT = now + 0.5; this.ctrlSmokes(plan, bots); }   // controllers block a confirmed push
         if (M.charge.state === 'planted') {
           if (plan.phase !== 'retake') { plan.phase = 'retake'; plan.retakeAt = now; plan.site = M.charge.site; plan.goAt = 0; this.say(team, bots[0], `Charge down ${plan.site} — group for the retake`, true); }
@@ -10372,14 +10488,15 @@ const Brain = {
     }
   },
   whenReady(b, d, cond, maxWait, fn) { const t0 = G.time + d; const tick = () => { if (!b.alive || !G.mode.charge || !(G.mode.phase === 'live' || G.mode.phase === 'planted')) return; if (cond() || G.time - t0 > maxWait) fn(); else G.later(0.2, tick); }; G.later(d, tick); },
-  later(b, d, fn) { G.later(d, () => { if (b.alive && G.mode.charge && (G.mode.phase === 'live' || G.mode.phase === 'planted')) fn(); }); },
+  later(b, d, fn) { G.later(d, () => { if (b.alive && G.mode.charge && (G.mode.phase === 'live' || G.mode.phase === 'planted' || BuySetup.active())) fn(); }); },   // v37: setup can land in the buy phase
   onDeath(victim) { const p = this.plans[victim.team]; if (p && p.side === 'atk' && p.phase === 'exec') p.deaths++; },
   setupUtil(plan, bots) {
     const D = Bots.D;
     for (const b of bots) {
       const h = b.ai.hold; if (!h) continue;
-      this.later(b, rand(0.5, 3), () => Bots.useTag(b, ['trap'], h.look.clone().setY(0), { force: true }));
-      this.later(b, rand(3, 5), () => Bots.useTag(b, ['trap'], h.look.clone().setY(0)));
+      const spot = () => BuySetup.clamp(b, h.look.clone().setY(0));   // v37: in the buy phase, kept on this side of the barrier
+      this.later(b, rand(0.5, 3), () => { const q = spot(); if (q && Bots.useTag(b, ['trap'], q, { force: true })) BuySetup.rebuy(b); });
+      this.later(b, rand(3, 5), () => { const q = spot(); if (q) Bots.useTag(b, ['trap'], q); });
       this.later(b, rand(1, 4), () => Bots.useTag(b, ['anchor'], null));
       if (b.A.role === 'Initiator' && Math.random() < D.recon) this.later(b, rand(2, 6), () => { if (Bots.useTag(b, ['info'], h.look.clone(), { force: true })) this.say(plan.team, b, `Recon out at ${World.callout(h.look.x, h.look.z) || 'the entrance'}`); });
     }
@@ -10401,7 +10518,7 @@ const Brain = {
       // controllers: only the entrance a push is confirmed through, one controller per door, last charge kept for the retake
       this.later(b, rand(0, 0.6), () => { const sp = SmokePlan.defense(plan, S, b); if (sp) Bots.useTag(b, ['smoke'], sp.pos, { force: true, keep: sp.keep }); });
       this.later(b, rand(0.3, 1.2), () => Bots.useTag(b, ['molly', 'decay', 'slow', 'concuss', 'frag', 'flash', 'barrier', 'wall'], choke.clone()));
-      this.later(b, rand(0.5, 1.5), () => { const X = b.A.abilities.X; if ((X.ai === 'ult-area' || X.ai === 'ult-zone') && Abil.ready(b, 'X') && b.pos.distanceTo(cpos(S.center)) < 25) Abil.use(b, 'X', X.kind === 'lockdown' ? null : choke.clone()); });
+      this.later(b, rand(0.5, 1.5), () => { const X = b.A.abilities.X; if ((X.ai === 'ult-area' || X.ai === 'ult-zone') && Abil.ready(b, 'X') && b.pos.distanceTo(cpos(S.center)) < 25 && UltBrain.allow(b, choke)) Abil.use(b, 'X', X.kind === 'lockdown' ? null : choke.clone()); });
     }
   },
   postPlantUtil(plan, bots) {
@@ -10506,6 +10623,14 @@ const Brain = {
   },
   postPlant(ag, dt, plan) {
     const M = G.mode, ai = ag.ai, ch = M.charge;
+    // v37: disciplined attackers run PostPlan (cover, crossfires on the retake entrances, lane retreat, staggered stall utility)
+    if (ai.ppSmartR !== M.round) { ai.ppSmartR = M.round; ai.ppSmart = Math.random() < Math.max(0.15, Bots.D.postIQ || 0); }
+    if (ai.ppSmart) {
+      PostPlan.stall(ag);
+      if (ag === plan.lurker) { const cut = this.lurkCutoff(plan); if (cut && !M.defuser) { if (Bots.moveTo(ag, cut.pos, { tol: 1 })) this.holdAngle(ag, dt, cut.look); else Bots.faceMove(ag, dt); return; } }
+      if (ag === plan.anchor && !M.defuser && (Brain.alive[ag.team] || 0) >= 3) { /* v37: a flank watcher only when 3+ are alive to hold the site */ const fl = ai.flank || this.flankWatch(plan, ag); if (fl) { if (Bots.moveTo(ag, fl.pos, { tol: 1.5 })) this.holdAngle(ag, dt, fl.look); else Bots.faceMove(ag, dt); return; } }
+      if (PostPlan.drive(ag, dt, plan)) return;
+    }
     if (M.defuser && !ai.postUtil && Abil.canUse(ag)) { if (Bots.useTag(ag, ['molly', 'decay', 'frag', 'concuss', 'slow', 'ult-area'], ch.pos.clone(), { force: true })) ai.postUtil = true; }
     if (ag === plan.lurker) { const cut = this.lurkCutoff(plan); if (cut) { if (Bots.moveTo(ag, cut.pos, { tol: 1 })) this.holdAngle(ag, dt, cut.look); else Bots.faceMove(ag, dt); return; } }
     if (ag === plan.anchor) { const fl = ai.flank || this.flankWatch(plan, ag); if (fl && !M.defuser) { if (Bots.moveTo(ag, fl.pos, { tol: 1.5 })) this.holdAngle(ag, dt, fl.look); else Bots.faceMove(ag, dt); return; } }
@@ -11450,7 +11575,7 @@ const PostPlay = {
     if (!best) return null;
     // alternate roles: one watches the spike (plays for the defuse), the next watches the access (the retake's entry)
     const watchSpike = best.watch && (mine.length % 2 === 1 || !best.c.look);
-    const look = watchSpike ? cp.clone().setY(0.9) : best.c.look ? cpos(best.c.look).setY(1.45) : cp.clone().setY(0.9);
+    const look = watchSpike || best.c.cat !== 'post' ? cp.clone().setY(0.9) : best.c.look ? cpos(best.c.look).setY(1.45) : cp.clone().setY(0.9);   // v37: a defender hold's look points at the attacker entrances — never borrow it
     taken.push({ ag, pos: best.P.clone(), key: best.c.key }); this.stats.ppAssigned++; if (mine.length) this.stats.crossfires++;
     return { pos: best.P, look, watch: best.watch };
   },
@@ -11648,6 +11773,215 @@ const SpikeIQ = {
   },
   holdsTime(ag) { return G.mode.phase === 'planted' && G.mode.sideOf(ag) === 'atk' && !G.mode.defuser && this.roll(ag, 'timeIQ'); },
 };
+// ============================================================ v37 ULT BRAIN: should this bot spend its ultimate right now?
+// Before v37 a bot fired its ultimate the moment it was ready and any target was in range: a Sunfall on one enemy in a 4v1,
+// a weapon ult in the last two seconds of a lost round, an area ult on a lone lurker while the spike ticked down on site.
+// High-level play treats the ult as a round-winning resource (round economy as much as credits): it is spent to convert
+// a man advantage, break a stacked site, win a retake or clutch, and it is held — the points carry into the next round —
+// when the round is already won, already lost, or the target is not worth it.
+// UltBrain scores one proposed use from what the bot can know:
+//   enemies   alive counts (Brain.alive) → overkill (way ahead), clutch (behind), hopeless (far behind)
+//   timer     live clock / spike clock → execute urgency, retake urgency, nothing left to win
+//   economy   our buy vs the enemy's (Bots.econ, scaled by econIQ) → equaliser on our eco, waste on their eco
+//   proximity known enemies (team intel, < 5 s old) inside the ult's area around the aimed point / near the bot
+//   match     last round of a half / match point / overtime → nothing to save for
+// and blends that judgement with the old always-fire behaviour by D.ultIQ (Easy ≈ fires on cooldown, Elite ≈ deliberate).
+// Pure decision code: it never moves or aims a bot, it only answers allow(); callers stay where they were.
+const DIFF_V37 = [{ ultIQ: 0.15 }, { ultIQ: 0.45 }, { ultIQ: 0.78 }, { ultIQ: 1 }];
+DIFF.forEach((d, i) => Object.assign(d, DIFF_V37[i]));
+const UltBrain = {
+  stats: { asked: 0, fired: 0, held: 0, why: {} },
+  // the ult's area radius (for cluster counting) — beams / waves use half their width plus a margin along their length
+  reach(X) { const p = X.p || {}; return p.r || (p.w ? p.w * 0.5 + 2 : 0) || 7; },
+  // what the bot's team knows: enemies seen or heard in the last `age` seconds
+  known(team, age) { const out = []; for (const [e, k] of Bots.intelFor(team)) if (e.alive && G.time - k.t < age) out.push(k.pos); return out; },
+  ctx(ag) {
+    const M = G.mode, side = M.sideOf ? M.sideOf(ag) : 'atk', us = Brain.alive[ag.team] || 1, them = Brain.alive[1 - ag.team] || 0;
+    const phase = M.phase, tl = M.timeLeft ? M.timeLeft() : 99, cl = M.chargeLeft ? M.chargeLeft() : 0;
+    const econ = Bots.econ || {}, mine = econ[ag.team], theirs = econ[1 - ag.team];
+    const cheap = c => c === 'save' || c === 'pistol' || c === 'eco', last = !!(M.ot || (M.isLastRoundOfHalf && M.isLastRoundOfHalf()));
+    return { M, side, us, them, adv: us - them, phase, tl, cl, ourEco: cheap(mine), theirEco: cheap(theirs), last, planted: phase === 'planted', defusing: !!M.defuser };
+  },
+  // smart score for one proposed use (≥ 0.5 = worth it)
+  score(ag, X, tgt, c, why) {
+    const tag = X.ai, D = Bots.D, R = this.reach(X), known = this.known(ag.team, 5), at = tgt && tgt.x != null ? tgt : null;
+    const inArea = at ? known.filter(p => Math.hypot(p.x - at.x, p.z - at.z) < R).length : 0, near = known.filter(p => p.distanceTo(ag.pos) < 30).length;
+    let s;
+    switch (tag) {
+      case 'ult-area': s = inArea >= 2 ? 0.85 : inArea === 1 ? 0.38 : 0.12; break;                        // a stack is the classic target
+      case 'ult-weapon': s = c.them >= 2 ? 0.75 : 0.5; if (c.ourEco) s += 0.2; break;                       // a free gun on an eco is pure value
+      case 'ult-self': s = near >= 2 || c.them >= 2 ? 0.7 : near ? 0.5 : 0.3; break;
+      case 'ult-info': s = known.length === 0 ? 0.8 : known.length < c.them ? 0.55 : 0.25; break;            // worth most when the map is dark
+      case 'ult-zone': s = c.planted || c.side === 'def' ? 0.7 : 0.55; break;                               // walls / lockdowns: site takes and retakes
+      default: return 1;                                                                                    // revives, cocoons: their own triggers decide
+    }
+    // the clock: nothing to win → hold; the clock forcing the play → spend
+    if (c.phase === 'live' && c.side === 'atk' && c.tl < 6 && !ag.hasCharge()) { s *= 0.3; why.push('no time'); }
+    if (c.planted && c.side === 'def' && c.cl < 7 && !c.defusing) { s *= 0.3; why.push('too late'); }
+    if (c.planted && c.side === 'def' && c.cl < 25) { s += 0.2; why.push('retake'); }
+    if (c.planted && c.side === 'atk' && c.defusing && (tag === 'ult-area' || tag === 'ult-zone') && inArea + (at && G.mode.charge && at.distanceTo(G.mode.charge.pos) < R ? 1 : 0) > 0) { s += 0.5; why.push('stop defuse'); }
+    if (c.phase === 'live' && c.side === 'atk' && c.tl < 30 && c.tl >= 6) { s += 0.12; why.push('execute clock'); }
+    // the numbers: way ahead → save it for next round (unless it wins the fight outright); behind → spend it; hopeless → keep it
+    if (c.adv >= 3 && !(inArea >= 2)) { s *= 0.45; why.push('overkill'); }
+    else if (c.adv >= 2 && c.them <= 1 && tag !== 'ult-info') { s *= 0.6; why.push('ahead'); }
+    if (c.adv < 0 && c.us >= 1 && c.them - c.us <= 2) { s += 0.18; why.push('clutch'); }
+    if (c.them - c.us >= 3 && !(inArea >= 2)) { s *= 0.5; why.push('hopeless'); }
+    // economy (read through econIQ): their eco → we should win on guns; ours → the ult is the equaliser
+    const e = D.econIQ || 0;
+    if (c.theirEco && !c.ourEco) { s -= 0.2 * e; why.push('their eco'); }
+    if (c.ourEco && !c.theirEco) { s += 0.12 * e; why.push('our eco'); }
+    if (c.last) { s += 0.3; why.push('last round'); }
+    // proximity: an area ult aimed at nothing nearby is wasted; a self/weapon ult is for a fight that is actually close
+    if (tag === 'ult-area' && at && at.distanceTo(ag.pos) > 70) { s *= 0.5; why.push('far'); }
+    return s;
+  },
+  allow(ag, tgt, opts) {
+    if (!ag.ai || !G.mode || !G.mode.teamBased) return true;
+    const X = ag.A.abilities.X; if (!X || !/^ult-/.test(X.ai || '') || X.ai === 'ult-revive') return true;
+    this.stats.asked++;
+    const iq = clamp(Bots.D.ultIQ || 0, 0, 1), why = [], c = this.ctx(ag), smart = this.score(ag, X, tgt, c, why);
+    if (opts && opts.force) why.push('forced');
+    // low IQ ≈ the old reflex (fire when ready) with some noise; high IQ follows the score
+    const v = (1 - iq) * 0.75 + iq * smart + (Math.random() - 0.5) * 0.3 * (1 - iq) + (opts && opts.force ? 0.25 : 0), ok = v >= 0.5;
+    this.stats[ok ? 'fired' : 'held']++; for (const w of why) this.stats.why[w] = (this.stats.why[w] || 0) + 1;
+    if (ok && ag.ai) ag.ai.lastUltWhy = why.join(', ') || X.ai;
+    return ok;
+  },
+  // proactive: a bot out of the fight with an info ult uses it when its team is blind late in a round (clutches, retakes)
+  think(ag) {
+    const ai = ag.ai, now = G.time; if (!ai || now < (ai.ultThinkT || 0)) return; ai.ultThinkT = now + 1.2;
+    const X = ag.A.abilities.X; if (!X || X.ai !== 'ult-info' || !Abil.ready(ag, 'X') || !Abil.canUse(ag) || ai.target) return;
+    const c = this.ctx(ag); if (!(c.phase === 'live' || c.phase === 'planted') || c.them === 0) return;
+    const blind = this.known(ag.team, 6).length === 0, late = (c.phase === 'live' && c.tl < 40) || (c.planted && c.side === 'def');
+    if (!blind || !late || c.us > 2) return;
+    const aim = c.planted ? G.mode.charge.pos.clone() : ag.pos.clone().addScaledVector(ag.dir(new V3()).setY(0).normalize(), 20);
+    if (Math.random() < (Bots.D.ultIQ || 0) && this.allow(ag, aim)) { ag.yaw = Abil.yawTo(ag, aim); Abil.use(ag, 'X', aim); }
+  },
+};
+// ============================================================ v37 POST-PLAN: attacker post-plant positioning and stall utility
+// After the plant, good attackers do not stand on the spike or in the open: they take cover where they can see the spike or
+// a retake entrance (rarely both from the same spot), set crossfires so a defender who clears one angle is shot from
+// another, fall back to the main lanes they came through when they are outnumbered, and spend what utility they have left
+// to stall the defuse — after the defuser commits, not on a fake tap. Before v37 the post spot could be one of the
+// DEFENDERS' holds, whose watch angle pointed at the attacker entrances: attackers stood on site looking back at their own
+// lane, and the stall utility was one throw the instant anyone touched the spike.
+// PostPlan builds, once per plant, a scored field of cells around the spike:
+//   watch    sight line from a standing eye to the spike             (spike role: play for the defuse)
+//   entries  which retake entrances (the site's defender chokes) the cell sees — a cell that sees one entrance and
+//            the spike is an ideal anchor; one that sees every entrance at once is exposed
+//   cover    solid neighbours (World.coverScore) — open ground is penalised hard
+//   side     attacker-side of the spike (shorter run to the attacker lanes) is preferred
+// and assigns each attacker a role: spike watcher, entry crossfire (50–150° from a teammate's line), or lane anchor
+// (the main lane outside the site, the retreat spot). The look direction is always a retake entrance or the spike.
+// Pure planning + steering through the existing Bots.moveTo / Brain.holdAngle; costs ~1 ms once per plant.
+const PostPlan = {
+  stats: { builds: 0, cells: 0, assigned: { spike: 0, entry: 0, lane: 0 }, retreats: 0, stallThrows: 0, tapsIgnored: 0, reangles: 0, buildMs: 0 },
+  _f: null,
+  // the scored field for the current plant
+  field() {
+    const M = G.mode, ch = M.charge; if (!ch || ch.state !== 'planted') return null;
+    const key = M.round + ':' + ch.site + ':' + Math.round(ch.pos.x) + ',' + Math.round(ch.pos.z); if (this._f && this._f.key === key) return this._f;
+    const t0 = performance.now(), S = World.sites[ch.site]; if (!S) return null;
+    const sp = ch.pos.clone().setY(0.5), [scx, scz] = World.cellOf(sp.x, sp.z), A = World.atkD, si = scz * GW + scx, aS = A ? A[si] : 0;
+    const entries = []; for (const k of S.defCh || []) entries.push(cpos(k.c).setY(1.3)); if (!entries.length) for (const r of S.retake || []) entries.push(cpos(r).setY(1.3));
+    // lane anchors: the covered cell outside each attacker entrance that still sees the entrance (looking into the site)
+    const lanes = []; (S.atkCh || []).forEach((k, i) => {
+      const st = S.stage[i] || World.descend(A, k.c[0], k.c[1], 4), ck = cpos(k.c).setY(1.4), q = new V3(); let best = null, bs = -1e9;
+      for (let dz = -4; dz <= 4; dz++) for (let dx = -4; dx <= 4; dx++) {
+        const cx = st[0] + dx, cz = st[1] + dz; if (!World.isWalkCell(cx, cz) || World.barrier[cz * GW + cx] || World.zone[cz * GW + cx]) continue;
+        const P = World.center(cx, cz), d = Math.hypot(P.x - ck.x, P.z - ck.z); if (d < 5 || d > 18) continue;
+        q.copy(P).setY(1.5); if (!World.los(q, ck)) continue;
+        const s = World.coverScore(cx, cz) * 1.2 - (World.coverScore(cx, cz) < 1 ? 3 : 0) - Math.abs(d - 10) * 0.1 - Math.hypot(dx, dz) * 0.15;
+        if (s > bs) { bs = s; best = P; }
+      }
+      lanes.push({ pos: best || cpos(st), look: ck, choke: cpos(k.c) });
+    });
+    const cells = [], e = new V3(), R = 14;
+    for (let dz = -R; dz <= R; dz++) for (let dx = -R; dx <= R; dx++) {
+      const cx = scx + dx, cz = scz + dz; if (!World.isWalkCell(cx, cz) || World.barrier[cz * GW + cx]) continue;
+      const P = World.center(cx, cz), d = Math.hypot(P.x - sp.x, P.z - sp.z); if (d < 6 || d > 27) continue;
+      e.copy(P).setY(1.5); const watch = World.los(e, sp), sees = []; entries.forEach((q, i) => { if (P.distanceTo(q) > 6 && World.los(e, q)) sees.push(i); });
+      const near = Math.min(99, ...entries.map(q => Math.hypot(q.x - P.x, q.z - P.z)));
+      if (!watch && !sees.length) continue;
+      const cover = World.coverScore(cx, cz), atkSide = A && aS > 0 ? (A[cz * GW + cx] <= aS ? 1 : 0) : 0;
+      let s = cover * 1.1 - (cover < 1 ? 2.5 : 0) + atkSide * 1.4 - Math.max(0, 9 - near) * 0.6 - Math.abs(d - 14) * 0.08;
+      s -= Math.max(0, sees.length - 1) * 1.3;   // seen from every entrance at once = exposed
+      cells.push({ P, watch, sees, cover, s, d });
+    }
+    this.stats.builds++; this.stats.cells = cells.length; this.stats.buildMs = +(performance.now() - t0).toFixed(2);
+    return (this._f = { key, sp, entries, lanes, cells, taken: [], stallT: 0, tapT: 0, lastDef: 0 });
+  },
+  role(F, n) { return n % 3 === 0 ? 'spike' : n % 3 === 1 ? 'entry' : (F.lanes.length ? 'lane' : 'entry'); },
+  // a spot for this bot: spread out, crossing teammates' lines, matching its role
+  assign(ag) {
+    const F = this.field(); if (!F) return null;
+    F.taken = F.taken.filter(t => t.ag.alive && t.ag !== ag);
+    const role = this.role(F, F.taken.length), threat = this.threatEntry(ag, F);
+    if (role === 'lane') { const L = F.lanes.slice().sort((a, b) => a.pos.distanceTo(ag.pos) - b.pos.distanceTo(ag.pos))[0]; const out = { pos: L.pos.clone(), look: L.look.clone(), role, lane: L }; F.taken.push({ ag, pos: out.pos }); this.stats.assigned.lane++; return out; }
+    let best = null, bs = -1e9;
+    for (const c of F.cells) {
+      if (role === 'spike' && !c.watch) continue; if (role === 'entry' && !c.sees.length) continue;
+      let s = c.s + (role === 'spike' ? (c.sees.length === 0 ? 1.5 : c.sees.length === 1 ? 0.6 : 0) : (c.watch ? 0.8 : 0) + (threat >= 0 && c.sees.includes(threat) ? 1.4 : 0));
+      for (const t of F.taken) {
+        const dd = t.pos.distanceTo(c.P); if (dd < 6) s -= 6;
+        const a1 = Math.atan2(t.pos.x - F.sp.x, t.pos.z - F.sp.z), a2 = Math.atan2(c.P.x - F.sp.x, c.P.z - F.sp.z), ang = Math.abs(angDiff(a1, a2));
+        if (ang > 0.85 && ang < 2.6) s += 1.8;   // two lines that meet at the spike from 50–150° apart
+      }
+      s -= ag.pos.distanceTo(c.P) * 0.04 + Math.random() * 0.3;
+      if (s > bs) { bs = s; best = c; }
+    }
+    if (!best) return null;
+    const ei = role === 'entry' || !best.watch ? (best.sees.includes(threat) ? threat : best.sees[0]) : -1;
+    const look = ei >= 0 ? F.entries[ei].clone().setY(1.4) : F.sp.clone().setY(0.9);
+    const out = { pos: best.P.clone(), look, role, cell: best, entry: ei };
+    F.taken.push({ ag, pos: out.pos }); this.stats.assigned[role]++; return out;
+  },
+  // the retake entrance enemies are most likely to come through: nearest fresh intel, else -1
+  threatEntry(ag, F) {
+    let bi = -1, bd = 1e9;
+    for (const [e, k] of Bots.intelFor(ag.team)) { if (!e.alive || G.time - k.t > 8) continue; F.entries.forEach((q, i) => { const d = q.distanceTo(k.pos); if (d < bd) { bd = d; bi = i; } }); }
+    return bd < 30 ? bi : -1;
+  },
+  // fall back to a main lane: outnumbered with time to burn, or too hurt to take a duel
+  shouldRetreat(ag) {
+    const M = G.mode, adv = Brain.adv[ag.team] || 0, left = M.chargeLeft();
+    return (adv <= -1 && left > 14) || (ag.hp < 35 && left > 10 && (Brain.alive[ag.team] || 1) > 1);
+  },
+  // steering for one smart attacker; returns true when it handled the frame
+  drive(ag, dt, plan) {
+    const M = G.mode, ai = ag.ai, F = this.field(); if (!F) return false;
+    if (!ai.pp2 || ai.pp2.key !== F.key) { const a = this.assign(ag); if (!a) return false; ai.pp2 = Object.assign(a, { key: F.key }); }
+    let P = ai.pp2;
+    if (P.role !== 'lane' && this.shouldRetreat(ag) && F.lanes.length) {   // retreat: play the clock from the main lane
+      const L = F.lanes.slice().sort((a, b) => a.pos.distanceTo(ag.pos) - b.pos.distanceTo(ag.pos))[0];
+      ai.pp2 = P = { pos: L.pos.clone(), look: L.look.clone(), role: 'lane', lane: L, key: F.key, retreat: true }; this.stats.retreats++;
+    }
+    // a committed defuse: a lane / entry anchor re-angles onto the spike from the nearest covered cell that sees it
+    if (M.defuser && P.role !== 'spike' && Tactics.defuseCanFinish() && !P.reangle) {
+      let best = null, bd = 1e9; for (const c of F.cells) { if (!c.watch) continue; const d = c.P.distanceTo(ag.pos) - c.cover * 1.5; if (d < bd) { bd = d; best = c; } }
+      if (best && best.P.distanceTo(ag.pos) < 22) { ai.pp2 = P = Object.assign({}, P, { pos: best.P.clone(), look: F.sp.clone().setY(0.9), reangle: true }); this.stats.reangles++; }
+    }
+    if (M.defuser && P.reangle) { if (Bots.moveTo(ag, P.pos, { tol: 1 })) Bots.lookPoint(ag, M.defuser.pos.clone().setY(1.0), dt, 360); else Bots.faceMove(ag, dt); return true; }
+    if (Bots.moveTo(ag, P.pos, { tol: 0.9 })) Brain.holdAngle(ag, dt, P.look); else Bots.faceMove(ag, dt);
+    return true;
+  },
+  // stall utility: once a defuse is committed (smart bots wait out a tap), one throw at a time across the team, damage /
+  // hindering utility on the spike first, then blinds; before a defuse, a hinder at the entrance the retake is coming from
+  stall(ag) {
+    const M = G.mode, ai = ag.ai, F = this.field(), ch = M.charge, D = Bots.D, iq = D.postIQ || 0, now = G.time; if (!F || !Abil.canUse(ag)) return;
+    if (M.defuser) {
+      if (!F.tapT || now - F.lastDef > 0.5) F.tapT = now; F.lastDef = now;   // a defuse that flickers (knock-back, a hop) is still one defuse
+      const wait = iq * 0.6; if (now - F.tapT < wait) return;                                 // a tap is a bait: let it go
+      if (now < F.stallT || ai.postUtil2 === F.key + ':' + Math.floor(M.defuseProg / 2.4)) return;
+      const k = Bots.useTag(ag, ['molly', 'decay', 'frag', 'concuss', 'slow', 'ult-area'], ch.pos.clone(), { force: true }) || (M.defuseProg > 2 && Bots.useTag(ag, ['flash'], ch.pos.clone().setY(1.6), { force: true }));
+      if (k) { F.stallT = now + (iq > 0.5 ? 1.6 : 0.4); ai.postUtil2 = F.key + ':' + Math.floor(M.defuseProg / 2.4); this.stats.stallThrows++; }
+      return;
+    }
+    if (F.tapT && now - F.lastDef > 0.5) { if (F.lastDef - F.tapT < 1.5) this.stats.tapsIgnored++; F.tapT = 0; }
+    // retake incoming: hinder the entrance they are coming through (slows / concuss / walls), keep the damage for the defuse
+    if (!ai.ppEntryUtil && Math.random() < iq) { const ti = this.threatEntry(ag, F); if (ti >= 0 && F.entries[ti].distanceTo(ag.pos) < 30) { if (Bots.useTag(ag, ['slow', 'concuss', 'wall'], F.entries[ti].clone().setY(0), { keep: 1 })) { ai.ppEntryUtil = true; this.stats.stallThrows++; } } }
+  },
+};
 // ============================================================ v27: controller smoke placement (human player)
 // Abilities with p.place:
 //   'map'    — tactical map overlay (Brimstone-style): click up to N points inside the ability's range, right-click / the
@@ -11657,7 +11991,7 @@ const SpikeIQ = {
 // Bots never open these: they call Abil.use with a target point as before.
 const Placement = {
   mode: null, P: null, key: null, def: null, pts: [], cur: { x: 0, y: 0 }, dist: 12, stats: { maps: 0, shadows: 0, placed: 0 },
-  wants(P, key) { const d = P.A.abilities[key]; return !!(d && d.p.place && G.mode && G.mode.abilities !== false && Abil.ready(P, key) && (Abil.canUse(P) || (d.p.dead && !P.alive && G.mode.teamBased))); },
+  wants(P, key) { const d = P.A.abilities[key]; return !!(d && d.p.place && G.mode && G.mode.abilities !== false && Abil.ready(P, key) && (Abil.canUse(P, key) || (d.p.dead && !P.alive && G.mode.teamBased))); },
   open(P, key) {
     const def = P.A.abilities[key]; this.P = P; this.key = key; this.def = def; this.pts = []; this.mode = def.p.place;
     VM.cancelInspect && VM.cancelInspect(); Sfx.ui();
@@ -11691,6 +12025,7 @@ const Placement = {
     x.strokeStyle = 'rgba(255,255,255,.35)'; x.setLineDash([6, 5]); x.lineWidth = 1.5; x.beginPath(); x.arc(px, pz, rr, 0, TAU); x.stroke(); x.setLineDash([]);
     for (const a of G.agents) { if (!a.alive || !sameTeam(a, P)) continue; const [ax, az] = this.toMap(a.pos.x, a.pos.z); x.fillStyle = a === P ? '#ffe9a8' : '#3fe0d8'; x.beginPath(); x.arc(ax, az, a === P ? 5 : 4, 0, TAU); x.fill(); }
     x.strokeStyle = '#ffe9a8'; x.lineWidth = 2; x.beginPath(); x.moveTo(px, pz); x.lineTo(px - Math.sin(P.yaw) * 14, pz - Math.cos(P.yaw) * 14); x.stroke();
+    { const sm = SpikeMark.locate(P.team); if (sm) { const [sx, sz] = this.toMap(sm.pos.x, sm.pos.z); SpikeMark.draw(x, sx, sz, 1.7, sm, 0); } }   // v37: the Charge on the ability map too
     const acc = '#' + (P.A.accent >>> 0).toString(16).padStart(6, '0');
     this.pts.forEach((q, i) => { const [mx, my] = this.toMap(q.x, q.z); x.fillStyle = acc + '66'; x.strokeStyle = acc; x.lineWidth = 2; x.beginPath(); x.arc(mx, my, (p.r || 4.4) * cellPx, 0, TAU); x.fill(); x.stroke(); x.fillStyle = '#fff'; x.font = '800 13px sans-serif'; x.textAlign = 'center'; x.fillText(String(i + 1), mx, my + 5); });
     if (p.line && this.pts.length) {   // line pads: origin set, the cursor sets the direction — preview the strike strip / wall
@@ -11790,7 +12125,7 @@ const AbilHand = {
     const t = CastType.of(def);
     if (t === 'insta') { this.cancel(P, true); this.stats.insta++; Abil.use(P, key); return; }
     if (t === 'place') { this.cancel(P, true); if (Placement.wants(P, key)) Placement.open(P, key); else Abil.use(P, key); return; }
-    if (!Abil.ready(P, key) || !Abil.canUse(P)) { Sfx.ui('deny'); if (P.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); return; }
+    if (!Abil.ready(P, key) || !Abil.canUse(P, key)) { Sfx.ui('deny'); if (P.st.suppU > G.time) UI.toast('Abilities suppressed', 'enemy'); return; }
     this.key = key; this.t0 = G.time; this.stats.equips++;
     P.input.fire = P.input.alt = false; P.ads = false;
     VM.hold(P.A.accent); Sfx.ui && Sfx.ui(); this.hint(P, def);
@@ -11873,17 +12208,17 @@ const MMProj = {
   },
   // forward-simulate the real projectile (same launch + step rules as Abil.update) — ≤ 90 steps, only while held
   predict(P, speed, g, bounces, fuse, ex) {
-    const saved = Abil.alt; Abil.alt = !!this._alt; const L = Abil.launch(P, speed, null, ex.flash ? 0 : g); Abil.alt = saved;
+    const saved = Abil.alt; Abil.alt = !!this._alt; const L = Abil.launch(P, speed, null, ex.flash ? 2 : g); Abil.alt = saved;
     if (ex.flash) L.v.y = Math.max(L.v.y, 1.2);
     const pos = L.o.clone(), vel = L.v.clone(), lat = ex.curve ? new V3(Math.cos(P.yaw), 0, -Math.sin(P.yaw)).multiplyScalar(5 * ex.curve) : null, pts = [pos.clone().setY(0)], dt = 1 / 30;
     let b = bounces;
-    for (let i = 0, t = 0; i < 90; i++, t += dt) {
+    for (let i = 0, t = 0; i < 120; i++, t += dt) {
       if (t >= fuse) break;
       if (lat) vel.addScaledVector(lat, dt);
       vel.y -= g * dt; const np = pos.clone().addScaledVector(vel, dt), [cx, cz] = World.cellOf(np.x, np.z), h = World.solidAt(cx, cz);
       let landed = false;
-      if (np.y < h) { if (ex.stick || ex.impact) landed = true; else { const [ox, oz] = World.cellOf(pos.x, pos.z); if (pos.y >= h - 0.01 && h < 6 && h > 0) { vel.y = -vel.y * 0.4; np.y = h + 0.01; } else { if (ox !== cx) vel.x *= -0.5; if (oz !== cz) vel.z *= -0.5; if (ox === cx && oz === cz) { vel.x *= -0.5; vel.z *= -0.5; } np.copy(pos); } if (b-- <= 0) landed = true; } }
-      if (np.y <= 0.05) { np.y = 0.05; if (ex.stick || ex.impact || b <= 0 || Math.abs(vel.y) < 2) landed = true; else { vel.y = -vel.y * 0.35; vel.x *= 0.6; vel.z *= 0.6; b--; } }
+      if (h > 0.05 && np.y < h) { if (ex.stick || ex.impact) landed = true; else { const [ox, oz] = World.cellOf(pos.x, pos.z); if (pos.y >= h - 0.01 && h < 6 && h > 0) { vel.y = -vel.y * 0.4; np.y = h + 0.01; } else { if (ox !== cx) vel.x *= -Ballistics.WALL_REST; if (oz !== cz) vel.z *= -Ballistics.WALL_REST; if (ox === cx && oz === cz) { vel.x *= -Ballistics.WALL_REST; vel.z *= -Ballistics.WALL_REST; } np.copy(pos); } if (b-- <= 0) landed = true; } }
+      if (np.y <= 0.05) { np.y = 0.05; if (ex.stick || ex.impact || b <= 0 || Math.abs(vel.y) < 2) landed = true; else { vel.y = -vel.y * Ballistics.FLOOR_REST; vel.x *= Ballistics.FLOOR_FRIC; vel.z *= Ballistics.FLOOR_FRIC; b--; } }   // v37: same bounce as the real flight
       pos.copy(np); if (i % 2 === 0) pts.push(pos.clone().setY(0)); if (landed) break;
     }
     pts.push(pos.clone().setY(0)); return { pts, end: pos.clone().setY(0) };
@@ -11957,7 +12292,7 @@ const Possess = {
     if (mode === 'cam') return devMesh([[SharedGeo.box(0.2, 0.16, 0.14), D, 0, 0, 0, 1, 1, 1], [SharedGeo.cyl, L, 0, 0, 0.09, 0.07, 0.05, 0.07], [SharedGeo.sph, acc, 0, 0, 0.12, 0.045, 0.045, 0.045], [SharedGeo.box(0.04, 0.04, 0.12), L, 0, 0, -0.12, 1, 1, 1]]);
     return devMesh([[SharedGeo.box(0.4, 0.12, 0.4), 0x3a4640, 0, 0, 0, 1, 1, 1], [SharedGeo.sph, acc, 0, 0, -0.2, 0.07, 0.07, 0.07], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, -0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, -0.25, 0.06, 0.25, 0.13, 0.02, 0.13], [SharedGeo.cyl, 0x22282b, 0.25, 0.06, 0.25, 0.13, 0.02, 0.13]]);
   },
-  enter(P, dr) { if (!dr || !dr.alive || !Abil.canUse(P)) { Sfx.ui('deny'); return; } AbilHand.cancel(P, true); Placement.close(); dr.ctrl = true; dr.pitch = 0; this.stats.camViews++; Sfx.ui(); },
+  enter(P, dr) { if (!dr || !dr.alive || !Abil.canUse(P, dr.key || Object.keys(P.A.abilities).find(k => P.A.abilities[k].kind === 'drone'))) { Sfx.ui('deny'); return; } AbilHand.cancel(P, true); Placement.close(); dr.ctrl = true; dr.pitch = 0; this.stats.camViews++; Sfx.ui(); },
   // step out: a camera stays where it is; every other drone is spent
   leave(P, force) { const dr = P.drone; if (!dr) return; if (dr.mode === 'cam' && !force) { dr.ctrl = false; P.input.fireP = false; Sfx.ui(); return; } Abil.endDrone(dr); },
   speed(dr) { return dr.mode === 'skim' ? 10 : dr.mode === 'runner' ? (dr.p.speed || 9) : dr.mode === 'cam' ? 0 : 8; },
@@ -11993,7 +12328,7 @@ const Possess = {
     }
     if (dr.mode === 'runner') { if (!dr.leap) { dr.leap = 0.3; Sfx.ability('dash', dr.pos); this.stats.leaps++; } return; }
     const cd = dr.mode === 'cam' ? (dr.p.cd || 6) : 0.8; if (now < dr.tagNext) return; dr.tagNext = now + cd;
-    const o = dr.pos.clone(), dd = dirFromAngles(dr.yaw, dr.pitch, new V3());
+    const o = DroneView.lens(dr), dd = dirFromAngles(dr.yaw, dr.pitch, new V3());   // v37: from the lens the pilot sees through
     const res = traceBullet(ag, o, dd, { pen: 0, dmg: [[999, 0, 0, 0]], name: 'Tag' }, 40, 0, true); FX.tracer(o, res.end, ag.A.accent, 0.2); this.stats.darts++;
     if (res.victim && res.victim.applyStatus) { Abil.applyFx(res.victim, ag, dr.tag === 'daze' ? { daze: 2.5, reveal: 3 } : { reveal: dr.mode === 'cam' ? 4 : 3 }); Sfx.ability('ping', o); }
   },
@@ -12009,6 +12344,34 @@ const Possess = {
       : dr.mode === 'cam' ? `Camera · <b>click</b> reveal dart · <b>${k}</b> step out (camera stays)`
       : `Scout drone · look to climb / dive · <b>click</b> tag · <b>${k}</b> return`;
   },
+};
+// ============================================================ v37 DRONE VIEW: an unobstructed first-person view through drones and cameras
+// Valorant's Owl Drone and Spycam views put the camera at the device's lens and never draw the device's own body in front
+// of it. Before v37 Riftline put the camera at the drone's centre: inside the scout drone's body (its lens orb sat right on
+// the crosshair), on the floor under the hound's head (the Crawler's chassis filled the screen), and inside the camera's
+// housing. This module owns where the pilot's eye is:
+//   · the lens: per mode, a point on the front of the device (fly / skim / runner / cam), pulled back if a wall is closer
+//   · the pilot never sees their own device: its mesh is hidden only while it is being piloted, restored the moment you
+//     step out, it dies or you die — everyone else (and replays / spectators) still sees it
+//   · darts and tags fire from the same lens, so the crosshair is exact
+// Pure view code: reads the drone record, writes the camera and one mesh's visibility.
+const DroneView = {
+  // [forward, up] from the device's origin to its lens, in metres
+  LENS: { fly: [0.26, 0.02], skim: [0.3, 0.07], runner: [0.66, 0.56], cam: [0.16, 0] },
+  hidden: null, stats: { frames: 0, pulled: 0, hides: 0 },
+  lens(dr, out) {
+    const L = this.LENS[dr.mode] || this.LENS.fly, fx = -Math.sin(dr.yaw), fz = -Math.cos(dr.yaw);
+    out = (out || new V3()).copy(dr.pos); out.y += L[1];
+    const f = tmpC.set(fx, 0, fz), hit = World.rayHit(out, f, L[0] + 0.15), fwd = Math.max(0, Math.min(L[0], hit - 0.15));
+    if (fwd < L[0] - 1e-3) this.stats.pulled++;
+    return out.addScaledVector(f, fwd);
+  },
+  apply(cam, V) {
+    const dr = V.drone; this.hide(dr); this.stats.frames++;
+    this.lens(dr, cam.position); cam.rotation.set(dr.pitch, dr.yaw, 0);
+  },
+  hide(dr) { if (this.hidden === dr) return; this.show(); if (dr && dr.mesh) { dr.mesh.visible = false; this.hidden = dr; this.stats.hides++; } },
+  show() { const h = this.hidden; if (h && h.mesh) h.mesh.visible = true; this.hidden = null; },
 };
 // ============================================================ GAME STATE
 const G = {
@@ -12258,6 +12621,12 @@ class PlantMode {
     this.charge.state = 'carried'; this.charge.carrier = a; this.charge.mesh.visible = false;
     if (a.isHuman) UI.toast('You have the Charge · hold 4 inside a site to plant', 'info');
   }
+  // an attacker walking over a dropped Charge picks it up (the dropper can't instantly re-grab it); buy phase and live play
+  pickupCharge(dt) {
+    const c = this.charge; c.mesh.rotation.y += dt;
+    for (const a of G.agents) if (a.alive && this.sides[a.team] === 'atk' && Math.hypot(a.pos.x - c.pos.x, a.pos.z - c.pos.z) < 1.1 && !(c.dropBy === a && G.time - c.dropT < 1.5)) {
+      this.giveCharge(a); if (this.phase === 'buy' && c.dropBy && c.dropBy !== a && c.dropBy.isHuman && a.team === G.player.team) UI.toast(a.name + ' picked up the Charge', 'ally'); break; }
+  }
   dropCharge(a) {
     if (!a.weapons.charge) return;
     a.weapons.charge = null; if (a.slot === 'charge') a.slot = a.bestSlot();
@@ -12340,9 +12709,10 @@ class PlantMode {
     const c = this.charge;
     World.updateTeleports(dt); Mech.update(dt); Orbs.update(dt, this);
     if (this.phase === 'buy') {
+      if (c.state === 'dropped') this.pickupCharge(dt);   // v37: attackers can pass the Charge around before the barriers drop
       if (this.timer <= 0) { this.phase = 'live'; this.timer = 100; World.barriersUp.atk = World.barriersUp.def = false; R.showBarriers(false, false); UI.closeBuy(); UI.banner('Round start', '', 'info', 1.2); Sfx.ui('round'); }
     } else if (this.phase === 'live' || this.phase === 'planted') {
-      if (c.state === 'dropped') { c.mesh.rotation.y += dt; for (const a of G.agents) if (a.alive && this.sides[a.team] === 'atk' && Math.hypot(a.pos.x - c.pos.x, a.pos.z - c.pos.z) < 1.1 && !(c.dropBy === a && G.time - c.dropT < 1.5)) { this.giveCharge(a); break; } }   // the dropper can't instantly re-grab it
+      if (c.state === 'dropped') this.pickupCharge(dt);
       for (const a of G.agents) {
         if (!a.alive || !a.weapons.charge || this.phase !== 'live') { a.planting = 0; continue; }
         const want = a.isHuman && !G.autopilot ? (a.slot === 'charge' && (Input.act('charge') && Input.holdPlantT > 0.25 || a.input.fire)) : a.wantPlant;
@@ -14078,13 +14448,7 @@ const UI = {
     for (const w of Abil.walls) { x.beginPath(); for (const [a, b] of w.segs) { const [ax, az] = P(a), [bx, bz] = P(b); x.moveTo(ax, az); x.lineTo(bx, bz); } x.stroke(); }
     x.font = `900 ${Math.round(36 * k)}px "Big Shoulders Display", Impact, sans-serif`; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillStyle = 'rgba(236,230,220,0.6)';
     for (const L of World.siteLetters) { const c = World.sites[L].center; x.save(); x.translate((c[0] + 0.5) * CELL * this.mmScale, (c[1] + 0.5) * CELL * this.mmScale); if (rot) x.rotate(-me.yaw); x.fillText(L, 0, 0); x.restore(); }
-    const M = G.mode, ch = M.charge;
-    if (M.teamBased && ch) {
-      let cp = null; const meAtk = M.sides[G.player.team] === 'atk';
-      // dropped Charge: attackers always; defenders only while a living defender has eyes on it (Brain.spikeWatch)
-      if (ch.state === 'planted') cp = ch.pos; else if (ch.state === 'dropped' && (meAtk || G.time - ((M.chargeSeen || {})[G.player.team] || -9) < 0.55)) cp = ch.pos; else if (ch.state === 'carried' && ch.carrier && ch.carrier.team === G.player.team) cp = ch.carrier.pos;
-      if (cp) { const [px, pz] = P(cp); x.save(); x.translate(px, pz); if (rot) x.rotate(-me.yaw); x.fillStyle = '#ff4b5c'; x.fillRect(-5 * k, -5 * k, 10 * k, 10 * k); x.restore(); }
-    }
+    const M = G.mode;
     Orbs.drawMap(x, P, k);
     MMProj.draw(x, P, k);   // held-ability targeting preview, under the player icons
     for (const d of Abil.devices) { if (!d.alive || (M.teamBased && d.team !== G.player.team)) continue; const [px, pz] = P(d.pos); x.fillStyle = d.owner.A.cssAccent; x.save(); x.translate(px, pz); x.rotate(Math.PI / 4); x.fillRect(-3 * k, -3 * k, 6 * k, 6 * k); x.restore(); }
@@ -14100,6 +14464,7 @@ const UI = {
       x.restore();
     }
     for (const d of Abil.drones) { const [px, pz] = P(d.pos); x.fillStyle = d.owner.A.cssAccent; x.fillRect(px - 3 * k, pz - 3 * k, 6 * k, 6 * k); }
+    { const sm = SpikeMark.locate(G.player.team); if (sm) { const [px, pz] = P(sm.pos); SpikeMark.draw(x, px, pz, k, sm, rot ? -me.yaw : 0); } }   // v37: on top of the arrows
     Ping.draw(x, P, k);
     x.restore(); x.strokeStyle = '#2b4050'; x.strokeRect(0.5, 0.5, W - 1, W - 1);
     this.set('callout', 'text', World.callout(me.pos.x, me.pos.z).toUpperCase());
@@ -14558,8 +14923,6 @@ Object.assign(UI, {
     Mech.drawMap(x, P);
     for (const z of Abil.zones) { const [px, pz] = P(z.pos); x.beginPath(); x.arc(px, pz, z.r * s, 0, TAU); x.fillStyle = z.kind === 'smoke' ? 'rgba(190,200,210,0.6)' : 'rgba(255,120,60,0.4)'; x.fill(); }
     for (const t of World.tp.values()) { const a = World.center(t.pad[0], t.pad[1]), b = World.center(t.exit[0], t.exit[1]); x.strokeStyle = 'rgba(111,240,255,0.6)'; x.setLineDash([6, 6]); x.lineWidth = 2; x.beginPath(); x.moveTo(...P(a)); x.lineTo(...P(b)); x.stroke(); x.setLineDash([]); }
-    const ch = M.charge;
-    if (M.teamBased && ch) { let cp = null; if (ch.state === 'planted' || (ch.state === 'dropped' && (M.sides[G.player.team] === 'atk' || G.time - ((M.chargeSeen || {})[G.player.team] || -9) < 0.55))) cp = ch.pos; else if (ch.state === 'carried' && ch.carrier && ch.carrier.team === G.player.team) cp = ch.carrier.pos; if (cp) { const [px, pz] = P(cp); x.fillStyle = '#ff4b5c'; x.fillRect(px - 7, pz - 7, 14, 14); } }
     Orbs.drawMap(x, P, k);
     Ping.draw(x, P, k);
     x.font = '700 12px "Barlow Semi Condensed", "Arial Narrow", sans-serif';
@@ -14570,9 +14933,52 @@ Object.assign(UI, {
       x.fillStyle = me ? '#f2c65a' : ally ? '#3fa9ff' : '#ff4b5c'; x.beginPath(); x.moveTo(0, -11); x.lineTo(8, 8); x.lineTo(-8, 8); x.closePath(); x.fill(); x.restore();
       x.fillStyle = '#ece6dc'; x.fillText(me ? 'YOU' : a.A.name.toUpperCase(), px, pz + 18);
     }
+    { const sm = SpikeMark.locate(G.player.team); if (sm) { const [px, pz] = P(sm.pos); SpikeMark.draw(x, px, pz, 1.6, sm, 0); } }   // v37 spike mark, over the arrows
     const here = World.callout(G.player.pos.x, G.player.pos.z); $('bigmap-t').textContent = MAP.name + (here ? ' · ' + here : '');
   },
 });
+// ============================================================ v37 SPIKE MARK: one spike icon for every map surface
+// The minimap, the big map (map key) and the ability placement map all show the Charge with the same rules and the same
+// glyph, drawn on top of the player arrows so the carrier's arrow never hides it:
+//   carried  your team's carrier: a badge riding on the carrier's arrow (attackers only see their own carrier)
+//   dropped  attackers always; defenders only while one of them has eyes on it (Brain.spikeWatch → chargeSeen) — a
+//            dashed ring pulses around it so a dropped spike reads at a glance
+//   planted  everyone: the glyph turns red and a ring pulses with the beeps, faster as detonation nears
+// Pure canvas drawing; callers pass their own transform (P(world) → canvas units) and pixel scale k.
+const SpikeMark = {
+  locate(team) {
+    const M = G.mode, ch = M && M.charge; if (!M || !M.teamBased || !ch) return null;
+    const atk = M.sides[team] === 'atk';
+    if (ch.state === 'planted') return { pos: ch.pos, state: 'planted' };
+    if (ch.state === 'dropped') return (atk || G.time - ((M.chargeSeen || {})[team] || -9) < 0.55) ? { pos: ch.pos, state: 'dropped' } : null;
+    if (ch.state === 'carried' && ch.carrier && ch.carrier.alive && ch.carrier.team === team) return { pos: ch.carrier.pos, state: 'carried', carrier: ch.carrier };
+    return null;
+  },
+  // the glyph: an upright hexagonal canister with a glowing core and two prongs, ~2r tall
+  glyph(x, r, fill, core) {
+    x.beginPath(); for (let i = 0; i < 6; i++) { const a = Math.PI / 6 + i * Math.PI / 3; x.lineTo(Math.cos(a) * r * 0.78, Math.sin(a) * r); } x.closePath();
+    x.fillStyle = '#10161c'; x.fill(); x.lineWidth = Math.max(1, r * 0.22); x.strokeStyle = fill; x.stroke();
+    x.fillStyle = core; x.beginPath(); x.moveTo(0, -r * 0.5); x.lineTo(r * 0.34, 0); x.lineTo(0, r * 0.5); x.lineTo(-r * 0.34, 0); x.closePath(); x.fill();
+    x.fillStyle = fill; x.fillRect(-r * 0.12, -r * 1.32, r * 0.24, r * 0.34); x.fillRect(-r * 0.12, r * 0.98, r * 0.24, r * 0.34);
+  },
+  // draw at canvas point (px, pz); k = canvas units per screen pixel; unrot = angle that undoes a rotated map
+  draw(x, px, pz, k, info, unrot) {
+    if (!info) return;
+    const t = G.time, M = G.mode;
+    x.save(); x.translate(px, pz); if (unrot) x.rotate(unrot);
+    if (info.state === 'carried') { x.translate(7 * k, -8 * k); this.glyph(x, 4.6 * k, '#ffb03a', '#ffe1a0'); }
+    else if (info.state === 'dropped') {
+      const ph = (t * 1.4) % 1; x.setLineDash([3 * k, 3 * k]); x.lineWidth = 1.6 * k; x.strokeStyle = `rgba(255,176,58,${0.9 - ph * 0.6})`;
+      x.beginPath(); x.arc(0, 0, (7 + ph * 6) * k, 0, TAU); x.stroke(); x.setLineDash([]);
+      this.glyph(x, 6 * k, '#ffb03a', '#ffe1a0');
+    } else {
+      const left = M && M.chargeLeft ? M.chargeLeft() : 30, hz = left > 20 ? 1 : left > 10 ? 2 : left > 5 ? 4 : 8, ph = (t * hz) % 1;
+      x.lineWidth = 2 * k; x.strokeStyle = `rgba(255,70,85,${1 - ph})`; x.beginPath(); x.arc(0, 0, (7 + ph * 10) * k, 0, TAU); x.stroke();
+      this.glyph(x, 6.5 * k, '#ff4655', ph < 0.25 ? '#ffffff' : '#ff9aa3');
+    }
+    x.restore();
+  },
+};
 // ============================================================ v31 ALLY HUD: through-wall silhouettes, nameplates, spike-carrier tag
 // Presentation only: reads agents / mode state, never changes them.
 //   X-ray   each teammate carries a second skinned copy of its body in flat teal. AllyVis decides per frame whether anything
@@ -15802,20 +16208,23 @@ function updateView(dt) {
   const hi = R.quality === 'high'; Outline.tick(G.time);
   for (const a of G.agents) {
     const hostile = G.mode.teamBased ? a.team !== P.team : a !== P;
-    a.model.visible = a.alive ? a !== V && !(a.st.invisU > G.time && V && !sameTeam(a, V)) : (a.deadT < (G.mode.teamBased ? 999 : 3) && !!a.corpse);
+    a.model.visible = a.alive ? (a !== V || !!(V.drone && V.drone.ctrl)) && !(a.st.invisU > G.time && V && !sameTeam(a, V)) : (a.deadT < (G.mode.teamBased ? 999 : 3) && !!a.corpse);
     const u = a.model.userData; Outline.set(u, hostile && a.alive);
     u.xray.visible = hostile && a.alive && (a.revealBy[P.team] || 0) > G.time;
     u.marker.visible = !hostile && a.alive && a !== V && G.mode.teamBased;
   }
   AllyHUD.update(P, G.viewer, cam, dt);   // teammate x-ray, nameplates, spike-carrier tag
   let zoom = 1, vmOn = false;
+  if (!(V && V.alive && V.drone && V.drone.ctrl)) DroneView.show();
   if (V && V.alive) {
     const w = V.weapon();
-    if (V.drone && V.drone.ctrl) { cam.position.copy(V.drone.pos); cam.rotation.set(V.drone.pitch, V.drone.yaw, 0); }
+    if (V.drone && V.drone.ctrl) DroneView.apply(cam, V);   // v37: from the lens, the device's own body hidden
     else {
       V.eye(cam.position);
-      const daze = V.st.dazeU > G.time ? 1 : 0;
-      cam.rotation.set(V.pitch + (w.recP || 0) * 0.32 * DEG + daze * Math.sin(G.time * 3.1) * 0.015, V.yaw - (w.recY || 0) * 0.25 * DEG + daze * Math.sin(G.time * 2.3) * 0.02, daze * Math.sin(G.time * 1.7) * 0.03);
+      // v37 concuss: the view drifts on its own (strongest right after the hit, easing out over the last 0.8 s) + hit jolts
+      const daze = V.st.dazeU > G.time ? Math.min(1, (V.st.dazeU - G.time) / 0.8) : 0, js = V === G.player ? CamShake.now() : 0, T = G.time;
+      cam.rotation.set(V.pitch + (w.recP || 0) * 0.32 * DEG + daze * (Math.sin(T * 1.9) * 0.032 + Math.sin(T * 5.3) * 0.008) + js * Math.sin(T * 47) * 0.012,
+        V.yaw - (w.recY || 0) * 0.25 * DEG + daze * (Math.sin(T * 1.3) * 0.045 + Math.sin(T * 4.1) * 0.01) + js * Math.sin(T * 39) * 0.014, daze * Math.sin(T * 1.1) * 0.05 + js * Math.sin(T * 31) * 0.01);
       if (V.ads) zoom = w.def.alt === 'scope' ? (w.scope ? w.def.zooms[w.scope - 1] : 1) : (w.def.zoom || 1);
       vmOn = !(w.def.alt === 'scope' && w.scope > 0);   // the player and any spectated teammate: their arms, gun, skin, recoil, reloads
       // spectated bots fidget like players: an occasional inspect while idle (VM only — purely cosmetic)
