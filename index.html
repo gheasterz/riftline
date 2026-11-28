@@ -999,7 +999,7 @@ img{max-width:100%}
 .imp-sum{display:grid;gap:4px;margin:10px 0;max-width:420px}.imp-row{display:flex;justify-content:space-between;gap:14px;font:600 13px var(--f-body);color:var(--dim)}.imp-row b{color:var(--off);font-weight:700;text-align:right}
 .mbox .mrow{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;flex-wrap:wrap}
 </style>
-<div id="loading">LOADING RIFTLINE</div>
+<div id="loading"><div class="ldw">LOADING RIFTLINE<small>(use Ctrl+Shift+R to hard reset the game in case there are any updates)</small></div></div>
 <canvas id="game"></canvas>
 
 <div id="nearsight"></div>
@@ -1407,6 +1407,41 @@ img{max-width:100%}
 .mpband{margin:8px 2px 2px;font-size:13px;color:#8aa0ad}.mpband b{color:var(--off)}
 .mpwait{padding:60px 0;text-align:center;color:#8aa0ad;font-size:18px}
 #mp .mpprac{border-left:3px solid var(--gold);padding:6px 10px;background:rgba(245,197,66,.07);color:#d8cfb8}#mp .mpprac b{color:var(--gold)}
+#loading .ldw{text-align:center}#loading .ldw small{display:block;margin-top:14px;font:500 14px/1.4 var(--f-body);letter-spacing:.3px;color:#8aa0ad;text-transform:none;padding:0 20px}
+/* friends: header button, slide-out panel, invite pop-up */
+.mpfrb{position:relative;display:flex;align-items:center;gap:8px;background:rgba(10,18,24,.55);border:1px solid rgba(255,255,255,.14);color:var(--off);font:800 15px var(--f-display);letter-spacing:2px;text-transform:uppercase;padding:9px 16px;margin-right:12px;cursor:pointer;transition:border-color .15s,background .15s}
+.mpfrb:hover,.mpfrb.on{border-color:var(--teal);background:rgba(63,208,200,.12)}
+.mpfrb b{font:800 13px var(--f-display);color:#5fe0b5;min-width:0}.mpfrb b:empty{display:none}
+.mpfrb i{position:absolute;top:-7px;right:-7px;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--red);color:#fff;font:800 11px/18px var(--f-body);font-style:normal;text-align:center}
+.mpfrb i.hidden{display:none}
+.mpfr{position:fixed;top:0;right:0;bottom:0;width:min(360px,100vw);z-index:40;background:linear-gradient(180deg,#17262f,#0f1a21);border-left:1px solid rgba(255,255,255,.1);box-shadow:-18px 0 50px rgba(0,0,0,.45);transform:translateX(105%);transition:transform .22s ease;display:flex;flex-direction:column}
+.mpfr.on{transform:none}
+.mpfr-h{display:flex;align-items:center;justify-content:space-between;padding:18px 20px 12px;border-bottom:1px solid rgba(255,255,255,.07)}
+.mpfr-h b{font:900 24px var(--f-display);letter-spacing:2px;text-transform:uppercase}
+.mpfr-x{background:none;border:0;color:#8aa0ad;font-size:28px;line-height:1;cursor:pointer}.mpfr-x:hover{color:var(--off)}
+.mpfr-add{display:flex;gap:8px;padding:14px 20px 0}.mpfr-add.hidden{display:none}
+.mpfr-add input{flex:1;min-width:0;font:600 15px var(--f-body)!important;padding:8px 10px!important}
+.mpfr-msg{margin:6px 20px 0;min-height:18px;font-size:13px;color:#5fe0b5}.mpfr-msg.bad{color:var(--red)}
+.mpfr-list{flex:1;overflow-y:auto;padding:4px 12px 20px}
+.mpfr-list h4{margin:16px 8px 6px;font:800 12px var(--f-display);letter-spacing:2.5px;text-transform:uppercase;color:#7f95a3}
+.mpfr-r{display:flex;flex-wrap:wrap;align-items:center;gap:10px;padding:8px;border-radius:2px}
+.mpfr-r:hover{background:rgba(255,255,255,.035)}
+.mpfr-r .dot{width:9px;height:9px;border-radius:50%;background:#4a5a64;flex:none}
+.mpfr-r.on .dot{background:#5fe0b5;box-shadow:0 0 7px #5fe0b5}.mpfr-r.on.lobby .dot{background:var(--teal);box-shadow:0 0 7px var(--teal)}.mpfr-r.on.match .dot{background:var(--gold);box-shadow:0 0 7px var(--gold)}
+.mpfr-n{flex:1;min-width:0}.mpfr-n b{display:block;font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpfr-n small{display:block;color:#8aa0ad;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mpfr-r:not(.on):not(.req) .mpfr-n b{color:#9aa8b3}
+.mpfr-dots{background:none;border:0;color:#6f8593;font-size:18px;cursor:pointer;padding:0 4px;line-height:1}.mpfr-dots:hover{color:var(--off)}
+.mpfr-more{flex-basis:100%;display:flex;gap:6px;padding-left:19px}
+.mpfr-tag{font:700 11px var(--f-body);letter-spacing:1px;text-transform:uppercase;color:var(--teal)}
+.mpfr-empty{color:#8aa0ad;font-size:14px;margin:14px 8px;line-height:1.45}.mpfr-empty.sm{margin:4px 8px 8px;font-size:13px}
+.mpfr-list>.mpbtn{margin:0 8px}
+.mpfr-blk{margin-top:14px}.mpfr-blk summary{cursor:pointer;margin:0 8px;font:800 12px var(--f-display);letter-spacing:2.5px;text-transform:uppercase;color:#7f95a3}
+#mpinv{position:fixed;top:16px;right:16px;z-index:60;display:flex;flex-direction:column;gap:8px;width:min(330px,calc(100vw - 32px));pointer-events:none}
+.mpinv{pointer-events:auto;background:linear-gradient(160deg,#1c2d39,#111c24);border:1px solid rgba(63,208,200,.45);border-left:3px solid var(--teal);padding:12px 14px;box-shadow:0 12px 34px rgba(0,0,0,.5);font:600 14px/1.4 var(--f-body);color:var(--off);animation:mpinvin .25s ease-out}
+.mpinv small{display:block;color:#8aa0ad;font-size:12px;margin-top:2px}
+.mpinv-b{display:flex;gap:8px;margin-top:10px}
+@keyframes mpinvin{from{opacity:0;transform:translateX(12px)}}
 /* account: cloud strip + dialogs */
 .mpcloud{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .mpcloud-u{display:flex;align-items:center;gap:8px;font:800 16px var(--f-display);letter-spacing:1px;margin-right:auto}
@@ -1526,7 +1561,7 @@ img{max-width:100%}
 </style>
 <div id="mp" class="hidden" role="dialog" aria-label="Multiplayer">
   <div class="mpwrap">
-    <div class="mphead"><div class="brand">Rift<span>line</span><em>Multiplayer</em></div><nav class="mptabs" id="mp-tabs"><button data-tab="play" class="on">Play</button><button data-tab="lb">Leaderboard</button></nav><div class="sp"></div><button class="mpbtn ghost" id="mp-close">← Back to menu</button></div>
+    <div class="mphead"><div class="brand">Rift<span>line</span><em>Multiplayer</em></div><nav class="mptabs" id="mp-tabs"><button data-tab="play" class="on">Play</button><button data-tab="lb">Leaderboard</button></nav><div class="sp"></div><button class="mpfrb" id="mp-frb" aria-label="Friends"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M16 4.6a3.5 3.5 0 0 1 0 6.8M18 14.3c2.2.7 3.5 2.8 3.5 5.7"/></svg>Friends<b id="mp-frn"></b><i id="mp-frbadge" class="hidden"></i></button><button class="mpbtn ghost" id="mp-close">← Back to menu</button></div>
     <section id="mp-home">
       <div class="mpacc" id="mp-acct"></div>
       <div class="mpcards">
@@ -16029,7 +16064,8 @@ class NetRelay {
       ws.onclose = () => { if (!done) { done = true; rej(new Error('Connection closed')); } else this.fire('close'); };
     });
   }
-  async host() { const m = await this.open({ t: 'host' }); this.id = 'H'; return m.code; }
+  async host() { const m = await this.open({ t: 'host' }); this.id = 'H'; this.rid = m.rid || ''; return m.code; }
+  async ticket(id, info) { const m = await this.open(Object.assign({ t: 'tkt', id }, info)); this.id = m.cid; return m.cid; }
   async join(code) { const m = await this.open({ t: 'join', code }); this.id = m.cid; return m.cid; }
   // ask to join a listed lobby by its public id (the code is never sent to us); resolves when the host accepts
   async request(rid, info) { const m = await this.open(Object.assign({ t: 'req', rid }, info)); this.id = m.cid; return m.cid; }
@@ -16179,7 +16215,7 @@ const Net = {
     // hovering a tile previews that agent's kit; leaving the grid shows your own again
     $('mp-room').addEventListener('mouseover', e => { const t = e.target.closest('.mpag'); if (!t || t.dataset.a === this._hov) return; this._hov = t.dataset.a; const me = this.me(); $('mp-agcard').innerHTML = this.agentCard(t.dataset.a, me && me.agent === t.dataset.a); });
     $('mp-room').addEventListener('mouseout', e => { if (!e.target.closest('.mpags') || (e.relatedTarget && e.relatedTarget.closest && e.relatedTarget.closest('.mpags'))) return; this._hov = null; const me = this.me(), c = $('mp-agcard'); if (c && me) c.innerHTML = this.agentCard(me.agent, true); });
-    Cloud.init(); this.chatInit(); this.browseInit(); this.lbInit();
+    Cloud.init(); this.chatInit(); this.browseInit(); this.lbInit(); Friends.init();
     const q = new URLSearchParams(location.search).get('join');
     if (q) { $('mp-code').value = q.toUpperCase().slice(0, 5); setTimeout(() => this.open(), 50); }
   },
@@ -16236,6 +16272,7 @@ const Net = {
       const c = this.myCard(); this._askName = c.name;
       this.lobby = { players: [{ id: 'H', name: c.name, team: 0, agent: c.agent, sk: c.sk, acct: c.acct, dl: c.dl }], map: 'random', mode: 'custom', cwin: 9, diff: Settings.diff, bots: [4, 5], fill: true, inGame: false, starting: false, listed: true };
       tx.on('msg', (cid, m) => this.hostMsg(cid, m)); tx.on('leave', cid => this.peerLeft(cid)); tx.on('close', () => this.lostLink('Lost connection to the relay server'));
+      this.lobby.rid = tx.rid || ''; if (Cloud.on() && tx.raw) tx.raw({ t: 'own', tok: Cloud.auth.tok });   // lets this account's invites skip the request step
       tx.on('req', (cid, m) => this.onReq(cid, m)); tx.on('reqx', cid => { this.reqs = this.reqs.filter(r => r.cid !== cid); this.render(); });
       this.chat = []; this.reqs = []; this._metaS = ''; this._chatRate = {}; this.hostName = c.name;
       this.addChat({ sys: 1, x: 'Lobby open · Enter sends · Team or All' }); this.pushLobby();
@@ -16449,7 +16486,7 @@ const Net = {
     const listed = host ? `<label class="mpchk${this.relay ? '' : ' dim'}"><input type="checkbox" id="mp-listed"${L.listed !== false && this.relay ? ' checked' : ''}${this.relay ? '' : ' disabled'}><span>Show in Open lobbies<small>${this.relay ? 'Players can ask to join · you accept or decline' : 'Needs the game server (server.js)'}</small></span></label>` : '';
     // a fixed-height strip (reserved while the lobby is listed) so a request never shoves the buttons below it around
     const seen = this._reqSeen || (this._reqSeen = new Set());
-    const reqs = host && this.relay && L.listed !== false ? `<div class="mpreqs">${!this.reqs.length ? `<div class="mpreq none"><b>Join requests</b><small>Your lobby is listed in Open lobbies · requests appear here</small></div>` : this.reqs.map(r => `<div class="mpreq${seen.has(r.cid) ? '' : ' new'}"><span class="mpreq-i">${this.badge(r.rk, 26)}</span><div><b>${NetU.esc(r.name)}</b><small>Level ${r.lv} · ${NetU.esc(Rank.name(r.rk))} · wants to join</small></div><button class="mpbtn sm on" data-act="racc" data-id="${NetU.esc(r.cid)}">Accept</button><button class="mpbtn sm ghost" data-act="rdec" data-id="${NetU.esc(r.cid)}">Decline</button></div>`).join('')}</div>` : '';
+    const reqs = host && this.relay && (L.listed !== false || this.reqs.length) ? `<div class="mpreqs">${!this.reqs.length ? `<div class="mpreq none"><b>Join requests</b><small>Your lobby is listed in Open lobbies · requests appear here</small></div>` : this.reqs.map(r => `<div class="mpreq${seen.has(r.cid) ? '' : ' new'}"><span class="mpreq-i">${this.badge(r.rk, 26)}</span><div><b>${NetU.esc(r.name)}</b><small>Level ${r.lv} · ${NetU.esc(Rank.name(r.rk))} · ${r.fr ? 'friend · ' : ''}wants to join</small></div><button class="mpbtn sm on" data-act="racc" data-id="${NetU.esc(r.cid)}">Accept</button><button class="mpbtn sm ghost" data-act="rdec" data-id="${NetU.esc(r.cid)}">Decline</button></div>`).join('')}</div>` : '';
     for (const r of this.reqs) seen.add(r.cid);
     const title = this.titleOf(L);
     const head = `<div class="mpttl"><small>Lobby</small><b title="${NetU.esc(title)}">${NetU.esc(title)}</b></div>` + (this.code ? `<span>Code</span><b>${this.code}</b><button class="mpbtn" data-act="copy" data-url="${NetU.esc(url)}">Copy invite link</button>` : '');
@@ -16555,7 +16592,7 @@ const Net = {
     else if (t.id === 'mp-cwin') L.cwin = +t.value;
     else if (t.id === 'mp-diff') L.diff = +t.value;
     else if (t.id === 'mp-ltitle') { L.title = this.cleanTitle(t.value); t.value = L.title; }
-    else if (t.id === 'mp-listed') { L.listed = t.checked; if (!L.listed) { for (const r of this.reqs) this.tx.answer(r.cid, false, MP_DENY.PRIVATE); this.reqs = []; } }
+    else if (t.id === 'mp-listed') { L.listed = t.checked; if (!L.listed) { for (const r of this.reqs.filter(x => !x.fr)) this.tx.answer(r.cid, false, MP_DENY.PRIVATE); this.reqs = this.reqs.filter(x => x.fr); } }
     else return;
     this.pushLobby();
   },
@@ -17309,10 +17346,10 @@ Object.assign(Net, {
   },
   onReq(cid, m) {
     const L = this.lobby, full = L && (this.partyMode() ? L.players.length >= 5 : L.players.length >= 10);
-    const no = !L ? 'That lobby closed.' : L.listed === false ? MP_DENY.PRIVATE : L.inGame || L.starting ? MP_DENY.MATCH_IN_PROGRESS : full ? (this.partyMode() ? MP_DENY.PARTY_FULL : MP_DENY.LOBBY_FULL) : '';
+    const no = !L ? 'That lobby closed.' : L.listed === false && !m.fr ? MP_DENY.PRIVATE : L.inGame || L.starting ? MP_DENY.MATCH_IN_PROGRESS : full ? (this.partyMode() ? MP_DENY.PARTY_FULL : MP_DENY.LOBBY_FULL) : '';
     if (no) { this.tx.answer(cid, false, no); return; }
     const num = (v, lo, hi, d) => { v = Math.round(+v); return isFinite(v) ? clamp(v, lo, hi) : d; };
-    const r = { cid, name: this.cleanName(m.name), lv: num(m.lv, 1, 1000, 1), rk: num(m[this.rankKey()], -1, RANK_TOP, -1) };
+    const r = { cid, name: this.cleanName(m.name), lv: num(m.lv, 1, 1000, 1), rk: num(m[this.rankKey()], -1, RANK_TOP, -1), fr: !!m.fr };
     this.reqs = this.reqs.filter(x => x.cid !== cid).concat(r); this.render();
     try { Sfx.ui(); } catch (e) { }
     if ($('mp').classList.contains('hidden')) try { UI.toast(r.name + ' wants to join your lobby · open Multiplayer to answer', 'info'); } catch (e) { }
@@ -17357,11 +17394,11 @@ Object.assign(Net, {
       return `<div class="mpbr${mine ? ' on' : ''}"><div class="mpbr-host"><b title="${NetU.esc(r.name || '')}">${NetU.esc(r.name || r.host + '’s lobby')}</b><small>Hosted by ${NetU.esc(r.host)}</small></div><div class="mpbr-m"><b>${NetU.esc(r.mode)}</b><small>${NetU.esc(r.map)}</small></div><div class="mpbr-n"><b>${r.n | 0}/${r.cap | 0}</b><small>players</small></div>${status}${btn}</div>`;
     }).join('');
   },
-  async requestJoin(rid, hostName) {
+  async requestJoin(rid, hostName, friend) {
     if (this.role || this._joining || !this.relay) return; this.err('');
     const tx = this.newTx(); this._joining = true; this._reqTx = tx; this._reqRid = rid; this.renderBrowse();
     try {
-      const c = this.myCard(), id = await tx.request(rid, { name: c.name, lv: c.acct.lv, rq: c.acct.rq.i, rs: c.acct.rs.i });
+      const c = this.myCard(), id = await tx.request(rid, Object.assign({ name: c.name, lv: c.acct.lv, rq: c.acct.rq.i, rs: c.acct.rs.i }, Cloud.on() ? { tok: Cloud.auth.tok } : {}));
       if (this._reqTx !== tx) { tx.close(); return; }
       this._reqTx = null; this._reqRid = null; this._joining = false;
       this.connected(tx, id, '', hostName);
@@ -17563,6 +17600,166 @@ Object.assign(Net, {
     if (!Cloud.on()) return `<div class="mpcloud off"><button class="mpbtn sm on" id="mp-signin">Sign in</button><button class="mpbtn sm ghost" id="mp-signup">Create account</button></div><small>Sign in to keep your progress on every device and appear on the leaderboard. Your current save carries over.</small>`;
     const sp = Cloud.syncPt(), st = Cloud.err ? `<span class="bad">${NetU.esc(Cloud.err)}</span>` : Cloud.pendingFix ? 'Sync waits until the match ends' : sp ? 'Saved to the cloud ' + Cloud.ago(sp.at) : 'Syncing…';
     return `<div class="mpcloud"><span class="mpcloud-u"><i></i>${NetU.esc(Cloud.auth.name)}</span><button class="mpbtn sm ghost" id="mp-acctb">Account</button></div><small>${st}</small>`;
+  },
+});
+
+// ------------------------------------------------------------ FRIENDS (slide-out panel) + PRESENCE + LOBBY INVITES
+// Needs an account. Friend requests / list live in the database; who's online, what they're doing and invites travel
+// over one small live socket per signed-in tab, through the game server. Invites from a lobby's host let the friend
+// straight in; invites from anyone else (and "Ask to join") go to the host to accept, like Open lobbies.
+const Friends = {
+  ws: null, up: false, data: null, open: false, invites: [], wait: 3000, more: '', msg: '', _st: '',
+  wsUrl() { return (location.protocol === 'https:' ? 'wss://' : 'ws://') + location.host + location.pathname.replace(/[^/]*$/, '') + 'ws'; },
+  init() {
+    const P = document.createElement('aside'); P.id = 'mp-fr'; P.className = 'mpfr'; P.setAttribute('aria-label', 'Friends');
+    P.innerHTML = `<div class="mpfr-h"><b>Friends</b><button class="mpfr-x" id="mp-frx" aria-label="Close friends">×</button></div>
+      <div class="mpfr-add" id="mp-fraddrow"><input id="mp-fradd" maxlength="16" placeholder="Add friend by username" autocomplete="off" spellcheck="false"><button class="mpbtn sm on" data-fr="add">Add</button></div>
+      <p class="mpfr-msg" id="mp-frmsg"></p><div class="mpfr-list" id="mp-frlist"></div>`;
+    $('mp').appendChild(P);
+    const I = document.createElement('div'); I.id = 'mpinv'; document.body.appendChild(I);
+    $('mp-frb').addEventListener('click', () => { Sfx.init(); Sfx.ui(); this.toggle(); });
+    $('mp-frx').addEventListener('click', () => this.toggle(false));
+    P.addEventListener('click', e => { const b = e.target.closest('[data-fr]'); if (b && !b.disabled) this.act(b.dataset.fr, b.dataset.n, b); });
+    $('mp-fradd').addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); this.act('add'); } });
+    I.addEventListener('click', e => { const b = e.target.closest('[data-inv]'); if (b && !b.disabled) this.answer(b.dataset.id, b.dataset.inv === 'join'); });
+    document.addEventListener('keydown', e => { if (e.key === 'Escape' && this.open && !$('mp').classList.contains('hidden') && !(document.getElementById('mp-modal') || {}).classList?.contains('on')) this.toggle(false); });
+    setInterval(() => this.tick(), 1500);
+  },
+  // keep the live socket matching the sign-in state, report status changes, surface queued invites
+  tick() {
+    const want = Cloud.on();
+    if (want && !this.ws && !this._retry) this.connect();
+    if (!want && this.ws) { this.drop(); this.data = null; this.invites = []; this.renderInv(); this.render(); }
+    if (this.up) { const st = this.myStatus(), k = JSON.stringify(st); if (k !== this._st) { this._st = k; this.send({ t: 'st', d: st }); } }
+    const now = Date.now(), n = this.invites.length; this.invites = this.invites.filter(v => v.exp > now); if (n !== this.invites.length || this.invites.length) this.renderInv();
+    this.badge();
+  },
+  connect() {
+    let ws; try { ws = new WebSocket(this.wsUrl()); } catch (e) { return; }
+    this.ws = ws; this.up = false;
+    ws.onopen = () => ws.send(JSON.stringify({ t: 'pres', tok: Cloud.auth.tok }));
+    ws.onmessage = ev => { let m; try { m = JSON.parse(ev.data); } catch (e) { return; } this.onMsg(m); };
+    ws.onclose = () => {
+      if (this.ws !== ws) return; this.ws = null; this.up = false;
+      if (!Cloud.on()) return;
+      this._retry = setTimeout(() => { this._retry = null; }, this.wait); this.wait = Math.min(30000, this.wait * 1.6);
+    };
+  },
+  drop() { const w = this.ws; this.ws = null; this.up = false; this._st = ''; if (w) try { w.close(); } catch (e) { } },
+  send(o) { if (this.ws && this.ws.readyState === 1) this.ws.send(JSON.stringify(o)); },
+  onMsg(m) {
+    if (m.t === 'ok') { this.up = true; this.wait = 3000; this._st = ''; this.load(); return; }
+    if (m.t === 'err') { this.drop(); return; }
+    if (m.t === 'fr') { this.load(); return; }
+    if (m.t === 'fs') { const f = this.data && this.data.friends.find(x => x.uid === m.uid); if (f) { f.st = m.st; this.render(); } else this.load(); return; }
+    if (m.t === 'inv') {
+      this.invites = this.invites.filter(v => v.from !== m.from).concat([{ id: m.id, from: m.from, ln: m.ln, m: m.m, n: m.n, cap: m.cap, direct: m.direct, exp: Date.now() + 115000 }]);
+      try { Sfx.ui(); } catch (e) { } this.renderInv(); return;
+    }
+    if (m.t === 'invok') { this.flash('Invite sent to ' + m.to); return; }
+    if (m.t === 'invx') { this.flash(m.msg || 'Couldn’t send the invite', true); return; }
+  },
+  myStatus() {
+    const L = Net.lobby;
+    if (!Net.role || !L) return { s: 'menu' };
+    const MD = MP_MODES[L.mode] || MP_MODES.custom, cap = MD.party ? 5 : 10, n = L.players.length;
+    const base = { m: MD.label, ln: Net.titleOf(L), n, cap };
+    if (Net.active || L.inGame) return Object.assign({ s: 'match' }, base);
+    return Object.assign({ s: 'lobby', rid: L.rid || '', open: !L.starting && n < cap, host: Net.role === 'host' }, base);
+  },
+  async api(path, body) { return Cloud.api(path, body ? 'POST' : 'GET', body); },
+  async load() { if (!Cloud.on()) return; try { this.data = await this.api('friends'); this.render(); } catch (e) { if (e.status === 404) { this.data = null; this.msg = 'This game server is out of date: upload the new server.js'; this.render(); } } },
+  toggle(on) {
+    this.open = on == null ? !this.open : !!on;
+    $('mp-fr').classList.toggle('on', this.open); $('mp-frb').classList.toggle('on', this.open);
+    if (this.open) { this.render(); this.load(); }
+  },
+  flash(t, bad) { this.msg = t; this._msgBad = !!bad; const e = $('mp-frmsg'); if (e) { e.textContent = t; e.classList.toggle('bad', !!bad); } clearTimeout(this._msgT); this._msgT = setTimeout(() => { this.msg = ''; const x = $('mp-frmsg'); if (x) x.textContent = ''; }, 4000); },
+  async act(a, name, btn) {
+    if (a === 'signin') { this.toggle(false); return Net.authDialog('login'); }
+    if (a === 'more') { this.more = this.more === name ? '' : name; return this.render(); }
+    if (a === 'invite') {
+      const L = Net.lobby; if (!L || !L.rid) return this.flash('Open a lobby first', true);
+      this.send({ t: 'inv', to: name, rid: L.rid }); btn.textContent = 'Sent'; btn.disabled = true; return;
+    }
+    if (a === 'join') { const f = this.data.friends.find(x => x.name === name); if (!f || !f.st.rid) return; this.toggle(false); try { UI.toast('Asked to join ' + f.name + '’s lobby · waiting for the host', 'info'); } catch (e) { } return Net.requestJoin(f.st.rid, f.name, true); }
+    if (a === 'add') { name = $('mp-fradd').value.trim(); if (!name) return; }
+    const path = { add: 'friends/add', accept: 'friends/accept', decline: 'friends/decline', cancel: 'friends/decline', remove: 'friends/remove', block: 'friends/block', unblock: 'friends/unblock' }[a];
+    if (!path) return;
+    if (btn) btn.disabled = true;
+    try {
+      this.data = await this.api(path, { name }); this.more = '';
+      if (a === 'add') { $('mp-fradd').value = ''; this.flash(this.data.friends.some(f => f.name.toLowerCase() === name.toLowerCase()) ? 'You’re now friends with ' + name : 'Request sent to ' + name); }
+      this.render();
+    } catch (e) { this.flash(e.message, true); if (btn) btn.disabled = false; }
+  },
+  stText(st) {
+    if (!st || st.s === 'off') return 'Offline' + (st && st.seen ? ' · seen ' + Cloud.ago(st.seen) : '');
+    if (st.s === 'menu') return 'Online';
+    if (st.s === 'match') return 'In a match · ' + (st.m || '');
+    return 'In a lobby · ' + (st.m || '') + ' · ' + st.n + '/' + st.cap;
+  },
+  render() {
+    const L = $('mp-frlist'); if (!L) return; this.badge();
+    const add = $('mp-fraddrow'); add.classList.toggle('hidden', !Cloud.on() || !this.data);
+    $('mp-frmsg').textContent = this.msg; $('mp-frmsg').classList.toggle('bad', !!this._msgBad);
+    if (!Net.relay) { L.innerHTML = `<p class="mpfr-empty">Friends need the game server (server.js, e.g. on Render).</p>`; return; }
+    if (!Cloud.on()) { L.innerHTML = `<p class="mpfr-empty">Sign in to add friends, see when they’re online and invite them to your lobby.</p><button class="mpbtn on" data-fr="signin">Sign in</button>`; return; }
+    if (!this.data) { L.innerHTML = `<p class="mpfr-empty">${this.ws ? 'Loading…' : 'Connecting…'}</p>`; return; }
+    const E = NetU.esc, D = this.data, me = this.myStatus(), inLobby = me.s === 'lobby', free = !Net.role;
+    const on = D.friends.filter(f => f.st && f.st.s !== 'off').sort((a, b) => a.name.localeCompare(b.name)), off = D.friends.filter(f => !f.st || f.st.s === 'off').sort((a, b) => (b.st.seen || 0) - (a.st.seen || 0));
+    const row = (f, online) => {
+      const st = f.st || {}, inMine = inLobby && st.rid && st.rid === me.rid;
+      let btn = '';
+      if (online && inLobby && !inMine && st.s !== 'match') btn = `<button class="mpbtn sm" data-fr="invite" data-n="${E(f.name)}">Invite</button>`;
+      else if (online && free && st.s === 'lobby' && st.open) btn = `<button class="mpbtn sm" data-fr="join" data-n="${E(f.name)}">Ask to join</button>`;
+      else if (inMine) btn = `<span class="mpfr-tag">In your lobby</span>`;
+      const more = this.more === f.name ? `<div class="mpfr-more"><button class="mpbtn sm ghost" data-fr="remove" data-n="${E(f.name)}">Remove friend</button><button class="mpbtn sm ghost" data-fr="block" data-n="${E(f.name)}">Block</button></div>` : '';
+      return `<div class="mpfr-r${online ? ' on ' + (st.s || '') : ''}"><i class="dot"></i><div class="mpfr-n"><b>${E(f.name)}</b><small>${E(this.stText(st))}${st.ln && st.s !== 'menu' ? ' · ' + E(st.ln) : ''}</small></div>${btn}<button class="mpfr-dots" data-fr="more" data-n="${E(f.name)}" aria-label="More">⋯</button>${more}</div>`;
+    };
+    let h = '';
+    if (D.incoming.length || D.outgoing.length) {
+      h += `<h4>Requests · ${D.incoming.length + D.outgoing.length}</h4>`;
+      h += D.incoming.map(r => `<div class="mpfr-r req"><div class="mpfr-n"><b>${E(r.name)}</b><small>Wants to be friends</small></div><button class="mpbtn sm on" data-fr="accept" data-n="${E(r.name)}">Accept</button><button class="mpbtn sm ghost" data-fr="decline" data-n="${E(r.name)}">Decline</button></div>`).join('');
+      h += D.outgoing.map(r => `<div class="mpfr-r req"><div class="mpfr-n"><b>${E(r.name)}</b><small>Request sent</small></div><button class="mpbtn sm ghost" data-fr="cancel" data-n="${E(r.name)}">Cancel</button></div>`).join('');
+    }
+    h += `<h4>Online · ${on.length}</h4>` + (on.length ? on.map(f => row(f, true)).join('') : `<p class="mpfr-empty sm">${D.friends.length ? 'Nobody online right now.' : 'No friends yet. Add someone by their username above.'}</p>`);
+    if (off.length) h += `<h4>Offline · ${off.length}</h4>` + off.map(f => row(f, false)).join('');
+    if (D.blocked.length) h += `<details class="mpfr-blk"><summary>Blocked · ${D.blocked.length}</summary>${D.blocked.map(n => `<div class="mpfr-r"><div class="mpfr-n"><b>${E(n)}</b></div><button class="mpbtn sm ghost" data-fr="unblock" data-n="${E(n)}">Unblock</button></div>`).join('')}</details>`;
+    L.innerHTML = h;
+  },
+  badge() {
+    const D = this.data, req = D ? D.incoming.length : 0, online = D ? D.friends.filter(f => f.st && f.st.s !== 'off').length : 0;
+    const n = $('mp-frn'), b = $('mp-frbadge'); if (!n) return;
+    n.textContent = Cloud.on() && D ? String(online) : ''; b.textContent = req ? String(req) : ''; b.classList.toggle('hidden', !req);
+  },
+  // the invite pop-up (top-right, anywhere outside a match)
+  renderInv() {
+    const I = $('mpinv'); if (!I) return;
+    const inMatch = typeof G !== 'undefined' && G.running && G.mode && !G.mode.over;
+    if (inMatch || !this.invites.length) { I.innerHTML = ''; return; }
+    const E = NetU.esc, busyHost = Net.role === 'host' && Net.lobby && Net.lobby.players.length > 1;
+    const sig = this.invites.map(v => v.id).join() + busyHost; if (I.dataset.sig === sig) return; I.dataset.sig = sig;
+    I.innerHTML = this.invites.slice(-3).map(v => `<div class="mpinv"><b>${E(v.from)}</b> invited you to <b>${E(v.ln || 'their lobby')}</b><small>${E(v.m || '')} · ${v.n | 0}/${v.cap | 0} players${v.direct ? '' : ' · the host will accept you'}</small>
+      <div class="mpinv-b"><button class="mpbtn sm on" data-inv="join" data-id="${E(v.id)}"${busyHost ? ' disabled title="You’re hosting a lobby with other players"' : ''}>${busyHost ? 'You’re hosting' : 'Join'}</button><button class="mpbtn sm ghost" data-inv="no" data-id="${E(v.id)}">Decline</button></div></div>`).join('');
+  },
+  async answer(id, yes) {
+    const v = this.invites.find(x => x.id === id); this.invites = this.invites.filter(x => x.id !== id); $('mpinv').dataset.sig = ''; this.renderInv();
+    if (!v || !yes) return;
+    if (Net.role) Net.leaveRoom();
+    Net.open(); Net.setTab('play');
+    Net.joinByInvite(v);
+  },
+};
+Object.assign(Net, {
+  async joinByInvite(v) {
+    if (this.role || this._joining) return; this.err('');
+    const tx = this.newTx(); this._joining = true; this._reqTx = tx; this.render();
+    try {
+      const c = this.myCard(), id = await tx.ticket(v.id, { tok: Cloud.auth.tok, lv: c.acct.lv, rq: c.acct.rq.i, rs: c.acct.rs.i });
+      if (this._reqTx !== tx) { tx.close(); return; }
+      this._reqTx = null; this._joining = false; this.connected(tx, id, '', v.from);
+    } catch (e) { if (this._reqTx !== tx) return; this._reqTx = null; this._joining = false; this.err(e.message); try { UI.toast(e.message, 'enemy'); } catch (x) { } this.render(); }
   },
 });
 

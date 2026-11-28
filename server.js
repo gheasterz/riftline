@@ -46,6 +46,9 @@ if (process.env.DATABASE_URL && pg) {
     create table if not exists rl_users (uid text primary key, uname text unique not null, name text not null, pass text not null, rec text not null, pid text not null, created bigint not null);
     create table if not exists rl_sessions (tok text primary key, uid text not null, created bigint not null, seen bigint not null);
     create table if not exists rl_saves (uid text primary key, data text not null, sha text not null, at bigint not null, size int not null);
+    create table if not exists rl_friends (a text not null, b text not null, st text not null, req text not null, created bigint not null, primary key (a, b));
+    create table if not exists rl_blocks (uid text not null, target text not null, created bigint not null, primary key (uid, target));
+    alter table rl_users add column if not exists seen bigint not null default 0;
     delete from rl_lb where pid not in (select pid from rl_users);`)   // entries from before accounts are dropped: one entry per account from now on
     .then(() => { LB.db = true; console.log('leaderboard: database ready'); console.log('accounts: database ready'); }).catch(e => console.log('leaderboard: database error, using memory:', e.message));
 } else console.log(process.env.DATABASE_URL ? 'leaderboard: run npm install (pg missing), using memory' : 'leaderboard: no DATABASE_URL, using memory');
@@ -201,6 +204,118 @@ async function acctRoute(req, res, url) {
   } catch (e) { console.log('accounts:', e.message); return json(res, 500, { err: 'The account service had a problem. Try again.' }); }
   json(res, 404, { err: 'not found' });
 }
+
+// ------------------------------------------------------------ FRIENDS + PRESENCE + LOBBY INVITES
+// Friend rows live in the database (a < b, st 'pending' with req = who asked, or 'friends'); blocks are one-way.
+// Presence is live only: each signed-in game tab keeps a small socket ({t:'pres'}) and reports menu / lobby / match.
+// Statuses and invites go socket to socket and never touch the database.
+const F = { mem: [], blocks: [], online: new Map(), tickets: new Map(), invHits: new Map() };   // online: uid → {name, socks:Set, st, friends:Set}
+const FRIEND_MAX = 200;
+const pair = (x, y) => x < y ? [x, y] : [y, x];
+async function frRows(uid) {
+  if (db()) return (await LB.pool.query('select a, b, st, req from rl_friends where a = $1 or b = $1', [uid])).rows;
+  return F.mem.filter(r => r.a === uid || r.b === uid);
+}
+async function frGet(x, y) { const [a, b] = pair(x, y); if (db()) return (await LB.pool.query('select * from rl_friends where a = $1 and b = $2', [a, b])).rows[0] || null; return F.mem.find(r => r.a === a && r.b === b) || null; }
+async function frPut(x, y, st, req) { const [a, b] = pair(x, y); if (db()) await LB.pool.query('insert into rl_friends (a, b, st, req, created) values ($1,$2,$3,$4,$5) on conflict (a, b) do update set st = excluded.st, req = excluded.req', [a, b, st, req, Date.now()]); else { frDelMem(a, b); F.mem.push({ a, b, st, req }); } }
+function frDelMem(a, b) { F.mem = F.mem.filter(r => !(r.a === a && r.b === b)); }
+async function frDel(x, y) { const [a, b] = pair(x, y); if (db()) await LB.pool.query('delete from rl_friends where a = $1 and b = $2', [a, b]); else frDelMem(a, b); }
+async function blocked(by, who) { if (db()) return !!(await LB.pool.query('select 1 from rl_blocks where uid = $1 and target = $2', [by, who])).rows[0]; return F.blocks.some(r => r.uid === by && r.target === who); }
+async function blockList(uid) { if (db()) return (await LB.pool.query('select target from rl_blocks where uid = $1', [uid])).rows.map(r => r.target); return F.blocks.filter(r => r.uid === uid).map(r => r.target); }
+async function setBlock(uid, who, on) {
+  if (db()) { if (on) await LB.pool.query('insert into rl_blocks (uid, target, created) values ($1,$2,$3) on conflict do nothing', [uid, who, Date.now()]); else await LB.pool.query('delete from rl_blocks where uid = $1 and target = $2', [uid, who]); }
+  else { F.blocks = F.blocks.filter(r => !(r.uid === uid && r.target === who)); if (on) F.blocks.push({ uid, target: who }); }
+}
+async function namesOf(uids) {
+  if (!uids.length) return new Map();
+  if (db()) return new Map((await LB.pool.query('select uid, name, seen from rl_users where uid = any($1)', [uids])).rows.map(r => [r.uid, r]));
+  return new Map(uids.map(u => [u, A.users.get(u)]).filter(x => x[1]));
+}
+async function friendSet(uid) { return new Set((await frRows(uid)).filter(r => r.st === 'friends').map(r => r.a === uid ? r.b : r.a)); }
+const onlineSt = uid => { const o = F.online.get(uid); return o ? o.st : null; };
+function pushTo(uid, o) { const p = F.online.get(uid); if (p) for (const w of p.socks) send(w, o); }
+function pushStatus(uid) { const p = F.online.get(uid); const st = p ? p.st : { s: 'off', seen: Date.now() }; const name = p ? p.name : null; for (const f of (p ? p.friends : [])) pushTo(f, { t: 'fs', uid, name, st }); }
+async function refreshFriends(uid) { const p = F.online.get(uid); if (p) p.friends = await friendSet(uid); pushTo(uid, { t: 'fr' }); }
+// what a friend may see of your status
+function cleanSt(d) {
+  d = d || {}; const s = ['menu', 'lobby', 'match'].includes(d.s) ? d.s : 'menu';
+  const o = { s }; if (s !== 'menu') { o.m = str(d.m, 24); o.ln = str(d.ln, 28); o.n = int(d.n, 0, 10, 0); o.cap = int(d.cap, 1, 10, 10); }
+  if (s === 'lobby') { o.rid = /^[0-9a-f]{12}$/.test(d.rid || '') ? d.rid : ''; o.open = !!d.open && !!o.rid; o.host = !!d.host; }
+  return o;
+}
+async function friendsView(u) {
+  const rows = await frRows(u.uid), blk = await blockList(u.uid), others = [...new Set(rows.map(r => r.a === u.uid ? r.b : r.a).concat(blk))], N = await namesOf(others);
+  const nm = id => (N.get(id) || {}).name || '?';
+  const friends = [], incoming = [], outgoing = [];
+  for (const r of rows) {
+    const o = r.a === u.uid ? r.b : r.a; if (!N.get(o)) continue;
+    if (r.st === 'friends') friends.push({ name: nm(o), uid: o, st: onlineSt(o) || { s: 'off', seen: +(N.get(o).seen || 0) } });
+    else if (r.req === u.uid) outgoing.push({ name: nm(o) }); else incoming.push({ name: nm(o) });
+  }
+  return { friends, incoming, outgoing, blocked: blk.map(nm).filter(x => x !== '?') };
+}
+async function friendsRoute(req, res, url) {
+  try {
+    const u = await authed(req); if (!u) return json(res, 401, { err: 'Signed out' });
+    if (url === '/friends' && req.method === 'GET') return json(res, 200, await friendsView(u));
+    if (req.method !== 'POST') return json(res, 404, { err: 'not found' });
+    if (limited(A.hits, 'fr:' + u.uid, 40, 60000)) return json(res, 429, { err: 'Slow down a little' });
+    const b = JSON.parse(await readBody(req, 2048) || '{}'), them = await userByName(String(b.name || '').trim());
+    if (!them) return json(res, 404, { err: 'No player with that username' });
+    if (them.uid === u.uid) return json(res, 400, { err: 'That’s you' });
+    const cur = await frGet(u.uid, them.uid), act = url.slice('/friends/'.length);
+    if (act === 'add') {
+      if (await blocked(them.uid, u.uid) || await blocked(u.uid, them.uid)) return json(res, 403, { err: 'You can’t add this player' });
+      if (cur && cur.st === 'friends') return json(res, 409, { err: 'You’re already friends' });
+      if (cur && cur.req === u.uid) return json(res, 409, { err: 'Request already sent' });
+      if ((await frRows(u.uid)).length >= FRIEND_MAX) return json(res, 400, { err: 'Friend list is full (' + FRIEND_MAX + ')' });
+      if (cur) await frPut(u.uid, them.uid, 'friends', cur.req);   // they had asked us: that's an accept
+      else await frPut(u.uid, them.uid, 'pending', u.uid);
+    } else if (act === 'accept') {
+      if (!cur || cur.st !== 'pending' || cur.req === u.uid) return json(res, 400, { err: 'No request from that player' });
+      await frPut(u.uid, them.uid, 'friends', cur.req);
+    } else if (act === 'decline' || act === 'remove') {
+      if (cur) await frDel(u.uid, them.uid);
+    } else if (act === 'block') { if (cur) await frDel(u.uid, them.uid); await setBlock(u.uid, them.uid, true); }
+    else if (act === 'unblock') await setBlock(u.uid, them.uid, false);
+    else return json(res, 404, { err: 'not found' });
+    await refreshFriends(u.uid); await refreshFriends(them.uid); pushStatus(u.uid); pushStatus(them.uid);
+    return json(res, 200, await friendsView(u));
+  } catch (e) { console.log('friends:', e.message); return json(res, 500, { err: 'Friends are unavailable right now' }); }
+}
+const authTok = tok => authed({ headers: { authorization: 'Bearer ' + String(tok || '') } });
+// a signed-in tab's live socket: status in, statuses and invites out
+async function presence(ws, tok) {
+  const u = await authTok(tok); if (!u) { refuse(ws, 'Signed out'); return; }
+  let p = F.online.get(u.uid);
+  if (!p) { p = { name: u.name, socks: new Set(), st: { s: 'menu' }, friends: await friendSet(u.uid) }; F.online.set(u.uid, p); }
+  p.socks.add(ws); send(ws, { t: 'ok' }); pushStatus(u.uid);
+  ws.on('message', raw => {
+    let o; try { o = JSON.parse(raw); } catch (e) { return; }
+    if (o.t === 'st') { const n = cleanSt(o.d); if (JSON.stringify(n) !== JSON.stringify(p.st)) { p.st = n; pushStatus(u.uid); } }
+    else if (o.t === 'inv') invite(u, p, ws, o);
+  });
+  ws.on('close', () => {
+    p.socks.delete(ws); if (p.socks.size) return;
+    F.online.delete(u.uid);
+    const st = { s: 'off', seen: Date.now() }; for (const f of p.friends) pushTo(f, { t: 'fs', uid: u.uid, name: u.name, st });
+    if (db()) LB.pool.query('update rl_users set seen = $2 where uid = $1', [u.uid, Date.now()]).catch(() => { }); else if (A.users.get(u.uid)) A.users.get(u.uid).seen = Date.now();
+  });
+}
+function roomByRid(rid) { for (const r of rooms.values()) if (r.rid === rid) return r; return null; }
+function invite(u, p, ws, o) {
+  const to = [...F.online.entries()].find(([id, q]) => q.name.toLowerCase() === String(o.to || '').toLowerCase());
+  const fail = msg => send(ws, { t: 'invx', to: o.to, msg });
+  if (!to || !p.friends.has(to[0])) return fail('They’re offline');
+  if (limited(F.invHits, u.uid + '>' + to[0], 1, 4000)) return fail('Wait a moment before inviting again');
+  const room = roomByRid(String(o.rid || '')); if (!room) return fail('Your lobby closed');
+  if (room.meta && room.meta.g) return fail('Invites open again after the match');
+  const id = crypto.randomBytes(9).toString('hex'), direct = room.owner === u.uid;
+  F.tickets.set(id, { rid: room.rid, to: to[0], from: u.name, direct, exp: Date.now() + 120000 });
+  pushTo(to[0], { t: 'inv', id, from: u.name, ln: room.meta ? room.meta.ln : '', m: room.meta ? room.meta.m : '', n: room.meta ? room.meta.n : 1, cap: room.meta ? room.meta.cap : 10, direct });
+  send(ws, { t: 'invok', to: to[1].name });
+}
+setInterval(() => { const now = Date.now(); for (const [k, t] of F.tickets) if (t.exp < now) F.tickets.delete(k); }, 60000);
 // hourly: forget rate-limit buckets
 setInterval(() => {
   const now = Date.now(); for (const M of [LB.hits, A.hits, A.fails]) for (const [k, h] of M) if (!h.some(t => now - t < 900000)) M.delete(k);
@@ -211,7 +326,8 @@ const server = http.createServer((req, res) => {
   const url = decodeURIComponent((req.url || '/').split('?')[0]);
   if (url === '/lb' || url === '/lb/submit') { lbRoute(req, res, url); return; }
   if (url.startsWith('/acct/')) { acctRoute(req, res, url); return; }
-  if (url === '/rl-relay.json') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"relay":true,"rooms":true,"lb":true,"acct":true}'); return; }
+  if (url === '/friends' || url.startsWith('/friends/')) { friendsRoute(req, res, url); return; }
+  if (url === '/rl-relay.json') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end('{"relay":true,"rooms":true,"lb":true,"acct":true,"friends":true}'); return; }
   if (url === '/rooms') { res.writeHead(200, { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' }); res.end(JSON.stringify({ rooms: listRooms() })); return; }
   if (url === '/health') { res.writeHead(200); res.end('ok ' + rooms.size + ' rooms'); return; }
   if (url !== '/' && url !== '/index.html') { res.writeHead(404); res.end('Not found'); return; }
@@ -243,18 +359,19 @@ wss.on('connection', ws => {
     let m; try { m = JSON.parse(raw); } catch (e) { ws.close(); return; }
     if (m.t === 'host') {
       const code = newCode(), room = { host: ws, guests: new Map(), pending: new Map(), rid: crypto.randomBytes(6).toString('hex'), meta: null, born: Date.now() };
-      rooms.set(code, room); send(ws, { t: 'ok', code });
+      rooms.set(code, room); send(ws, { t: 'ok', code, rid: room.rid });
       ws.on('message', raw2 => {
         let o; try { o = JSON.parse(raw2); } catch (e) { return; }
         if (o.t === 'to') { const g = room.guests.get(o.cid); if (g) send(g, JSON.stringify({ t: 'msg', d: o.d })); }
         else if (o.t === 'all') { const pkt = JSON.stringify({ t: 'msg', d: o.d }); for (const [cid, g] of room.guests) if (cid !== o.ex) send(g, pkt); }
         else if (o.t === 'meta') {   // what the lobby browser shows for this room
-          const d = o.d || {};
+          const d = o.d || {}, was = room.meta && room.meta.open;
           room.meta = { h: str(d.h, 16) || 'Player', ln: str(d.ln, 28), m: str(d.m, 24), mp: str(d.mp, 24), n: int(d.n, 1, 10, 1), cap: int(d.cap, 1, 10, 10), g: !!d.g, open: !!d.open };
-          if (!room.meta.open) for (const cid of [...room.pending.keys()]) { dropPending(room, cid, 'That lobby is no longer listed.'); send(ws, { t: 'reqx', cid }); }
+          if (was && !room.meta.open) for (const [cid, pq] of [...room.pending]) if (!pq.fr) { dropPending(room, cid, 'That lobby is no longer listed.'); send(ws, { t: 'reqx', cid }); }   // friends' requests stay
         }
         else if (o.t === 'acc') { const p = dropPending(room, o.cid); if (p && p.ws.readyState === 1) { if (room.guests.size >= 9) refuse(p.ws, 'That room is full.'); else addGuest(room, o.cid, p.ws); } }
         else if (o.t === 'dec') dropPending(room, o.cid, str(o.msg, 120) || 'The host declined your request.');
+        else if (o.t === 'own') authTok(o.tok).then(u => { if (u && rooms.get(code) === room) { room.owner = u.uid; room.ownerName = u.name; } }).catch(() => { });
       });
       ws.on('close', () => {
         rooms.delete(code);
@@ -270,22 +387,44 @@ wss.on('connection', ws => {
       addGuest(room, 'c' + (nextCid++), ws);
       return;
     }
-    if (m.t === 'req') {   // ask to join a listed lobby: held here until the host answers
-      let room = null; for (const r of rooms.values()) if (r.rid === m.rid) { room = r; break; }
+    if (m.t === 'pres') { presence(ws, m.tok).catch(() => refuse(ws, 'Presence unavailable')); return; }
+    if (m.t === 'tkt') {   // accepting a lobby invite
+      const t = F.tickets.get(String(m.id || ''));
+      authTok(m.tok).then(u => {
+        if (!t || !u || u.uid !== t.to || t.exp < Date.now()) return refuse(ws, 'That invite expired');
+        F.tickets.delete(m.id); const room = roomByRid(t.rid);
+        if (!room) return refuse(ws, 'That lobby closed');
+        if (room.meta && room.meta.g) return refuse(ws, 'That lobby is in a match right now. Try again when it ends.');
+        if (room.guests.size >= 9 || (room.meta && room.meta.n >= room.meta.cap)) return refuse(ws, 'That lobby is full.');
+        if (t.direct) addGuest(room, 'c' + (nextCid++), ws); else joinRequest(room, ws, { name: u.name, lv: m.lv, rq: m.rq, rs: m.rs, fr: true });
+      }).catch(() => refuse(ws, 'That invite expired'));
+      return;
+    }
+    if (m.t === 'req') {   // ask to join a listed lobby (or a friend's): held here until the host answers
+      const room = roomByRid(m.rid);
+      if (room && room.meta && !room.meta.open && m.tok && room.owner) {   // unlisted: only the owner's friends may ask
+        authTok(m.tok).then(async u => { if (u && (await friendSet(room.owner)).has(u.uid)) joinRequest(room, ws, Object.assign({}, m, { fr: true })); else refuse(ws, 'That lobby is private.'); }).catch(() => refuse(ws, 'That lobby is private.'));
+        return;
+      }
       if (!room || !room.meta || !room.meta.open) { refuse(ws, 'That lobby is no longer open.'); return; }
+      joinRequest(room, ws, m); return;
+    }
+    ws.close();
+  });
+});
+function joinRequest(room, ws, m) {
+  if (!room.meta) { refuse(ws, 'That lobby is still opening. Try again in a moment.'); return; }
+  {
       if (room.meta.g) { refuse(ws, 'That lobby is in a match right now. Try again when it ends.'); return; }
       if (room.guests.size >= 9 || room.meta.n >= room.meta.cap) { refuse(ws, 'That lobby is full.'); return; }
       if (room.pending.size >= MAX_PENDING) { refuse(ws, 'That host has too many requests right now. Try again shortly.'); return; }
       const cid = 'c' + (nextCid++);
       const timer = setTimeout(() => { if (dropPending(room, cid, 'The host didn’t answer your request.')) send(room.host, { t: 'reqx', cid }); }, REQ_TIMEOUT);
-      room.pending.set(cid, { ws, timer });
-      send(room.host, { t: 'req', cid, name: str(m.name, 16) || 'Player', lv: int(m.lv, 1, 1000, 1), rq: int(m.rq, -1, 99, -1), rs: int(m.rs, -1, 99, -1) });
+      room.pending.set(cid, { ws, timer, fr: !!m.fr });
+      send(room.host, { t: 'req', cid, name: str(m.name, 16) || 'Player', lv: int(m.lv, 1, 1000, 1), rq: int(m.rq, -1, 99, -1), rs: int(m.rs, -1, 99, -1), fr: !!m.fr });
       ws.on('close', () => { if (dropPending(room, cid)) send(room.host, { t: 'reqx', cid }); });   // they cancelled
-      return;
-    }
-    ws.close();
-  });
-});
+  }
+}
 // drop dead sockets (closed laptops, lost wifi) so their slot frees up and a bot takes over
 setInterval(() => { for (const ws of wss.clients) { if (!ws.isAlive) { ws.terminate(); continue; } ws.isAlive = false; try { ws.ping(); } catch (e) { } } }, 15000);
 
